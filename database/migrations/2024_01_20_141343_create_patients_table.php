@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('patients', function (Blueprint $table) {
+        Schema::create('patients', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->number('age');
-            $table->number('national_id');
+            $table->integer('age');
+            $table->integer('national_id');
             $table->enum('age_unit',['year','day'])->default('year');
             $table->enum('gender',['male','female'])->default('male');
             $table->timestamp('deleted_at')->nullable();

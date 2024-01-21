@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('laboratories_media', function (Blueprint $table) {
+        Schema::create('laboratories_media', static function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('lab_id');
             $table->text('avatar')->nullable();
