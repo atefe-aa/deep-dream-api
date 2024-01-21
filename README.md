@@ -44,9 +44,9 @@ Automated notifications for test status changes and SMS alerts to counselors for
 
 - ### Backend:
 
-Laravel (with Sanctum for authentication)
-Python (for camera and scanner control)
-Spatie/Permissions for role-based access control
+  - Laravel (with Sanctum for authentication)
+  - Python (for camera and scanner control)
+  - Spatie/Permissions for role-based access control
 
 - ### Frontend:
 
@@ -80,5 +80,5 @@ Spatie/Permissions for role-based access control
 - Secure storage of sensitive information.
 
 ## Contact Information
-For questions or inquiries, feel free to contact [Atefe Ali Asgariyan](aa.asgariyan12@gmail.com)
+For questions or inquiries, feel free to contact **Atefe** **Ali** **Asgariyan** at aa.asgariyan12@gmail.com
 
