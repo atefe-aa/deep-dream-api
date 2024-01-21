@@ -57,19 +57,25 @@ Automated notifications for test status changes and SMS alerts to counselors for
   ## Installation
 1. Clone the repository.
 2. Install dependencies:
-```composer install```
+```bash
+composer install
+2. ```
 
 3. Install Spatie/Permissions:
-```composer require spatie/laravel-permission```
+```bash
+composer require spatie/laravel-permission
+3. ```
 
 4. Publish and migrate permissions:
 
- ``` php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider" --tag="migrations" and php artisan migrate```
-
+ ```bash 
+  php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider" --tag="migrations" and php artisan migrate
+```
 5. Configure .env based on the database
 6. Run the app:
-```php artisan serve```
- 
+```bash 
+php artisan serve
+ ```
 ---
 
 ## Security Measures
