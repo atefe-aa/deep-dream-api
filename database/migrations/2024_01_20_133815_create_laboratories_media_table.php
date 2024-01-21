@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('laboratories_media', static function (Blueprint $table) {
+        Schema::create('laboratory_media', static function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('lab_id');
             $table->text('avatar')->nullable();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('laboratories_media');
+        Schema::dropIfExists('laboratory_media');
     }
 };
