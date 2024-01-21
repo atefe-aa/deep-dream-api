@@ -21,12 +21,14 @@ Facilitate annotations and collaborations between laboratories and counselors.
 Manual and auto mode for scanning, allowing configuration of scanning regions and magnifications.
 
 ### Sytomine Integration:
-Display scanned images with filters, zoom, and drawing features using Sytomine.
+Display scanned images with filters, zoom, and drawing features using [Sytomine](https://sytomine.com).
 
 
 ### Result Templating:
 Create and print result templates.
-Statistical Visualization: Charts to visualize test statistics by price, quantity, and test types.
+
+### Statistical Visualization:
+Charts to visualize test statistics by price, quantity, and test types.
 
 ### Notifications: 
 Automated notifications for test status changes and SMS alerts to counselors for image reviews.
