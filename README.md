@@ -1,7 +1,7 @@
 # Deep Dream
 
 ## Description
-Deep Dream is a comprehensive slide scanner manager application designed to manage tests, test types, patients, and collaborations between laboratories and counselors. The application facilitates manual and automated scanning, image annotation using Sytomine, result templating, and advanced statistical visualization. It leverages Python for camera and scanner control and utilizes Laravel Sanctum for authentication.
+Deep Dream is a comprehensive slide scanner manager application designed to manage tests, test types, patients, and collaborations between laboratories and counselors. The application facilitates manual and automated scanning, image annotation using Cytomine, result templating, and advanced statistical visualization. It leverages Python for camera and scanner control and utilizes Laravel Sanctum for authentication.
 
 ## Repository Links:
 
@@ -20,8 +20,8 @@ Facilitate annotations and collaborations between laboratories and counselors.
 ### Scanner Control: 
 Manual and auto mode for scanning, allowing configuration of scanning regions and magnifications.
 
-### Sytomine Integration:
-Display scanned images with filters, zoom, and drawing features using [Sytomine](https://sytomine.com).
+### Cytomine Integration:
+Display scanned images with filters, zoom, and drawing features using [Cytomine](https://cytomine.com/).
 
 
 ### Result Templating:
@@ -38,7 +38,7 @@ Automated notifications for test status changes and SMS alerts to counselors for
 - Admin: Full access to all features, charts, tests, laboratories, and counselors. CRUD access for all components.
 - Operator: Create tests, configure machine settings, and utilize manual and scanning features.
 - Laboratories: CRUD access to their tests, counselors, and view completed scanned images of their tests.
-- Counselors: View assigned images in Sytomine and create annotations.
+- Counselors: View assigned images in Cytomine and create annotations.
 
 ## Technologies Used
 
