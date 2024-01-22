@@ -8,9 +8,11 @@ use App\Http\Resources\LaboratoryResource;
 use App\Models\Laboratory;
 use App\Models\LaboratoryMedia;
 use App\Models\User;
+use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use mysql_xdevapi\Exception;
 
 class LaboratoryController extends Controller
 {
@@ -19,7 +21,8 @@ class LaboratoryController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return LaboratoryResource::collection(Laboratory::all());
+        $laboratories = Laboratory::orderBy('created_at','desc')->get();
+        return LaboratoryResource::collection($laboratories);
     }
 
     /**
@@ -34,6 +37,10 @@ class LaboratoryController extends Controller
                 'phone' => $request->input('phone'),
                 'password' => $request->input('password'),
             ]);
+
+            if($user) {
+                $user->assignRole('laboratory');
+            }
 
             $laboratory = Laboratory::create([
                 'user_id' => $user->id,
@@ -92,6 +99,14 @@ class LaboratoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $laboratory = Laboratory::findOrFail($id);
+        try{
+//            $laboratory->delete();
+            $laboratory->user->delete();
+
+            return response(['success'], 200);
+        }catch (\Exception $e){
+            return response(['error'=> $e ], 200);
+        }
     }
 }

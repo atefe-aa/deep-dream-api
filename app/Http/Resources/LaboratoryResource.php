@@ -23,7 +23,7 @@ class LaboratoryResource extends JsonResource
             "address"=>$this->address,
             "description"=>$this->description,
             "username"=>$this->user->username,
-            "picture"=>$this->media->avatar,
+            "avatar"=>$this->media->avatar ? asset('storage/'.$this->media->avatar): null,
         ];
     }
 }

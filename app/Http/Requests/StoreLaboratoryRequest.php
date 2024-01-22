@@ -28,7 +28,7 @@ class StoreLaboratoryRequest extends FormRequest
            "footer" => ['nullable','image'],
            "labName" => ['required','string'],
            "fullName" => ['required','string'],
-           "phone" => ['required','string'],
+           "phone" => ['required','string','unique:users'],
            "address" => ['required','string'],
            "description" => ['string'],
            "username" => ['required','string','unique:users'],
