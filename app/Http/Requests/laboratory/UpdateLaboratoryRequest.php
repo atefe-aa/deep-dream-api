@@ -4,7 +4,7 @@ namespace App\Http\Requests\laboratory;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateLaboratoryInfoRequest extends FormRequest
+class UpdateLaboratoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,6 +29,10 @@ class UpdateLaboratoryInfoRequest extends FormRequest
             "description" => ['nullable','string'],
             "username" => ['nullable','string','unique:users'],
             "password" => ['nullable','string','confirmed'],
+            "avatar" => ['nullable','image'],
+            "signature" => ['nullable','image'],
+            "header" => ['nullable','image'],
+            "footer" => ['nullable','image'],
         ];
     }
 }

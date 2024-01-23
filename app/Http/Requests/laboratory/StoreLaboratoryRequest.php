@@ -23,8 +23,8 @@ class StoreLaboratoryRequest extends FormRequest
     {
         return [
            "avatar" => ['nullable','image'],
-           "signature" => ['required','nullable','image'],
-           "header" => ['required','nullable','image'],
+           "signature" => ['required','image'],
+           "header" => ['required','image'],
            "footer" => ['nullable','image'],
            "labName" => ['required','string'],
            "fullName" => ['required','string'],

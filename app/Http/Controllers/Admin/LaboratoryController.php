@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\laboratory\StoreLaboratoryRequest;
+use App\Http\Requests\laboratory\UpdateLaboratoryRequest;
 use App\Http\Resources\LaboratoryResource;
 use App\Models\Laboratory;
 use App\Models\LaboratoryMedia;
@@ -11,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -95,7 +97,7 @@ class LaboratoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateLaboratoryRequest $request, string $id): JsonResponse|LaboratoryResource
     {
         $laboratory = Laboratory::findOrFail($id);
         $user = User::findOrFail($laboratory->user->id);
@@ -141,10 +143,59 @@ class LaboratoryController extends Controller
         }
     }
 
+    public function updateMedia(UpdateLaboratoryRequest $request ,string $id): LaboratoryResource | JsonResponse
+    {
+        $laboratory = Laboratory::findOrFail($id);
+        try{
+            DB::beginTransaction();
+
+            $avatarPath = null;
+            $footerPath = null;
+            $headerPath = null;
+            $signaturePath = null;
+            if($request->hasFile('avatar')){
+                !is_null($laboratory->media->avatar)
+                && Storage::disk('public')->delete($laboratory->media->avatar);
+                $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            }
+            if($request->hasFile('header')){
+                !is_null($laboratory->media->header)
+                && Storage::disk('public')->delete($laboratory->media->header);
+                $headerPath = $request->file('header')->store('headers', 'public');
+            }
+            if($request->hasFile('signature')){
+                !is_null($laboratory->media->signature)
+                && Storage::disk('public')->delete($laboratory->media->signature);
+                $signaturePath = $request->file('signature')->store('signatures', 'public');
+            }
+            if($request->hasFile('footer')){
+                !is_null($laboratory->media->footer)
+                && Storage::disk('public')->delete($laboratory->media->footer);
+                $footerPath = $request->file('footer')->store('footers', 'public');
+            }
+
+            $laboratory->media->update([
+                'avatar' => $avatarPath ?:  $laboratory->media->avatar,
+                'header' => $headerPath ?:  $laboratory->media->header,
+                'signature' => $signaturePath ?:  $laboratory->media->signature,
+                'footer' => $footerPath ?:  $laboratory->media->footer,
+            ]);
+
+            DB::commit();
+
+            return new LaboratoryResource($laboratory);
+        }catch (\Exception $e){
+            DB::rollBack();
+
+            \Log::info($e);
+            return response()->json(['error' => 'Error creating laboratory.'], 500);
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id) : Response
     {
         $laboratory = Laboratory::findOrFail($id);
         try{

@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('laboratory',LaboratoryController::class);
+Route::post('laboratory/{laboratory}',[LaboratoryController::class,'updateMedia']);
