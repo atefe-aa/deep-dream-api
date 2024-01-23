@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreLaboratoryRequest;
+use App\Http\Requests\laboratory\StoreLaboratoryRequest;
 use App\Http\Resources\LaboratoryResource;
 use App\Models\Laboratory;
 use App\Models\LaboratoryMedia;
 use App\Models\User;
-use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use mysql_xdevapi\Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class LaboratoryController extends Controller
 {
@@ -31,6 +31,8 @@ class LaboratoryController extends Controller
     public function store(StoreLaboratoryRequest $request): LaboratoryResource | JsonResponse
     {
         try{
+            DB::beginTransaction();
+
             $user = User::create([
                 'name' => $request->input('fullName'),
                 'username' => $request->input('username'),
@@ -71,8 +73,12 @@ class LaboratoryController extends Controller
                 'footer' => $footerPath ?? null,
             ]);
 
+            DB::commit();
+
             return new LaboratoryResource($laboratory);
         }catch (\Exception $e){
+            DB::rollBack();
+
             \Log::info($e);
             return response()->json(['error' => 'Error creating laboratory.'], 500);
         }
@@ -83,7 +89,7 @@ class LaboratoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+
     }
 
     /**
@@ -91,7 +97,48 @@ class LaboratoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $laboratory = Laboratory::findOrFail($id);
+        $user = User::findOrFail($laboratory->user->id);
+
+        try{
+            DB::beginTransaction();
+
+            $user->update([
+                'name' => !is_null($request->input('fullName')) && $request->input('fullName') !==""
+                    ? $request->input('fullName')
+                    : $user->name,
+                'username' => !is_null($request->input('username')) && $request->input('username') !== ""
+                    ? $request->input('username')
+                    : $user->username,
+                'phone' => !is_null($request->input('phone')) && $request->input('phone') !== ""
+                    ? $request->input('phone')
+                    : $user->phone,
+                'password' => !is_null($request->input('password')) && $request->input('password') !== ""
+                    ? $request->input('password')
+                    : $user->password ,
+            ]);
+
+            $laboratory->update([
+                'title' => !is_null($request->input('labName')) && $request->input('labName') !== ""
+                    ? $request->input('labName')
+                    : $laboratory->title,
+                'address' => !is_null($request->input('address')) && $request->input('address') !== ""
+                    ? $request->input('address')
+                    :$laboratory->address ,
+                'description' => !is_null($request->input('description')) && $request->input('description') !== ""
+                    ? $request->input('description')
+                    : $laboratory->description,
+            ]);
+
+            DB::commit();
+
+            return new LaboratoryResource($laboratory);
+        }catch (\Exception $e){
+            DB::rollBack();
+
+            \Log::info($e);
+            return response()->json(['error' => 'Error creating laboratory.'], 500);
+        }
     }
 
     /**
@@ -101,7 +148,24 @@ class LaboratoryController extends Controller
     {
         $laboratory = Laboratory::findOrFail($id);
         try{
-//            $laboratory->delete();
+
+            if($laboratory->media){
+                if($laboratory->media->avatar){
+                    Storage::disk('public')->delete($laboratory->media->avatar);
+                }
+                if($laboratory->media->header){
+                    Storage::disk('public')->delete($laboratory->media->header);
+                }
+                if($laboratory->media->footer){
+                    Storage::disk('public')->delete($laboratory->media->footer);
+                }
+                if($laboratory->media->signature){
+                    Storage::disk('public')->delete($laboratory->media->signature);
+                }
+            }
+
+//by deleting the user related laboratory will be deleted because of cascade relationship
+// then the media row related to the laboratory will be deleted
             $laboratory->user->delete();
 
             return response(['success'], 200);

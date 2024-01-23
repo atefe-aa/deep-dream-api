@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->text('address');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
 

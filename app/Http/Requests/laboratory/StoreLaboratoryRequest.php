@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\laboratory;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -30,7 +30,7 @@ class StoreLaboratoryRequest extends FormRequest
            "fullName" => ['required','string'],
            "phone" => ['required','string','unique:users'],
            "address" => ['required','string'],
-           "description" => ['string'],
+           "description" => ['nullable','string'],
            "username" => ['required','string','unique:users'],
            "password" => ['required','string','confirmed'],
         ];
