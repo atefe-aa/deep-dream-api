@@ -15,7 +15,6 @@ class LaboratoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-
             "id"=>$this->id ,
             "labName"=>$this->title,
             "fullName"=>$this->user->name,
@@ -23,10 +22,18 @@ class LaboratoryResource extends JsonResource
             "address"=>$this->address,
             "description"=>$this->description,
             "username"=>$this->user->username,
-            "avatar"=>$this->media->avatar ? asset('storage/'.$this->media->avatar): null,
-            "header"=>$this->media->header ? asset('storage/'.$this->media->header): null,
-            "footer"=>$this->media->footer ? asset('storage/'.$this->media->footer): null,
-            "signature"=>$this->media->signature ? asset('storage/'.$this->media->signature): null,
+            "avatar"=>$this->media->avatar ? $this->prepareUrl($this->media->avatar) : null,
+            "header"=>$this->media->header ? $this->prepareUrl($this->media->header) : null,
+            "footer"=>$this->media->footer ? $this->prepareUrl($this->media->footer) : null,
+            "signature"=> $this->media->signature ? $this->prepareUrl($this->media->signature): null,
         ];
+    }
+
+    private function prepareUrl(string $path){
+        if(str_starts_with($path, 'http')){
+            return $path;
+        }
+
+        return asset('storage/'.$path);
     }
 }
