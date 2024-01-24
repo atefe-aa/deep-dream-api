@@ -23,8 +23,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'name' => 'superAdmin',
         ]);
 
-        $opratorRole = Role::create([
-            'name' => 'oprator',
+        $operatorRole = Role::create([
+            'name' => 'operator',
         ]);
 
         $laboratoryRole = Role::create([
@@ -35,7 +35,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdminUser = User::firstOrCreate(
             ['username' => "superadmin"],
             [
-                'name' => "superadmin",
+                'name' => "super admin",
                 'phone' => "09100520741",
                 'email' => "superadmin@voi.com",
                 'password' => bcrypt("1-7EAYk6oc(v7P")
@@ -45,17 +45,17 @@ class RolesAndPermissionsSeeder extends Seeder
             $superAdminUser->assignRole($superAdminRole);
 
         // Admin
-        $opratorUser = User::firstOrCreate(
-            ['username'=>"oprator"],
+        $operatorUser = User::firstOrCreate(
+            ['username'=>"operator"],
             [
-                'name'=>"oprator", 
+                'name'=>"operator",
                 'phone'=>"09100520742",
                 'email' => 'oprator@voi.com',
                 'password' => bcrypt('password')
             ],
         );
-        if ($opratorUser)
-            $opratorUser->assignRole($opratorRole);
+        if ($operatorUser)
+            $operatorUser->assignRole($operatorRole);
 
         //TourProvider
         $laboratoryUser = User::firstOrCreate(
@@ -68,6 +68,6 @@ class RolesAndPermissionsSeeder extends Seeder
         );
         if ($laboratoryUser)
             $laboratoryUser->assignRole($laboratoryRole);
-            
+
     }
 }

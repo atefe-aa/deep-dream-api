@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('patients', static function (Blueprint $table) {
+        Schema::create('counsellors', static function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('lab_id');
             $table->string('name');
-            $table->integer('age');
-            $table->string('national_id');
-            $table->enum('age_unit',['year','day'])->default('year');
-            $table->enum('gender',['male','female'])->default('male');
+            $table->string('phone');
+            $table->string('description')->nullable();
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('patients');
+        Schema::dropIfExists('counsellors');
     }
 };
