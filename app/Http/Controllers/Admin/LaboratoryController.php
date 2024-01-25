@@ -21,9 +21,33 @@ class LaboratoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $laboratories = Laboratory::orderBy('created_at','desc')->get();
+        $query = Laboratory::query();
+
+        // Search by laboratory details or user's name
+        if ($request->has('search')) {
+            $searchTerm = $request->get('search');
+
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('address', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+            })
+                ->orWhereHas('user', function ($query) use ($searchTerm) {
+                    $query->where('name', 'like', '%' . $searchTerm . '%');
+                });
+        }
+
+        $sortBy = $request->get('sort', 'created_at');
+        $sortOrder = $request->get('order', 'desc');
+        if($sortBy  === 'name'){
+            $query->orderBy('title', $sortOrder);
+        }
+        $query->orderBy('created_at', 'desc');
+
+        $laboratories = $query->paginate(10);
+
         return LaboratoryResource::collection($laboratories);
     }
 
