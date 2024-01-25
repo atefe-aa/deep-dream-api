@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Test extends Model
 {
@@ -21,4 +23,17 @@ class Test extends Model
         'duration',
         'description'
     ];
+
+    public function patient() : BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+    public function laboratory() : BelongsTo
+    {
+        return $this->belongsTo(Laboratory::class, 'lab_id');
+    }
+    public function testType(): BelongsTo
+    {
+        return $this->belongsTo(TestType::class);
+    }
 }
