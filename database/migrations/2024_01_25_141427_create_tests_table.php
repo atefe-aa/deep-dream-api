@@ -26,7 +26,7 @@ return new class extends Migration
                 );
             $table->integer('num_slide')->default(1);
             $table->integer('duration')->nullable();
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->timestamps();
 
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');

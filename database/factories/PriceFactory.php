@@ -20,6 +20,7 @@ class PriceFactory extends Factory
             'lab_id'=> fake()->numberBetween(1,100),
             'test_type_id'=> fake()->numberBetween(1,30) ,
             'price'=> fake()->numberBetween(10000,500000) ,
+            'price_per_slide'=> fake()->numberBetween(10000,50000) ,
             'description'=> fake()->sentence(10),
         ];
     }

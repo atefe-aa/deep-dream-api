@@ -17,12 +17,22 @@ class Test extends Model
       'sender_register_code',
       'test_type_id',
       'doctor_name',
-      'price',
       'status',
       'num_slide',
         'duration',
         'description'
     ];
+
+    public function setPriceAttribute(): void
+    {
+        $priceModel = Price::where('lab_id', $this->lab_id)
+            ->where('test_type_id', $this->test_type_id)
+            ->first();
+\Log::info("ll");
+        if ($priceModel) {
+            $this->attributes['price'] = $priceModel->price + ( ($this->num_slide - 1) * $priceModel->price_per_slide ) ;
+        }
+    }
 
     public function patient() : BelongsTo
     {

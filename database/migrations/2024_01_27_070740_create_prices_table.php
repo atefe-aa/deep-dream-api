@@ -22,6 +22,8 @@ return new class extends Migration
 
             $table->foreign('lab_id')->references('id')->on('laboratories')->onDelete('cascade');
             $table->foreign('test_type_id')->references('id')->on('test_types')->onDelete('cascade');
+
+            $table->unique(['lab_id', 'test_type_id']);
         });
     }
 

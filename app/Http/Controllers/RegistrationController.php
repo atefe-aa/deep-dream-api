@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\registration\StoreRegistrationRequest;
 use App\Http\Resources\RegistrationResource;
+use App\Models\Patient;
 use App\Models\Test;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 
 class RegistrationController extends Controller
 {
@@ -73,9 +76,54 @@ class RegistrationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRegistrationRequest $request)
     {
-        //
+        try{
+            DB::beginTransaction();
+
+            //to prevent duplicate rows for a patient
+            $patient = Patient::where('national_id',$request->input('nationalId'))->first();
+            if($patient){
+                $patient->update([
+                    'age' => $request->input('age'),
+                    'ageUnit' => $request->input('ageUnit'),
+                ]);
+            }else{
+                $patient = Patient::create([
+                    'name' => $request->input('name'),
+                    'national_id' => $request->input('nationalId'),
+                    'age' => $request->input('age'),
+                    'ageUnit' => $request->input('ageUnit'),
+                    'gender' => $request->input('gender'),
+                ]);
+            }
+
+
+            $test = new Test([
+                'patient_id' => $patient->id,
+                'lab_id' => $request->input('laboratoryId'),
+                'sender_register_code' => $request->input('senderRegisterCode'),
+                'test_type_id' => $request->input('testType'),
+                'doctor_name' => $request->input('doctorName'),
+                'num_slide' => $request->input('numberOfSlides'),
+                'description' => $request->input('description'),
+            ]);
+
+           $test->setPriceAttribute();
+
+            $test->save();
+
+            DB::commit();
+
+            return new RegistrationResource($test);
+
+        }catch(\Exception $e){
+            DB::rollBack();
+
+            \Log::info($e);
+            return response()->json(['error' => 'Error creating registration.'], 500);
+
+        }
     }
 
     /**

@@ -14,5 +14,6 @@ class Price extends Model
         'test_type_id',
         'price',
         'description',
+        'price_per_slide'
     ];
 }

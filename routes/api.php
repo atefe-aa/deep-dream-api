@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\LaboratoryController;
+use App\Http\Controllers\Admin\TestTypeController;
 use App\Http\Controllers\RegistrationController;
 
 /*
@@ -21,6 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('laboratory',LaboratoryController::class);
+Route::apiResource('test-type',TestTypeController::class);
 Route::post('laboratory/{laboratory}',[LaboratoryController::class,'updateMedia']);
 
 Route::apiResource('registration',RegistrationController::class);
