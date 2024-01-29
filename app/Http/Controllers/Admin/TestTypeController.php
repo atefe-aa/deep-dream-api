@@ -6,15 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TestTypeResource;
 use App\Models\TestType;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TestTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request) : AnonymousResourceCollection
     {
-        return TestTypeResource::collection(TestType::all());
+        $query = TestType::query();
+
+        if ($request->has('laboratory')) {
+            $labId = $request->input('laboratory'); // Corrected line
+            $query->whereHas('prices', function ($query) use ($labId) {
+                $query->where('lab_id', $labId);
+            });
+        }
+
+        $testTypes = $query->get();
+
+        return TestTypeResource::collection($testTypes);
     }
 
     /**

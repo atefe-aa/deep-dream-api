@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TestType extends Model
 {
@@ -23,4 +24,9 @@ class TestType extends Model
         'magnification',
         'description',
     ];
+
+    public function prices() : HasMany
+    {
+        return $this->hasMany(Price::class);
+    }
 }

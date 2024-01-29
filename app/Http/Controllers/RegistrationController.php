@@ -131,7 +131,9 @@ class RegistrationController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $test = Test::findOrFail($id);
+
+        return new RegistrationResource($test);
     }
 
     /**
