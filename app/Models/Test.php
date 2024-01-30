@@ -14,6 +14,7 @@ class Test extends Model
     protected $fillable=[
       'patient_id',
       'lab_id',
+      'project_id',
       'sender_register_code',
       'test_type_id',
       'doctor_name',

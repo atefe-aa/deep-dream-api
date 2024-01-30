@@ -6,6 +6,8 @@ use App\Http\Requests\registration\StoreRegistrationRequest;
 use App\Http\Resources\RegistrationResource;
 use App\Models\Patient;
 use App\Models\Test;
+use App\Services\CytomineAuthService;
+use App\Services\CytomineProjectService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +15,11 @@ use Illuminate\Support\Facades\DB;
 
 class RegistrationController extends Controller
 {
+    protected CytomineProjectService $cytomineProjectService;
+    public function __construct(CytomineProjectService $cytomineProjectService)
+    {
+        $this->cytomineProjectService = $cytomineProjectService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -84,6 +91,8 @@ class RegistrationController extends Controller
      */
     public function store(StoreRegistrationRequest $request)
     {
+        $user = Auth::user();
+
         try{
             DB::beginTransaction();
 
@@ -107,7 +116,9 @@ class RegistrationController extends Controller
 
             $test = new Test([
                 'patient_id' => $patient->id,
-                'lab_id' => $request->input('laboratoryId'),
+                'lab_id' => $user && $user->laboratory
+                    ? $user->laboratory->id
+                    : $request->input('laboratoryId'),
                 'sender_register_code' => $request->input('senderRegisterCode'),
                 'test_type_id' => $request->input('testType'),
                 'doctor_name' => $request->input('doctorName'),
@@ -115,9 +126,22 @@ class RegistrationController extends Controller
                 'description' => $request->input('description'),
             ]);
 
+
+
            $test->setPriceAttribute();
 
             $test->save();
+
+            $projectName = $request->input('name')."-".$test->id;
+            $username = $user->hasRole(['superAdmin','operator'])
+                ? env('CYTOMINE_ADMIN_USERNAME')
+                : $user->username;
+
+            $projectResponse = $this->cytomineProjectService->createProject($projectName,$username);
+            if(isset($projectResponse['error'])){
+                throw new \Exception('Cytomine project creation failed');
+            }
+            $test->update(['project_id' => $projectResponse['projectId']]);
 
             DB::commit();
 

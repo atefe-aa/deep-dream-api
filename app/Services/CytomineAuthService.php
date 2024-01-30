@@ -1,12 +1,10 @@
 <?php
 namespace App\Services;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 
 class CytomineAuthService
 {
-
     public function login(string $username, string $password) : string
     {
         $response = Http::withHeaders([
