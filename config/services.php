@@ -31,4 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'cytomine' => [
+        'admin_username' => env('CYTOMINE_ADMIN_USERNAME'),
+        'admin_password' => env('CYTOMINE_ADMIN_PASSWORD'),
+        'auth_url' => env('CYTOMINE_AUTH_URL'),
+        'api_url' => env('CYTOMINE_API_URL'),
+        'core_url' => env('CYTOMINE_CORE_URL'),
+    ],
+
 ];

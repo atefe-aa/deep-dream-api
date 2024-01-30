@@ -137,10 +137,12 @@ class RegistrationController extends Controller
                 ? env('CYTOMINE_ADMIN_USERNAME')
                 : $user->username;
 
-            $projectResponse = $this->cytomineProjectService->createProject($projectName,$username);
-            if(isset($projectResponse['error'])){
-                throw new \Exception('Cytomine project creation failed');
+            $projectResponse = $this->cytomineProjectService->createProject($projectName , $username);
+
+            if(isset($projectResponse['errors']) && !is_null($projectResponse['errors'])){
+                throw new \Exception($projectResponse['errors']);
             }
+
             $test->update(['project_id' => $projectResponse['projectId']]);
 
             DB::commit();

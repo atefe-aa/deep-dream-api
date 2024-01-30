@@ -13,28 +13,28 @@ class CytomineProjectService
     public function createProject(string $projectName,string $username): array
     {
         try {
-            $authToken = $this->cytomineAuthService->getUserToken($username)['token'];
+            $authTokenResponse = $this->cytomineAuthService->loginWithToken($username);
 
-            if ($authToken) {
+            if ($authTokenResponse) {
                 $response = Http::withHeaders([
                     'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $authToken
+                    'Authorization' => 'Bearer ' . $authTokenResponse['token']
                 ])->post(env('CYTOMINE_API_URL') . '/project.json', [
                     "name"=> $projectName,
                     "ontology"=> 235359
                 ]);
 
                 if ($response->successful()) {
-                    return ['projectId' => $response->json()['project']['id']];
+                    return ['projectId' => $response['project']['id']];
                 }
 
-                return ['error' => $response->status()];
+                return ['errors' => $response];
             }
-            return ['error' => 'Something went wrong creating project.'];
+            return ['errors' => 'Something went wrong logging in.'];
 
         } catch (\Exception $e) {
             // Log or handle the exception
-            return ['error' => $e->getMessage()];
+            return ['errors' => $e];
         }
     }
 }
