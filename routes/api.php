@@ -32,7 +32,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('laboratory',LaboratoryController::class);
     Route::apiResource('test-type',TestTypeController::class);
     Route::post('laboratory/{laboratory}',[LaboratoryController::class,'updateMedia']);
-    Route::get('loginCytomine',[LaboratoryController::class,'loginCytomine']);
 
     Route::apiResource('registration',RegistrationController::class);
 });

@@ -9,21 +9,34 @@ use App\Http\Resources\LaboratoryResource;
 use App\Models\Laboratory;
 use App\Models\LaboratoryMedia;
 use App\Models\User;
+use App\Services\CytomineAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class LaboratoryController extends Controller
 {
+    protected CytomineAuthService $cytomineAuthService;
+
+    public function __construct(CytomineAuthService $cytomineAuthService)
+    {
+        $this->cytomineAuthService = $cytomineAuthService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
+        $user = Auth::user();
         $query = Laboratory::query();
+        if($user && !$user->hasRole(['superAdmin','operator'])){
+            $query->where('id', $user->laboratory->id);
+        }
 
         // Search by laboratory details or user's name
         if ($request->has('search')) {
@@ -68,6 +81,15 @@ class LaboratoryController extends Controller
 
             if($user) {
                 $user->assignRole('laboratory');
+
+                $data = $user->toArray();
+                $data['password'] = $request->input('password');
+                $cytomineUser = $this->cytomineAuthService->registerUser($data);
+                \Log::info($cytomineUser);
+
+                if (!$cytomineUser || !isset($cytomineUser['success'])) {
+                    throw new \Exception('Cytomine user creation failed');
+                }
             }
 
             $laboratory = Laboratory::create([
