@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\Test;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RegistrationController extends Controller
@@ -17,8 +18,13 @@ class RegistrationController extends Controller
      */
     public function index(Request $request) :AnonymousResourceCollection
     {
-
         $query = Test::with(['testType','laboratory','patient']);
+
+        $user = Auth::user();
+        if($user && !$user->hasRole(['superAdmin','operator'])){
+            $laboratoryId = $user->laboratory->id;
+            $query->where('lab_id', $laboratoryId);
+        }
 
         if($request->has('search'))
         {

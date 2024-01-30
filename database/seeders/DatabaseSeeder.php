@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
 //        LaboratoryMedia::factory(100)->create();
 //         Patient::factory(100)->create();
 //         TestType::factory(30)->create();
-         Price::factory(300)->create();
+//         Price::factory(300)->create();
 //         Test::factory(100)->create();
 //         Counsellor::factory(100)->create();
     }
