@@ -37,6 +37,7 @@ return [
         'auth_url' => env('CYTOMINE_AUTH_URL'),
         'api_url' => env('CYTOMINE_API_URL'),
         'core_url' => env('CYTOMINE_CORE_URL'),
+        'ontology' => env('CYTOMINE_DEFAULT_ONTOLOGY', 235359),
     ],
 
 ];

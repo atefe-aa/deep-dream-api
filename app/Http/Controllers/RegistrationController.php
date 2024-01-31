@@ -143,7 +143,7 @@ class RegistrationController extends Controller
                 throw new \Exception($projectResponse['errors']);
             }
 
-            $test->update(['project_id' => $projectResponse['projectId']]);
+            $test->update(['project_id' => $projectResponse['data']['projectId']]);
 
             DB::commit();
 

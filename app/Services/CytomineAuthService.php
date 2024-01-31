@@ -1,8 +1,14 @@
 <?php
+
 namespace App\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Http;
+use Log;
 
+/**
+ * Service class for handling authentication with the Cytomine API.
+ */
 class CytomineAuthService
 {
     private mixed $adminUsername;
@@ -11,7 +17,12 @@ class CytomineAuthService
     private mixed $apiUrl;
     private mixed $coreUrl;
 
-    public function __construct() {
+
+    /**
+     * Constructor for CytomineAuthService.
+     */
+    public function __construct()
+    {
         $this->adminUsername = config('services.cytomine.admin_username');
         $this->adminPassword = config('services.cytomine.admin_password');
         $this->authUrl = config('services.cytomine.auth_url');
@@ -19,32 +30,52 @@ class CytomineAuthService
         $this->coreUrl = config('services.cytomine.core_url');
     }
 
-    public function login(string $username, string $password) : string
+    /**
+     * Logs in with a token for a specific user.
+     *
+     * @param string $username The username for login.
+     * @return array The response array containing the token or error.
+     */
+    public function loginWithToken(string $username): array
     {
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-        ])->post($this->authUrl, [
-            "username" => $username,
-            "rememberMe" => true,
-            "password" => $password
-        ]);
+        try {
+            $tokenKey = $this->getUserToken($username);
 
-        if ($response->successful()) {
-            return $response['token'];
+            if ($tokenKey['token']) {
+                $response = Http::withHeaders([
+                    'Accept' => 'application/json',
+                ])->get($this->coreUrl . '/login/loginWithToken?username=' . $username . '&tokenKey=' . $tokenKey['token']);
+                if ($response->successful()) {
+                    return ['token' => $response->json('token')];
+                }
+
+                return ['error' => $response->status()];
+            }
+            return ['error' => 'Something went wrong during authentication.'];
+
+        } catch (Exception $e) {
+            Log::error("Logging in the user with token Failed: {$e->getMessage()}", [
+                'username' => $username,
+            ]);
+            return ['errors' => 'Failed to login the user. Please try again later.'];
         }
-        return $response->status();
     }
 
+    /**
+     * Retrieves a user token for a given username.
+     *
+     * @param string $username The username for which to retrieve the token.
+     * @return array|null An array with the token or null on failure.
+     */
     public function getUserToken(string $username): ?array
     {
         try {
             $authToken = $this->login($this->adminUsername, $this->adminPassword);
 
-            if (is_string($authToken)) {
+            if (isset($authToken['data'])) {
                 $response = Http::withHeaders([
                     'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $authToken
+                    'Authorization' => 'Bearer ' . $authToken['data']['token']
                 ])->get($this->apiUrl . '/token.json', [
                     'username' => $username,
                     'validity' => true
@@ -58,57 +89,74 @@ class CytomineAuthService
                 return ['error' => $responseData['error'] ?? 'Unknown error'];
             }
             return ['error' => 'Authentication failed.'];
-        } catch (\Exception $e) {
-            \Log::error("Exception in getUserToken: " . $e->getMessage());
-            return ['error' => 'Exception occurred.'];
+        } catch (Exception $e) {
+            Log::error("Getting user token Failed: {$e->getMessage()}", [
+                'username' => $username,
+            ]);
+            return ['errors' => 'Failed to get the user token. Please try again later.'];
         }
     }
 
-    public function loginWithToken($username): array
+    /**
+     * Login to Cytomine with provided credentials.
+     *
+     * @param string $username The username for login.
+     * @param string $password The password for login.
+     * @return array[] The authentication token or status code on failure.
+     */
+    public function login(string $username, string $password): array
     {
         try {
-            $tokenKey = $this->getUserToken($username);
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ])->post($this->authUrl, [
+                "username" => $username,
+                "rememberMe" => true,
+                "password" => $password
+            ]);
 
-            if ($tokenKey['token']) {
-                $response = Http::withHeaders([
-                    'Accept' => 'application/json',
-                ])->get($this->coreUrl . '/login/loginWithToken?username='.$username.'&tokenKey='.$tokenKey['token']);
-                if ($response->successful()) {
-                    return ['token' => $response->json('token')];
-                }
-
-                return ['error' => $response->status()];
+            if ($response->successful()) {
+                return ['data' => ['token' => $response['token']]];
             }
-            return ['error' => 'Something went wrong during authentication.'];
-
-        } catch (\Exception $e) {
-            // Log or handle the exception
-            return ['error' => $e->getMessage()];
+            return ['errors' => $response->status()];
+        } catch (Exception $e) {
+            Log::error("Authentication Failed: {$e->getMessage()}", [
+                'username' => $username,
+            ]);
+            return ['errors' => 'Failed to log in. Please try again later.'];
         }
+
     }
 
-    public function registerUser($data): ?array
+    /**
+     * Registers a new user with Cytomine.
+     *
+     * @param array $data The user data for registration.
+     * @return array|null The response array on success, or null on failure.
+     */
+    public function registerUser(array $data): ?array
     {
         try {
             $authToken = $this->login(env('CYTOMINE_ADMIN_USERNAME'), env('CYTOMINE_ADMIN_PASSWORD'));
-            if ($authToken) {
+            if (isset($authToken['data'])) {
                 $response = Http::withHeaders([
                     'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $authToken
+                    'Authorization' => 'Bearer ' . $authToken['data']['data']
                 ])->post($this->apiUrl . '/user.json', [
-                    'firstname'=>explode(" ",$data['name'])[0],
-                    'lastname'=>explode(" ",$data['name'])[1],
-                    'language'=>'EN',
-                    'email' => $data['username'].'@gmail.com',
-                    'username'=>$data['username'],
-                    'password'=>$data['password'],
+                    'firstname' => explode(" ", $data['name'])[0],
+                    'lastname' => explode(" ", $data['name'])[1],
+                    'language' => 'EN',
+                    'email' => $data['username'] . '@gmail.com',
+                    'username' => $data['username'],
+                    'password' => $data['password'],
                 ]);
 
                 if ($response->successful()) {
                     $defineRoleResponse = Http::withHeaders([
-                    'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $authToken
-                ])->put(env('CYTOMINE_API_URL') . '/user/'.$response['user']['id'].'/role/44/define.json');
+                        'Accept' => 'application/json',
+                        'Authorization' => 'Bearer ' . $authToken
+                    ])->put(env('CYTOMINE_API_URL') . '/user/' . $response['user']['id'] . '/role/44/define.json');
 
                     return ['success' => $response->json()];
                 }
@@ -117,9 +165,11 @@ class CytomineAuthService
             }
             return ['error' => 'Something went wrong during authentication.'];
 
-        } catch (\Exception $e) {
-            // Log or handle the exception
-            return ['error' => $e->getMessage()];
+        } catch (Exception $e) {
+            Log::error("Cytomine Project Creation Failed: {$e->getMessage()}", [
+                'name' => $data['name'],
+            ]);
+            return ['errors' => 'Failed to create user. Please try again later.'];
         }
     }
 }
