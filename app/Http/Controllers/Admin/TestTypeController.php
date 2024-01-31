@@ -11,9 +11,10 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class TestTypeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @param Request $request
+     * @return AnonymousResourceCollection
      */
-    public function index(Request $request) : AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
         $query = TestType::query();
 

@@ -10,6 +10,7 @@ use App\Models\Laboratory;
 use App\Models\LaboratoryMedia;
 use App\Models\User;
 use App\Services\CytomineAuthService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -18,23 +19,38 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+
+/**
+ * Controller for managing laboratories.
+ *
+ * Handles CRUD operations for laboratories, including
+ * listing, creating, updating, and deleting laboratory records.
+ */
 class LaboratoryController extends Controller
 {
     protected CytomineAuthService $cytomineAuthService;
 
+    /**
+     * Constructor for LaboratoryController.
+     *
+     * @param CytomineAuthService $cytomineAuthService Service for Cytomine authentication.
+     */
     public function __construct(CytomineAuthService $cytomineAuthService)
     {
         $this->cytomineAuthService = $cytomineAuthService;
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of laboratories.
+     *
+     * @param Request $request Incoming request instance.
+     * @return AnonymousResourceCollection Collection of laboratory resources.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
         $user = Auth::user();
         $query = Laboratory::query();
-        if($user && !$user->hasRole(['superAdmin','operator'])){
+        if ($user && !$user->hasRole(['superAdmin', 'operator'])) {
             $query->where('id', $user->laboratory->id);
         }
 
@@ -54,7 +70,7 @@ class LaboratoryController extends Controller
 
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');
-        if($sortBy  === 'name'){
+        if ($sortBy === 'name') {
             $query->orderBy('title', $sortOrder);
         }
         $query->orderBy('created_at', 'desc');
@@ -65,11 +81,81 @@ class LaboratoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Display the specified laboratory resource.
+     *
+     * @param string $id The ID of the laboratory.
+     * @return LaboratoryResource The requested laboratory resource.
      */
-    public function store(StoreLaboratoryRequest $request): LaboratoryResource | JsonResponse
+    public function show(string $id)
     {
-        try{
+
+    }
+
+    /**
+     * Update media files for a specific laboratory.
+     *
+     * @param UpdateLaboratoryRequest $request Validated request data with media files.
+     * @param string $id The ID of the laboratory for which to update media.
+     * @return LaboratoryResource|JsonResponse Updated laboratory resource with new media or error response.
+     */
+    public function updateMedia(UpdateLaboratoryRequest $request, string $id): LaboratoryResource|JsonResponse
+    {
+        $laboratory = Laboratory::findOrFail($id);
+        try {
+            DB::beginTransaction();
+
+            $avatarPath = null;
+            $footerPath = null;
+            $headerPath = null;
+            $signaturePath = null;
+            if ($request->hasFile('avatar')) {
+                !is_null($laboratory->media->avatar)
+                && Storage::disk('public')->delete($laboratory->media->avatar);
+                $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            }
+            if ($request->hasFile('header')) {
+                !is_null($laboratory->media->header)
+                && Storage::disk('public')->delete($laboratory->media->header);
+                $headerPath = $request->file('header')->store('headers', 'public');
+            }
+            if ($request->hasFile('signature')) {
+                !is_null($laboratory->media->signature)
+                && Storage::disk('public')->delete($laboratory->media->signature);
+                $signaturePath = $request->file('signature')->store('signatures', 'public');
+            }
+            if ($request->hasFile('footer')) {
+                !is_null($laboratory->media->footer)
+                && Storage::disk('public')->delete($laboratory->media->footer);
+                $footerPath = $request->file('footer')->store('footers', 'public');
+            }
+
+            $laboratory->media->update([
+                'avatar' => $avatarPath ?: $laboratory->media->avatar,
+                'header' => $headerPath ?: $laboratory->media->header,
+                'signature' => $signaturePath ?: $laboratory->media->signature,
+                'footer' => $footerPath ?: $laboratory->media->footer,
+            ]);
+
+            DB::commit();
+
+            return new LaboratoryResource($laboratory);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::info($e);
+            return response()->json(['error' => 'Error creating laboratory.'], 500);
+        }
+    }
+
+    /**
+     * Store a newly created laboratory in the database.
+     *
+     * @param StoreLaboratoryRequest $request Validated request data.
+     * @return LaboratoryResource|JsonResponse Newly created laboratory resource or error response.
+     */
+    public function store(StoreLaboratoryRequest $request): LaboratoryResource|JsonResponse
+    {
+        try {
             DB::beginTransaction();
 
             $user = User::create([
@@ -79,16 +165,16 @@ class LaboratoryController extends Controller
                 'password' => $request->input('password'),
             ]);
 
-            if($user) {
+            if ($user) {
                 $user->assignRole('laboratory');
 
                 $data = $user->toArray();
                 $data['password'] = $request->input('password');
                 $cytomineUser = $this->cytomineAuthService->registerUser($data);
-                \Log::info($cytomineUser);
+                Log::info($cytomineUser);
 
                 if (!$cytomineUser || !isset($cytomineUser['success'])) {
-                    throw new \Exception('Cytomine user creation failed');
+                    throw new Exception('Cytomine user creation failed');
                 }
             }
 
@@ -100,16 +186,16 @@ class LaboratoryController extends Controller
             ]);
 
             // Handle file uploads
-            if($request->hasFile('avatar')){
+            if ($request->hasFile('avatar')) {
                 $avatarPath = $request->file('avatar')->store('avatars', 'public');
             }
-            if($request->hasFile('header')){
+            if ($request->hasFile('header')) {
                 $headerPath = $request->file('header')->store('headers', 'public');
             }
-            if($request->hasFile('signature')){
+            if ($request->hasFile('signature')) {
                 $signaturePath = $request->file('signature')->store('signatures', 'public');
             }
-            if($request->hasFile('footer')){
+            if ($request->hasFile('footer')) {
                 $footerPath = $request->file('footer')->store('footers', 'public');
             }
 
@@ -124,35 +210,31 @@ class LaboratoryController extends Controller
             DB::commit();
 
             return new LaboratoryResource($laboratory);
-        }catch (\Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::info($e);
+            Log::info($e);
             return response()->json(['error' => 'Error creating laboratory.'], 500);
         }
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update the specified laboratory in the database.
+     *
+     * @param UpdateLaboratoryRequest $request Validated request data.
+     * @param string $id The ID of the laboratory to update.
+     * @return JsonResponse|LaboratoryResource Updated laboratory resource or error response.
      */
     public function update(UpdateLaboratoryRequest $request, string $id): JsonResponse|LaboratoryResource
     {
         $laboratory = Laboratory::findOrFail($id);
         $user = User::findOrFail($laboratory->user->id);
 
-        try{
+        try {
             DB::beginTransaction();
 
             $user->update([
-                'name' => !is_null($request->input('fullName')) && $request->input('fullName') !==""
+                'name' => !is_null($request->input('fullName')) && $request->input('fullName') !== ""
                     ? $request->input('fullName')
                     : $user->name,
                 'username' => !is_null($request->input('username')) && $request->input('username') !== ""
@@ -163,7 +245,7 @@ class LaboratoryController extends Controller
                     : $user->phone,
                 'password' => !is_null($request->input('password')) && $request->input('password') !== ""
                     ? $request->input('password')
-                    : $user->password ,
+                    : $user->password,
             ]);
 
             $laboratory->update([
@@ -172,7 +254,7 @@ class LaboratoryController extends Controller
                     : $laboratory->title,
                 'address' => !is_null($request->input('address')) && $request->input('address') !== ""
                     ? $request->input('address')
-                    :$laboratory->address ,
+                    : $laboratory->address,
                 'description' => !is_null($request->input('description')) && $request->input('description') !== ""
                     ? $request->input('description')
                     : $laboratory->description,
@@ -181,82 +263,36 @@ class LaboratoryController extends Controller
             DB::commit();
 
             return new LaboratoryResource($laboratory);
-        }catch (\Exception $e){
+        } catch (Exception $e) {
             DB::rollBack();
 
-            \Log::info($e);
-            return response()->json(['error' => 'Error creating laboratory.'], 500);
-        }
-    }
-
-    public function updateMedia(UpdateLaboratoryRequest $request ,string $id): LaboratoryResource | JsonResponse
-    {
-        $laboratory = Laboratory::findOrFail($id);
-        try{
-            DB::beginTransaction();
-
-            $avatarPath = null;
-            $footerPath = null;
-            $headerPath = null;
-            $signaturePath = null;
-            if($request->hasFile('avatar')){
-                !is_null($laboratory->media->avatar)
-                && Storage::disk('public')->delete($laboratory->media->avatar);
-                $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            }
-            if($request->hasFile('header')){
-                !is_null($laboratory->media->header)
-                && Storage::disk('public')->delete($laboratory->media->header);
-                $headerPath = $request->file('header')->store('headers', 'public');
-            }
-            if($request->hasFile('signature')){
-                !is_null($laboratory->media->signature)
-                && Storage::disk('public')->delete($laboratory->media->signature);
-                $signaturePath = $request->file('signature')->store('signatures', 'public');
-            }
-            if($request->hasFile('footer')){
-                !is_null($laboratory->media->footer)
-                && Storage::disk('public')->delete($laboratory->media->footer);
-                $footerPath = $request->file('footer')->store('footers', 'public');
-            }
-
-            $laboratory->media->update([
-                'avatar' => $avatarPath ?:  $laboratory->media->avatar,
-                'header' => $headerPath ?:  $laboratory->media->header,
-                'signature' => $signaturePath ?:  $laboratory->media->signature,
-                'footer' => $footerPath ?:  $laboratory->media->footer,
-            ]);
-
-            DB::commit();
-
-            return new LaboratoryResource($laboratory);
-        }catch (\Exception $e){
-            DB::rollBack();
-
-            \Log::info($e);
+            Log::info($e);
             return response()->json(['error' => 'Error creating laboratory.'], 500);
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified laboratory from the database.
+     *
+     * @param string $id The ID of the laboratory to delete.
+     * @return Response Response object indicating success or failure.
      */
-    public function destroy(string $id) : Response
+    public function destroy(string $id): Response
     {
         $laboratory = Laboratory::findOrFail($id);
-        try{
+        try {
 
-            if($laboratory->media){
-                if($laboratory->media->avatar){
+            if ($laboratory->media) {
+                if ($laboratory->media->avatar) {
                     Storage::disk('public')->delete($laboratory->media->avatar);
                 }
-                if($laboratory->media->header){
+                if ($laboratory->media->header) {
                     Storage::disk('public')->delete($laboratory->media->header);
                 }
-                if($laboratory->media->footer){
+                if ($laboratory->media->footer) {
                     Storage::disk('public')->delete($laboratory->media->footer);
                 }
-                if($laboratory->media->signature){
+                if ($laboratory->media->signature) {
                     Storage::disk('public')->delete($laboratory->media->signature);
                 }
             }
@@ -266,8 +302,8 @@ class LaboratoryController extends Controller
             $laboratory->user->delete();
 
             return response(['success'], 200);
-        }catch (\Exception $e){
-            return response(['error'=> $e ], 200);
+        } catch (Exception $e) {
+            return response(['error' => $e], 200);
         }
     }
 }
