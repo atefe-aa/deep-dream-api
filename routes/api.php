@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\LaboratoryController;
-use App\Http\Controllers\Admin\TestTypeController;
-use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\Admin\PriceController;
 use App\Http\Controllers\Admin\StatisticsController;
+use App\Http\Controllers\Admin\TestTypeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RegistrationController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,21 +19,24 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::post('login', [AuthController::class,'login']);
-Route::post('logout', [AuthController::class,'logout']);
+Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('verify_token',[AuthController::class,'verifyToken']);
+    Route::get('verify_token', [AuthController::class, 'verifyToken']);
+
+    Route::apiResource('test-type', TestTypeController::class);
+
+    Route::apiResource('registration', RegistrationController::class);
 
     Route::group(['middleware' => ['role:superAdmin']], static function () {
-        Route::get('statistics',[StatisticsController::class,'prices']);
+        Route::apiResource('price', PriceController::class);
+        Route::apiResource('laboratory', LaboratoryController::class);
+        Route::post('laboratory/{laboratory}', [LaboratoryController::class, 'updateMedia']);
+
+        Route::get('statistics', [StatisticsController::class, 'prices']);
     });
 
-    Route::apiResource('laboratory',LaboratoryController::class);
-    Route::apiResource('test-type',TestTypeController::class);
-    Route::post('laboratory/{laboratory}',[LaboratoryController::class,'updateMedia']);
-
-    Route::apiResource('registration',RegistrationController::class);
 });
 

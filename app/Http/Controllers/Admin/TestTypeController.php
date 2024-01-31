@@ -7,9 +7,9 @@ use App\Http\Requests\testType\StoreTestTypeRequest;
 use App\Http\Resources\TestTypeResource;
 use App\Models\TestType;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Log;
 
 class TestTypeController extends Controller
 {
@@ -22,21 +22,45 @@ class TestTypeController extends Controller
         $query = TestType::query();
 
         if ($request->has('laboratory')) {
-            $labId = $request->input('laboratory'); // Corrected line
-            $query->whereHas('prices', function ($query) use ($labId) {
-                $query->where('lab_id', $labId);
-            });
+
+            $labId = $request->input('laboratory');
+            $noPrice = $request->has('noPrice');
+            if ($noPrice) {
+                //for create new test type price form to prevent duplicate pair of lab_id - test_typ_id
+                //return only test types with no price record for the lab
+                $query->whereDoesntHave('prices', function ($query) use ($labId) {
+                    $query->where('lab_id', $labId);
+                });
+            } else {
+                //for registration form we need test types with price for the lab
+                $query->whereHas('prices', function ($query) use ($labId) {
+                    $query->where('lab_id', $labId);
+                });
+            }
+
         }
 
-        $testTypes = $query->get();
+        $sortBy = $request->get('sort', 'created_at');
+        $order = $request->get('order', 'desc');
+        $noPaginate = $request->has('noPaginate');
+
+        if ($noPaginate) {
+//            in the forms we need all the test types but in the tables we paginate the data
+            $testTypes = $query->orderBy('title')->get();
+        } else {
+            $testTypes = $query->orderBy($sortBy, $order)->paginate(10);
+        }
 
         return TestTypeResource::collection($testTypes);
     }
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param StoreTestTypeRequest $request
+     * @return TestTypeResource|JsonResponse
      */
-    public function store(StoreTestTypeRequest $request)
+    public function store(StoreTestTypeRequest $request): JsonResponse|TestTypeResource
     {
         try {
             $testType = new TestType([
@@ -53,7 +77,7 @@ class TestTypeController extends Controller
                 'magnification' => $request->input('magnification'),
                 'description' => $request->input('description'),
             ]);
-            
+
             $testType->setDefaultValues($request->input('magnification'));
             $testType->save();
 
