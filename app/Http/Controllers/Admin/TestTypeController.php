@@ -39,7 +39,7 @@ class TestTypeController extends Controller
     public function store(StoreTestTypeRequest $request)
     {
         try {
-            $testType = TestType::create([
+            $testType = new TestType([
                 'title' => $request->input('title'),
                 'code' => $request->input('code'),
                 'gender' => $request->input('gender'),
@@ -53,6 +53,9 @@ class TestTypeController extends Controller
                 'magnification' => $request->input('magnification'),
                 'description' => $request->input('description'),
             ]);
+            
+            $testType->setDefaultValues($request->input('magnification'));
+            $testType->save();
 
             return new TestTypeResource($testType);
         } catch (Exception $e) {
