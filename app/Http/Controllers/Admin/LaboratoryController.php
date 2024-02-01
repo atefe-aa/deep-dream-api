@@ -18,7 +18,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
+use Log;
 
 /**
  * Controller for managing laboratories.
@@ -143,7 +143,7 @@ class LaboratoryController extends Controller
             DB::rollBack();
 
             Log::info($e);
-            return response()->json(['error' => 'Error creating laboratory.'], 500);
+            return response()->json(['errors' => 'Error updating laboratory media.'], 500);
         }
     }
 
@@ -171,7 +171,6 @@ class LaboratoryController extends Controller
                 $data = $user->toArray();
                 $data['password'] = $request->input('password');
                 $cytomineUser = $this->cytomineAuthService->registerUser($data);
-                Log::info($cytomineUser);
 
                 if (!$cytomineUser || !isset($cytomineUser['success'])) {
                     throw new Exception('Cytomine user creation failed');
@@ -213,8 +212,8 @@ class LaboratoryController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
 
-            Log::info($e);
-            return response()->json(['error' => 'Error creating laboratory.'], 500);
+            Log::info('Failed to create laboratory: ' . $e->getMessage(), ['request' => $request->all()]);
+            return response()->json(['errors' => 'Creating laboratory failed. Try again later.']);
         }
     }
 
@@ -267,7 +266,7 @@ class LaboratoryController extends Controller
             DB::rollBack();
 
             Log::info($e);
-            return response()->json(['error' => 'Error creating laboratory.'], 500);
+            return response()->json(['errors' => 'Error updating laboratory.'], 500);
         }
     }
 
