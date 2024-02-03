@@ -10,16 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('areas', static function (Blueprint $table) {
+        Schema::create('slides', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('scan_id');
-            $table->integer('nw_x');
-            $table->integer('nw_y');
-            $table->integer('se_x');
-            $table->integer('se_y');
+            $table->integer('nth')->unique();
+            $table->integer('sw_x');
+            $table->integer('sw_y');
+            $table->integer('ne_x');
+            $table->integer('ne_y');
             $table->timestamps();
-
-            $table->foreign('scan_id')->references('id')->on('scans')->onDelete('cascade');
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('areas');
+        Schema::dropIfExists('slides');
     }
 };

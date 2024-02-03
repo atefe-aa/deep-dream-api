@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\StatisticsController;
 use App\Http\Controllers\Admin\TestTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounsellorController;
+use App\Http\Controllers\Operator\ScanController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('laboratory/{laboratory}', [LaboratoryController::class, 'updateMedia']);
 
         Route::get('statistics', [StatisticsController::class, 'prices']);
+    });
+
+    Route::group([
+        'middleware' => ['role:superAdmin,operator'],
+        'prefix' => 'scan'
+    ], static function () {
+        Route::post('full-scan', [ScanController::class, 'fullScan']);
     });
 
 });
