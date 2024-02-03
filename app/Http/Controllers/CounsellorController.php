@@ -8,9 +8,10 @@ use App\Models\Counsellor;
 use App\Services\CytomineAuthService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Log;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class CounsellorController extends Controller
@@ -31,7 +32,7 @@ class CounsellorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
         $query = Counsellor::query();
         $user = Auth::user();
