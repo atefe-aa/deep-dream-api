@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\TestTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounsellorController;
 use App\Http\Controllers\Operator\ScanController;
+use App\Http\Controllers\Operator\SlideController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'middleware' => ['role:superAdmin|operator'],
         'prefix' => 'scan'
     ], static function () {
+        Route::apiResource('slide', SlideController::class);
         Route::post('full-slide', [ScanController::class, 'fullSlide']);
         Route::post('areas', [ScanController::class, 'scanAreas']);
     });

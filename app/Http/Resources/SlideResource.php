@@ -14,6 +14,13 @@ class SlideResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'nth' => $this->nth,
+            'sw_x' => $this->sw_x,
+            'sw_y' => $this->sw_y,
+            'ne_x' => $this->ne_x,
+            'ne_y' => $this->ne_y,
+        ];
     }
 }
