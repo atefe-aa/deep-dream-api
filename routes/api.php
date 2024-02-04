@@ -43,10 +43,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::group([
-        'middleware' => ['role:superAdmin,operator'],
+        'middleware' => ['role:superAdmin|operator'],
         'prefix' => 'scan'
     ], static function () {
-        Route::post('full-scan', [ScanController::class, 'fullScan']);
+        Route::post('full-slide', [ScanController::class, 'fullSlide']);
+        Route::post('areas', [ScanController::class, 'scanAreas']);
     });
 
 });

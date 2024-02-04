@@ -39,5 +39,8 @@ return [
         'core_url' => env('CYTOMINE_CORE_URL'),
         'ontology' => env('CYTOMINE_DEFAULT_ONTOLOGY', 235359),
     ],
+    'scanner' => [
+        'api_url' => env('SCANNER_API_URL'),
+    ]
 
 ];
