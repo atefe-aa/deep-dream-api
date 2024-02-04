@@ -13,6 +13,7 @@ class ScanController extends Controller
 {
     public function fullSlide(Request $request): JsonResponse
     {
+
         if ($request->has('slides') && is_array($request->input('slides')) && !empty($request->input('slides'))) {
             $nthSlides = $request->input('slides');
 
@@ -26,6 +27,7 @@ class ScanController extends Controller
             foreach ($slides as $slide) {
                 ScanFullSlide::dispatch(['slide' => $slide, 'settings' => $mag2xSettings['settings']]);
             }
+            return response()->json(['message' => 'Scanning started']);
 
         }
         return response()->json(['message' => 'Invalid request'], 400);

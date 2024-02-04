@@ -30,6 +30,7 @@ class SlideScannerService
     public function scanFullSlide(array $data): array
     {
         try {
+
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
             ])->post($this->apiUrl, $data);
@@ -40,7 +41,7 @@ class SlideScannerService
             return ['errors' => 'scanner error'];
 
         } catch (Exception $e) {
-            Log::error("Cytomine Project Creation Failed: {$e->getMessage()}", $data);
+            Log::error("Scanning full slide Failed: {$e->getMessage()}", $data);
             return ['errors' => 'Failed to scan slide. Please try again later.'];
         }
     }

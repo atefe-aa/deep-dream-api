@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Broadcast;
 | used to check if an authenticated user can listen to the channel.
 |
 */
-
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
+Broadcast::channel('slides.{nthSlide}', static function ($user) {
+    return $user->hasRole('superAdmin');
 });

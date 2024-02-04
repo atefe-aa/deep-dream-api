@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\App;
 
 class ScanFullSlide implements ShouldQueue
 {
@@ -22,10 +23,10 @@ class ScanFullSlide implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($data, SlideScannerService $slideScannerService)
+    public function __construct($data)
     {
         $this->data = $data;
-        $this->slideScannerService = $slideScannerService;
+        $this->slideScannerService = App::make(SlideScannerService::class);
     }
 
     /**
@@ -35,22 +36,23 @@ class ScanFullSlide implements ShouldQueue
     {
         $response = $this->slideScannerService->scanFullSlide($this->data);
         // $response = ['test_id','slide_number','slide_image']
-        if ($response) {
+        if (!$response['errors']) {
             $test = Test::where('id', $response['test_id'])->first();
 
             $scan = Scan::create([
                 'test_id' => $response['test_id'],
                 'slide_number' => $response['slide_number'],
-                'slide_coordinates' => serialize([
+                'slide_coordinates' => [
                     'sw' =>
                         ['x' => $this->data['slide']['sw_x'], 'y' => $this->data['slide']['sw_y']],
                     'ne' =>
                         ['x' => $this->data['slide']['ne_x'], 'y' => $this->data['slide']['ne_y']]
-                ]),
+                ],
                 'slide_image' => $response['slide_image']
             ]);
-
-            broadcast(new FullSlideScanned(['data' => ['scan' => $scan, 'test' => $test]]));
+            broadcast(new FullSlideScanned(['data' => ['scan' => $scan, 'test' => $test], 'nth' => $this->data['slide']['nth']]));
         }
+
+        broadcast(new FullSlideScanned(['error' => 'Scanning Failed' . $this->data['slide']['nth'], 'nth' => $this->data['slide']['nth']]));
     }
 }
