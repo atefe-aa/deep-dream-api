@@ -53,6 +53,6 @@ class ScanFullSlide implements ShouldQueue
             broadcast(new FullSlideScanned(['data' => ['scan' => $scan, 'test' => $test], 'nth' => $this->data['slide']['nth']]));
         }
 
-        broadcast(new FullSlideScanned(['error' => 'Scanning Failed' . $this->data['slide']['nth'], 'nth' => $this->data['slide']['nth']]));
+        broadcast(new FullSlideScanned(['error' => 'Scanning Failed ' . $this->data['slide']['nth'], 'nth' => $this->data['slide']['nth']]));
     }
 }

@@ -8,34 +8,38 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class FullSlideScanned implements ShouldBroadcast
+class testWebsocket implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-
-    public mixed $data;
+    public array $data;
 
     public function __construct($data)
     {
         $this->data = $data;
     }
 
-
-    public function broadcastAs(): string
-    {
-        return 'FullSlideScanned';
-    }
-
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
-        return [new Channel('slides.' . $this->data['nth'])];
+        return [
+            new Channel('test-channel'),
+        ];
     }
+
+    public function broadcastAs(): string
+    {
+        return 'testing';
+    }
+//    public function broadcastWith(): array
+//    {
+//        return ['data' => $this->data];
+//    }
 }
