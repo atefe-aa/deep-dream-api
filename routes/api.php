@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\TestTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounsellorController;
 use App\Http\Controllers\Operator\ScanController;
+use App\Http\Controllers\Operator\SettingsController;
 use App\Http\Controllers\Operator\SlideController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('verify_token', [AuthController::class, 'verifyToken']);
 
-    Route::apiResource('test-type', TestTypeController::class);
 
     Route::apiResource('registration', RegistrationController::class);
 
@@ -43,6 +43,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('statistics', [StatisticsController::class, 'prices']);
     });
 
+    Route::group([
+        'middleware' => ['role:superAdmin|operator']
+    ], static function () {
+        Route::apiResource('test-type', TestTypeController::class);
+        Route::apiResource('settings', SettingsController::class);
+    });
     Route::group([
         'middleware' => ['role:superAdmin|operator'],
         'prefix' => 'scan'

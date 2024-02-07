@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Log;
 
 class TestTypeController extends Controller
 {
@@ -84,7 +85,7 @@ class TestTypeController extends Controller
             return new TestTypeResource($testType);
         } catch (Exception $e) {
             Log::info('Failed to create test type: ' . $e->getMessage(), ['request' => $request->all()]);
-            return response()->json(['error' => 'Creating new test type failed. Try again later.']);
+            return response()->json(['errors' => 'Creating new test type failed. Try again later.']);
         }
     }
 

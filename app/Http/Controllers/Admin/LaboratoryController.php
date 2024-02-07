@@ -302,7 +302,7 @@ class LaboratoryController extends Controller
 
             return response(['success'], 200);
         } catch (Exception $e) {
-            return response(['error' => $e], 200);
+            return response(['error' => $e], 500);
         }
     }
 }
