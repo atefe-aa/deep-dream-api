@@ -5,7 +5,7 @@ namespace App\Http\Requests\slide;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSlideRequest extends FormRequest
+class UpdateSlideRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,14 @@ class StoreSlideRequest extends FormRequest
      */
     public function rules(): array
     {
+        $slideId = $this->route('slide'); // Assuming 'slide' is the route parameter name for the slide's ID
+
         return [
-            'nth' => ['required', 'integer', 'unique:slides,nth'],
-            'sw_x' => ['required', 'numeric', 'between:0,999.999'],
-            'sw_y' => ['required', 'numeric', 'between:0,999.999'],
-            'ne_x' => ['required', 'numeric', 'between:0,999.999'],
-            'ne_y' => ['required', 'numeric', 'between:0,999.999'],
+            'nth' => ['integer', 'unique:slides,nth,' . $slideId], // Exclude the current slide from the unique check
+            'sw_x' => ['numeric', 'between:0,999.999'],
+            'sw_y' => ['numeric', 'between:0,999.999'],
+            'ne_x' => ['numeric', 'between:0,999.999'],
+            'ne_y' => ['numeric', 'between:0,999.999'],
         ];
     }
 }

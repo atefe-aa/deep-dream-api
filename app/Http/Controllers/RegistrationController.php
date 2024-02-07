@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Log;
+use Illuminate\Support\Facades\Log;
+
 
 class RegistrationController extends Controller
 {
@@ -153,7 +154,7 @@ class RegistrationController extends Controller
 
             DB::commit();
 
-            return new RegistrationResource($test);
+            return response()->json(['data' => 'success']);
 
         } catch (Exception $e) {
             DB::rollBack();

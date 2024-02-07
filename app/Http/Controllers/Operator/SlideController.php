@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\slide\StoreSlideRequest;
+use App\Http\Requests\slide\UpdateSlideRequest;
 use App\Http\Resources\SlideResource;
 use App\Models\Slide;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Log;
 
@@ -35,7 +35,7 @@ class SlideController extends Controller
     {
         try {
             Slide::create($request->all());
-            return response()->json(['success']);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             Log::info('Failed to create slide : ' . $e->getMessage(), ['request' => $request->all()]);
             return response()->json(['errors' => 'Creating slide failed. Please try again later.'], 500);
@@ -54,9 +54,16 @@ class SlideController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateSlideRequest $request, string $id)
     {
-        //
+        $slide = Slide::findOrFail($id);
+        try {
+            $slide->update($request->all());
+            return response()->json(['data' => 'success']);
+        } catch (Exception $e) {
+            Log::info('Failed to update slide : ' . $e->getMessage(), ['request' => $request->all()]);
+            return response()->json(['errors' => 'Updating slide failed. Please try again later.'], 500);
+        }
     }
 
     /**
@@ -67,7 +74,7 @@ class SlideController extends Controller
         $slide = Slide::findOrFail($id);
         try {
             $slide->delete();
-            return response()->json(['success']);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             Log::info('Failed to delete slide : ' . $e->getMessage(), ['slide id' => $id]);
             return response()->json(['errors' => 'Deleting slide failed. Please try again later.'], 500);

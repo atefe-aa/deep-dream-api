@@ -28,7 +28,7 @@ class StoreTestTypeRequest extends FormRequest
             'code' => ['string'],
             'gender' => ['required', 'string', 'in:male,female,both'],
             'type' => ['required', 'string', 'in:invert,fluorescent,optical'],
-            'numberOfLayers' => ['nullable', 'integer'],
+            'numberOfLayers' => ['nullable', 'integer', 'min:1'],
             'microStep' => ['nullable', 'integer'],
             'step' => ['nullable', 'integer',],
             'z' => ['nullable', 'integer'],

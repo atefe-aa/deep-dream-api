@@ -37,7 +37,7 @@ class PriceController extends Controller
                 'price_per_slide' => $request->input('extraPrice'),
                 'description' => $request->input('description'),
             ]);
-            return new PriceResource($price);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             Log::info('Failed to create test type price: ' . $e->getMessage(), ['request' => $request->all()]);
             return response()->json(['error' => 'Creating new test type price failed. Try again later.']);

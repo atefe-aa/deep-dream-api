@@ -39,7 +39,7 @@ class SettingsController extends Controller
                 $setting->update([
                     'value' => $request->input('value')
                 ]);
-                return response()->json(['success' => 'Setting updated successfully.']);
+                return response()->json(['data' => 'success']);
             } catch (Exception $e) {
                 Log::info('Failed to update setting: ' . $e->getMessage(), ['request' => $request->all()]);
 

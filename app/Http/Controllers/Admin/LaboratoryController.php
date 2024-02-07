@@ -14,7 +14,6 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -138,7 +137,7 @@ class LaboratoryController extends Controller
 
             DB::commit();
 
-            return new LaboratoryResource($laboratory);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -208,7 +207,7 @@ class LaboratoryController extends Controller
 
             DB::commit();
 
-            return new LaboratoryResource($laboratory);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -261,7 +260,7 @@ class LaboratoryController extends Controller
 
             DB::commit();
 
-            return new LaboratoryResource($laboratory);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -274,9 +273,9 @@ class LaboratoryController extends Controller
      * Remove the specified laboratory from the database.
      *
      * @param string $id The ID of the laboratory to delete.
-     * @return Response Response object indicating success or failure.
+     * @return  JsonResponse object indicating success or failure.
      */
-    public function destroy(string $id): Response
+    public function destroy(string $id): JsonResponse
     {
         $laboratory = Laboratory::findOrFail($id);
         try {
@@ -300,9 +299,9 @@ class LaboratoryController extends Controller
 // then the media row related to the laboratory will be deleted
             $laboratory->user->delete();
 
-            return response(['success'], 200);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
-            return response(['error' => $e], 500);
+            return response()->json(['error' => $e], 500);
         }
     }
 }

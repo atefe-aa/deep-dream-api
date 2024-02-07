@@ -110,7 +110,7 @@ class CounsellorController extends Controller
             }
 
             DB::commit();
-            return response()->json(['data' => 'counsellor created successfully.'], 201);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             DB::rollBack();
 

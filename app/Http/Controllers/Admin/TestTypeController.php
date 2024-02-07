@@ -82,7 +82,7 @@ class TestTypeController extends Controller
             $testType->setDefaultValues($request->input('magnification'));
             $testType->save();
 
-            return new TestTypeResource($testType);
+            return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             Log::info('Failed to create test type: ' . $e->getMessage(), ['request' => $request->all()]);
             return response()->json(['errors' => 'Creating new test type failed. Try again later.']);
