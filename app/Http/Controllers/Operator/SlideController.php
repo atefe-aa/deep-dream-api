@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\slide\StoreSlideRequest;
 use App\Http\Resources\SlideResource;
 use App\Models\Slide;
 use Exception;
@@ -30,9 +31,16 @@ class SlideController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSlideRequest $request)
     {
-        //
+        try {
+            Slide::create($request->all());
+            return response()->json(['success']);
+        } catch (Exception $e) {
+            Log::info('Failed to create slide : ' . $e->getMessage(), ['request' => $request->all()]);
+            return response()->json(['errors' => 'Creating slide failed. Please try again later.'], 500);
+
+        }
     }
 
     /**
@@ -54,8 +62,15 @@ class SlideController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
-        //
+        $slide = Slide::findOrFail($id);
+        try {
+            $slide->delete();
+            return response()->json(['success']);
+        } catch (Exception $e) {
+            Log::info('Failed to delete slide : ' . $e->getMessage(), ['slide id' => $id]);
+            return response()->json(['errors' => 'Deleting slide failed. Please try again later.'], 500);
+        }
     }
 }

@@ -13,10 +13,10 @@ return new class extends Migration {
         Schema::create('slides', static function (Blueprint $table) {
             $table->id();
             $table->integer('nth')->unique();
-            $table->integer('sw_x');
-            $table->integer('sw_y');
-            $table->integer('ne_x');
-            $table->integer('ne_y');
+            $table->float('sw_x');
+            $table->float('sw_y');
+            $table->float('ne_x');
+            $table->float('ne_y');
             $table->timestamps();
         });
     }
