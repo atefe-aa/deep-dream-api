@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ScanFullSlide;
+use App\Models\Scan;
 use App\Models\SettingsCategory;
 use App\Models\Slide;
 use App\Services\SlideScannerService;
@@ -53,4 +54,30 @@ class ScanController extends Controller
         return response()->json(['message' => 'Invalid request'], 400);
     }
 
+    public function region(Request $request): JsonResponse|AnonymousResourceCollection
+    {
+        if ($request->has('selectedRegions') && is_array($request->input('selectedRegions')) && !empty($request->input('selectedRegions'))) {
+            $selectedRegions = $request->input('selectedRegions');
+
+            $slideIds = collect($selectedRegions)->pluck('slideId')->all();
+
+            $scans = Scan::where('status', 'ready')
+                ->whereIn('id', $slideIds)
+                ->with('test.testType')
+                ->get();
+
+            if ($scans->isEmpty()) {
+                return response()->json(['message' => 'Slides are not ready to scan.'], 404);
+            }
+
+
+            foreach ($scans as $scan) {
+                ScanFullSlide::dispatch($scan);
+            }
+
+            return response()->json(['success' => 'scanning started'], 200);
+
+        }
+        return response()->json(['message' => 'Invalid request'], 400);
+    }
 }

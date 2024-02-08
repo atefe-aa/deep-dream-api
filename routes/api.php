@@ -55,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     ], static function () {
         Route::apiResource('slide', SlideController::class);
         Route::post('full-slide', [ScanController::class, 'fullSlide']);
+        Route::post('region', [ScanController::class, 'region']);
         Route::post('areas', [ScanController::class, 'scanAreas']);
     });
 

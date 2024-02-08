@@ -45,4 +45,23 @@ class SlideScannerService
             return ['errors' => 'Failed to scan slide. Please try again later.'];
         }
     }
+
+    public function scanRegion(array $data): array
+    {
+        try {
+
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+            ])->post($this->apiUrl, $data);
+
+            if ($response->successful()) {
+                return ['data' => 'responseData'];
+            }
+            return ['errors' => 'scanner error'];
+
+        } catch (Exception $e) {
+            Log::error("Scanning full slide Failed: {$e->getMessage()}", $data);
+            return ['errors' => 'Failed to scan slide. Please try again later.'];
+        }
+    }
 }
