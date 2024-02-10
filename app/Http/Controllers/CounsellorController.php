@@ -7,12 +7,14 @@ use App\Http\Resources\CounsellorResource;
 use App\Models\Counsellor;
 use App\Services\CytomineAuthService;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
+use Throwable;
 
 class CounsellorController extends Controller
 {
@@ -73,14 +75,15 @@ class CounsellorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCounsellorRequest $request)
+    public function store(StoreCounsellorRequest $request): JsonResponse
     {
         $user = Auth::user();
-        if ($user && $user->hasRole("superAdmin")) {
-            $labId = $request->input('labId');
-        } else {
-            $labId = $user->laboratory->id;
+
+        if (!$user) {
+            return response()->json(['errors' => 'Unauthorized'], 401);
         }
+
+        $labId = $user->hasRole("superAdmin") ? $request->input('labId') : $user->laboratory->id;
 
         try {
             DB::beginTransaction();
@@ -91,33 +94,51 @@ class CounsellorController extends Controller
                 'phone' => $request->input('phone'),
                 'description' => $request->input('description'),
             ]);
-            if ($counsellor) {
-                $username = preg_replace('/[^a-zA-Z0-9]/', '', $request->input('name')) . $counsellor['id'];
-                $data = [
-                    "firstname" => explode(' ', $request->input('name'))[0],
-                    "lastname" => explode(' ', $request->input('name'))[1],
-                    "email" => $username . '@gmail.com',
-                    "language" => 'EN',
-                    'password' => $request->input('phone'),
-                    'username' => $username
-                ];
 
-                $cytomineUser = $this->cytomineAuthService->registerUser($data);
 
-                if (!$cytomineUser || !isset($cytomineUser['success'])) {
-                    throw new RuntimeException('Cytomine user creation failed');
-                }
+            if (!$counsellor) {
+                throw new Exception('Failed to create counsellor');
+            }
+
+
+            $baseUsername = preg_replace('/[^a-zA-Z0-9]/', '', $request->input('name'));
+            $username = $baseUsername . $counsellor->id;
+
+
+            $nameParts = explode(' ', $request->input('name'));
+            $firstname = $nameParts[0];
+            $lastname = count($nameParts) > 1 ? end($nameParts) : "";
+
+            $email = $username . '@gmail.com';
+
+            $password = $request->input('phone');
+
+            $data = [
+                "firstname" => $firstname,
+                "lastname" => $lastname,
+                "email" => $email,
+                "language" => 'EN',
+                'password' => $password,
+                'username' => $username
+            ];
+
+            $cytomineUser = $this->cytomineAuthService->registerUser($data);
+
+            // Check for successful external service registration
+            if (!$cytomineUser || !isset($cytomineUser['success'])) {
+                throw new RuntimeException('Cytomine user creation failed');
             }
 
             DB::commit();
-            return response()->json(['data' => 'success']);
-        } catch (Exception $e) {
-            DB::rollBack();
+            return response()->json(['data' => 'Counsellor created successfully'], 201);
 
-            Log::info('Failed to create counsellor: ' . $e->getMessage(), ['request' => $request->all()]);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error('Failed to create counsellor: ' . $e->getMessage(), ['request' => $request->all()]);
             return response()->json(['errors' => 'Creating counsellor failed. Try again later.'], 500);
         }
     }
+
 
     /**
      * Display the specified resource.

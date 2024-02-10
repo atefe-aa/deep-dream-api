@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->text('slide_image')->nullable();
             $table->text('image')->nullable();
             $table->timestamps();
-            $table->unique(['test_id', 'slide_number']);
         });
     }
 

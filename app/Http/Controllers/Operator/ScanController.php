@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ScanFullSlide;
+use App\Http\Resources\ScanRequestResource;
+use App\Jobs\ScanRegion;
 use App\Models\Scan;
+use App\Models\Setting;
 use App\Models\SettingsCategory;
 use App\Models\Slide;
 use App\Services\SlideScannerService;
@@ -12,16 +14,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use JsonException;
+use Throwable;
 
 class ScanController extends Controller
 {
-//    public function index(Request $request){
-//        if($request->has('nth')){
-//            $slide = Slide::where('nth',$request->get('nth'))->first();
-//            $scan = Scan::where()
-//        }
-//    }
     private mixed $slideScannerService;
 
     public function __construct()
@@ -32,26 +31,53 @@ class ScanController extends Controller
     /**
      * @throws JsonException
      */
-    public function fullSlide(Request $request): JsonResponse|AnonymousResourceCollection
+    public function fullSlide(Request $request): JsonResponse
     {
-        if ($request->has('slides') && is_array($request->input('slides')) && !empty($request->input('slides'))) {
-            $nthSlides = $request->input('slides');
+        $validated = $request->validate([
+            'slides' => 'required|array|min:1',
+        ]);
 
+        $nthSlides = $validated['slides'];
+
+        DB::beginTransaction();
+
+        try {
             $slides = Slide::whereIn('nth', $nthSlides)->get();
 
             if ($slides->isEmpty()) {
+                DB::rollBack();
                 return response()->json(['message' => 'No slides found'], 404);
             }
-            $mag2xSettings = SettingsCategory::where('title', '2x')->with('settings')->first();
 
+            $scans = [];
             foreach ($slides as $slide) {
-                ScanFullSlide::dispatch(['slide' => $slide, 'settings' => $mag2xSettings['settings']]);
+                $scans[] = $slide->toScanArray();
             }
 
-            return response()->json(['success' => 'scanning started'], 200);
+            if (!$scans) {
+                DB::rollBack();
+                return response()->json(['message' => 'Failed to create scans.'], 500);
+            }
 
+            $settings = SettingsCategory::query()->withMagnificationAndCondenser(1)->get();
+
+            DB::commit();
+
+            $scan = Scan::getFirstReadyScan();
+            $scanData = new ScanRequestResource(['scan' => $scan, 'settings' => $settings]);
+
+            $response = $this->slideScannerService->scanFullSlide($scanData->resolve());
+
+            if (isset($response['success']) && $response['success']) {
+                return response()->json(['success' => 'Scanning started']);
+            }
+            return response()->json(['errors' => 'Scanning failed to start.']);
+
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error('Failed to start scanning: ' . $e->getMessage(), ['request' => $request->all()]);
+            return response()->json(['message' => 'Creating scans failed. Try again later.'], 500);
         }
-        return response()->json(['message' => 'Invalid request'], 400);
     }
 
     public function region(Request $request): JsonResponse|AnonymousResourceCollection
@@ -59,10 +85,10 @@ class ScanController extends Controller
         if ($request->has('selectedRegions') && is_array($request->input('selectedRegions')) && !empty($request->input('selectedRegions'))) {
             $selectedRegions = $request->input('selectedRegions');
 
-            $slideIds = collect($selectedRegions)->pluck('slideId')->all();
+            $scanIds = collect($selectedRegions)->pluck('scanId')->all();
 
             $scans = Scan::where('status', 'ready')
-                ->whereIn('id', $slideIds)
+                ->whereIn('id', $scanIds)
                 ->with('test.testType')
                 ->get();
 
@@ -72,7 +98,21 @@ class ScanController extends Controller
 
 
             foreach ($scans as $scan) {
-                ScanFullSlide::dispatch($scan);
+                $regions = [];
+
+                $settings = Setting::where('category_id', $scan['test']['testType']['magnification'])->get();
+                foreach ($selectedRegions as $selectedRegion) {
+                    $regions = $selectedRegion['scanId'] === $scan->id ?? $selectedRegion['regions'];
+                }
+                if (!empty($regions)) {
+                    foreach ($regions as $region) {
+                        $scanData = [
+                            'region' => $region,
+                            'settings' => $settings,
+                        ];
+                        ScanRegion::dispatch($scanData);
+                    }
+                }
             }
 
             return response()->json(['success' => 'scanning started'], 200);

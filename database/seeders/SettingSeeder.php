@@ -12,23 +12,23 @@ class SettingSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('settings_categories')->insert([
-            [
-                'title' => '2x',
-            ],
-            [
-                'title' => '10x',
-            ],
-            [
-                'title' => '40x',
-            ],
-            [
-                'title' => '100x',
-            ],
-            [
-                'title' => 'condenser',
-            ],
-        ]);
+//        DB::table('settings_categories')->insert([
+//            [
+//                'title' => '2x',
+//            ],
+//            [
+//                'title' => '10x',
+//            ],
+//            [
+//                'title' => '40x',
+//            ],
+//            [
+//                'title' => '100x',
+//            ],
+//            [
+//                'title' => 'condenser',
+//            ],
+//        ]);
 
         $settings = [
             [
@@ -81,6 +81,44 @@ class SettingSeeder extends Seeder
                 'unit' => 'mm'
             ],
             [
+                'category_id' => 1,
+                'key' => 'min-focus',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 1,
+                'key' => 'max-focus',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ], [
+                'category_id' => 1,
+                'key' => 'number-of-layers',
+                'value' => 13,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 1,
+                'key' => 'number-of-merge-layers',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 1,
+                'key' => 'merge-algorithm',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 1,
+                'key' => 'stitch-algorithm',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ],
+            [
                 'category_id' => 2,
                 'key' => 'placement',
                 'value' => 20,
@@ -128,6 +166,44 @@ class SettingSeeder extends Seeder
                 'value' => 1,
                 'default' => 2,
                 'unit' => 'mm'
+            ],
+            [
+                'category_id' => 2,
+                'key' => 'min-focus',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 2,
+                'key' => 'max-focus',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ], [
+                'category_id' => 2,
+                'key' => 'number-of-layers',
+                'value' => 13,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 2,
+                'key' => 'number-of-merge-layers',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 2,
+                'key' => 'merge-algorithm',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 2,
+                'key' => 'stitch-algorithm',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
             ],
             [
                 'category_id' => 3,
@@ -179,6 +255,44 @@ class SettingSeeder extends Seeder
                 'unit' => 'mm'
             ],
             [
+                'category_id' => 3,
+                'key' => 'min-focus',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 3,
+                'key' => 'max-focus',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ], [
+                'category_id' => 3,
+                'key' => 'number-of-layers',
+                'value' => 13,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 3,
+                'key' => 'number-of-merge-layers',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 3,
+                'key' => 'merge-algorithm',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 3,
+                'key' => 'stitch-algorithm',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ],
+            [
                 'category_id' => 4,
                 'key' => 'placement',
                 'value' => 80,
@@ -226,6 +340,45 @@ class SettingSeeder extends Seeder
                 'value' => 1,
                 'default' => 2,
                 'unit' => 'mm'
+            ],
+            [
+                'category_id' => 4,
+                'key' => 'min-focus',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 4,
+                'key' => 'max-focus',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 4,
+                'key' => 'number-of-layers',
+                'value' => 13,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 4,
+                'key' => 'number-of-merge-layers',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 4,
+                'key' => 'merge-algorithm',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
+            ], [
+                'category_id' => 4,
+                'key' => 'stitch-algorithm',
+                'value' => 5,
+                'default' => 2,
+                'unit' => ''
             ],
             [
                 'category_id' => 5,

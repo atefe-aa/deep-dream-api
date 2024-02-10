@@ -79,7 +79,7 @@ class TestTypeController extends Controller
                 'description' => $request->input('description'),
             ]);
 
-            $testType->setDefaultValues($request->input('magnification'));
+//            $testType->setDefaultValues($request->input('magnification'));
             $testType->save();
 
             return response()->json(['data' => 'success']);

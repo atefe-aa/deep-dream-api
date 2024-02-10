@@ -30,13 +30,12 @@ class SlideScannerService
     public function scanFullSlide(array $data): array
     {
         try {
-
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
             ])->post($this->apiUrl, $data);
 
             if ($response->successful()) {
-                return ['data' => 'responseData'];
+                return ['success' => 'responseData'];
             }
             return ['errors' => 'scanner error'];
 

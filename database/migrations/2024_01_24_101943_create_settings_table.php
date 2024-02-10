@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,9 +14,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('category_id');
             $table->string('key');
-            $table->integer('value');
+            $table->float('value');
             $table->string('unit');
-            $table->integer('default');
+            $table->float('default');
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('settings_categories')->onDelete('cascade');
