@@ -3,17 +3,16 @@
 namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\scan\RegionScanRequest;
 use App\Http\Resources\ScanRequestResource;
 use App\Http\Resources\ScanResource;
-use App\Jobs\ScanRegion;
+use App\Models\Region;
 use App\Models\Scan;
-use App\Models\Setting;
 use App\Models\SettingsCategory;
 use App\Models\Slide;
 use App\Services\SlideScannerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -130,51 +129,57 @@ class ScanController extends Controller
         }
     }
 
-    public function region(Request $request): JsonResponse|AnonymousResourceCollection
+    /**
+     * @throws JsonException
+     */
+    public function region(RegionScanRequest $request)
     {
-        $request->validate([
-            '*.scanId' => 'required|integer',
-            '*.regions' => 'required|array',
-            '*.regions.*.height' => 'required|numeric',
-            '*.regions.*.unit' => 'required|string|in:%',
-            '*.regions.*.width' => 'required|numeric',
-            '*.regions.*.x' => 'required|numeric',
-            '*.regions.*.y' => 'required|numeric',
-        ]);
+        try {
+            DB::beginTransaction();
+            $selectedRegions = $request->get('selectedRegions');
 
-        $selectedRegions = $request->input('selectedRegions');
-
-        $scanIds = collect($selectedRegions)->pluck('scanId')->all();
-
-        $scans = Scan::where('status', 'ready')
-            ->whereIn('id', $scanIds)
-            ->with('test.testType')
-            ->get();
-
-        if ($scans->isEmpty()) {
-            return response()->json(['message' => 'Slides are not ready to scan.'], 404);
-        }
-
-
-        foreach ($scans as $scan) {
-            $regions = [];
-
-            $settings = Setting::where('category_id', $scan['test']['testType']['magnification'])->get();
-            foreach ($selectedRegions as $selectedRegion) {
-                $regions = $selectedRegion['scanId'] === $scan->id ?? $selectedRegion['regions'];
-            }
-            if (!empty($regions)) {
-                foreach ($regions as $region) {
-                    $scanData = [
-                        'region' => $region,
-                        'settings' => $settings,
-                    ];
-                    ScanRegion::dispatch($scanData);
+            $regionsArray = [];
+            foreach ($selectedRegions as $scan) {
+                $regionData = [
+                    'scan_id' => $scan['scanId'],
+                    'status' => 'ready'
+                ];
+                foreach ($scan['regions'] as $region) {
+                    $regionData['coordinates'] = json_encode($region, JSON_THROW_ON_ERROR);
+                    $regionsArray[] = $regionData;
                 }
             }
+            if (!empty($regionsArray)) {
+                Region::insert($regionsArray);
+            }
+
+            $regionToScan = Region::where('status', 'ready')->first();
+            $settings = $regionToScan->scan->test->testType->settings;
+
+            $coordinates = json_decode($regionToScan['coordinates'], true, 512, JSON_THROW_ON_ERROR);
+            $scanData = new ScanRequestResource([
+                'id' => $regionToScan->id,
+                'coordinates' => $coordinates,
+                'settings' => $settings,
+                'testType' => $regionToScan->scan->test->testType
+            ]);
+
+            $response = $this->slideScannerService->scanFullSlide($scanData->resolve());
+
+            if (isset($response['success']) && $response['success']) {
+                $regionToScan->update([
+                    'status' => 'scanning'
+                ]);
+                return response()->json(['success' => 'Scanning started']);
+            }
+            DB::commit();
+            return response()->json(['errors' => 'Scanning failed to start.'], 500);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error('Failed to start scanning region: ' . $e->getMessage(), ['request' => $request->all()]);
+            return response()->json(['message' => 'Creating regions failed. Try again later.'], 500);
         }
 
-        return response()->json(['success' => 'scanning started'], 200);
 
     }
 }

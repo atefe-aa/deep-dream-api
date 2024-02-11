@@ -31,22 +31,17 @@ class TestType extends Model
     }
 
     /**
-     * set default settings values for those null parameters
-     *
-     * @param $magnification
-     * @return void
+     * @return null
      */
-    public function setDefaultValues($magnification): void
+    public function getSettingsAttribute()
     {
-        $categoryId = $this->getCategoryIdByMagnification($magnification);
+        $categoryId = $this->getCategoryIdByMagnification($this->magnification);
 
         if ($categoryId) {
-            $settings = Setting::where('category_id', $categoryId)->get()->keyBy('key');
+            return SettingsCategory::withMagnificationAndCondenser($categoryId)->get();
 
-            $this->z_axis = $this->z_axis ?? $settings['z']->value ?? null;
-            $this->condenser = $this->condenser ?? $settings['condenser']->value ?? null;
-            $this->brightness = $this->brightness ?? $settings['brightness']->value ?? null;
         }
+        return null;
     }
 
     /**

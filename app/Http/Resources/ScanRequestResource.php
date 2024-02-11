@@ -22,6 +22,7 @@ class ScanRequestResource extends JsonResource
         $magnificationPosition =
         $xStep =
         $yStep =
+        $zStep =
         $numLayer =
         $numMergeLayer =
         $mergeAlgorithm =
@@ -42,9 +43,9 @@ class ScanRequestResource extends JsonResource
                         }
                         break;
                     case 'condenser':
-                        if ($category['title'] === '2x') {
-                            $defaultCondenser = $setting['value'];
-                        }
+                        $defaultCondenser = $this['testType'] && $this['testType']['condenser']
+                            ? $this['testType']['condenser']
+                            : $setting['value'];
                         break;
                     case 'min-focus':
                         $minFocus = $setting['value'];
@@ -60,6 +61,11 @@ class ScanRequestResource extends JsonResource
                         break;
                     case 'y':
                         $yStep = $setting['value'];
+                        break;
+                    case 'z':
+                        $zStep = $this['testType'] && $this['testType']['z_axis']
+                            ? $this['testType']['z_axis']
+                            : $setting['value'];
                         break;
                     case 'number-of-layers':
                         $numLayer = $setting['value'];
@@ -95,6 +101,7 @@ class ScanRequestResource extends JsonResource
             'stitchAlgorithm' => $stitchAlgorithm,
             'xStep' => $xStep,
             'yStep' => $yStep,
+            'zStep ' => $zStep,
             'minX' => $minX,
             'minY' => $minY,
             'maxX' => $maxX,
