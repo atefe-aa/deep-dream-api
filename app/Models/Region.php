@@ -10,6 +10,13 @@ class Region extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'scan_id',
+        'coordinates',
+        'status',
+        'image',
+    ];
+
     public function scan(): BelongsTo
     {
         return $this->belongsTo(Scan::class);

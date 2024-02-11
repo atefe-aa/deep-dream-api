@@ -8,7 +8,6 @@ use App\Http\Resources\ScanRequestResource;
 use App\Models\Region;
 use App\Models\Scan;
 use App\Models\SettingsCategory;
-use App\Models\Test;
 use Illuminate\Http\JsonResponse;
 use JsonException;
 use function response;
@@ -37,7 +36,7 @@ class MachineController extends Controller
             $scanData['status'] = '2x-scanned';
         }
 
-        $test = $testId ? Test::findOrFail($testId) : [];
+
         if ($testId) {
             $scanData['test_id'] = $testId;
         }
@@ -47,6 +46,7 @@ class MachineController extends Controller
 
         $scan->update($scanData);
 
+//        $test = $testId ? Test::findOrFail($testId) : [];
 //        broadcast(new FullSlideScanned(['data' => ['scan' => $scan, 'test' => $test]]));
 
         //prepare next scan data
@@ -93,10 +93,18 @@ class MachineController extends Controller
         if ($nextScan) {
             $region = Region::where([['scan_id', $nextScan->id], ['status', '!=', 'scanned']])->first();
             if ($region) {
-                $settings = SettingsCategory::query()->withMagnificationAndCondenser(1)->get();
+                $settings = $region->scan->test->testType->settings;
+
+                $coordinates = json_decode($region['coordinates'], true, 512, JSON_THROW_ON_ERROR);
+
                 $nextScan->update(['status' => 'scanning']);
-                $coordinates = json_decode($region->coordinates, true, 512, JSON_THROW_ON_ERROR);
-                return new ScanRequestResource(['coordinates' => $coordinates, 'settings' => $settings]);
+
+                return new ScanRequestResource([
+                    'id' => $region->id,
+                    'coordinates' => $coordinates,
+                    'settings' => $settings,
+                    'testType' => $region->scan->test->testType
+                ]);
             }
             return response()->json('', 404);
         }
