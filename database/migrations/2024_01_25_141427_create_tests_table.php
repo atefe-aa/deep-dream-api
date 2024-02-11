@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,11 +20,10 @@ return new class extends Migration
             $table->integer('price')->default(0);
             $table->enum(
                 'status',
-                ['registered','scanning','scanned','failed','answered','approved','suspended'])
+                ['registered', 'scanning', 'scanned', 'failed', 'answered', 'approved', 'suspended'])
                 ->default('registered'
                 );
             $table->integer('num_slide')->default(1);
-            $table->integer('duration')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
 

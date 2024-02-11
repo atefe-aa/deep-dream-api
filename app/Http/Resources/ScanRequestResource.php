@@ -84,7 +84,7 @@ class ScanRequestResource extends JsonResource
         $maxX = $this['coordinates'] ? $this['coordinates']['ne']['x'] : null;
         $maxY = $this['coordinates'] ? $this['coordinates']['ne']['y'] : null;
         return [
-            'id' => $this['scan']['id'],
+            'id' => $this['id'],
             'minCondenser' => $minCondenser,
             'maxCondenser' => $maxCondenser,
             'defaultCondenser' => $defaultCondenser,

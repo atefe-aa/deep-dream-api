@@ -15,15 +15,15 @@ class ScanResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this['scan']['id'],
-            'nth' => $this['nth'],
-            'image' => $this['scan']['slide_image'],
-            'cytomine' => $this['scan']['image'],
-            'laboratory' => $this['test']['laboratory']['title'],
-            'testNumber' => $this['test']['id'],
-            'testType' => $this['test']['testType']['title'],
-            'progress' => $this['scan']['status'],
-            'duration' => $this['test']['duration'],
+            'id' => $this->id,
+            'nth' => $this->nth_slide,
+            'slideImage' => $this->slide_image,
+            'image' => $this->image,
+            'laboratory' => $this->test ? $this->test->laboratory->title : null,
+            'testNumber' => $this->test ? $this->test->id : null,
+            'testType' => $this->test ? $this->test->testType->title : null,
+            'duration' => $this->duration,
+            'progress' => $this->status,
         ];
     }
 }

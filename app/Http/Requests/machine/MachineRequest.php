@@ -23,7 +23,7 @@ class MachineRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'scanId' => 'required|integer',
+            'id' => 'required|integer',
             'status' => 'required|in:scanned,failed',
             'imagePath' => 'nullable|string'
         ];
