@@ -19,9 +19,9 @@ class Scan extends Model
         'image',
     ];
 
-    public static function getFirstReadyScan()
+    public static function getFirstStatus($status)
     {
-        return self::where('status', 'ready')->first();
+        return self::where('status', $status)->first();
     }
 
     public function test(): BelongsTo

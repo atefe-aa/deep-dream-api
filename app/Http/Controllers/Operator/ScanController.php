@@ -63,12 +63,16 @@ class ScanController extends Controller
 
             DB::commit();
 
-            $scan = Scan::getFirstReadyScan();
-            $scanData = new ScanRequestResource(['scan' => $scan, 'settings' => $settings]);
+            $scan = Scan::getFirstStatus('ready');
+            $coordinates = json_decode($scan['slide_coordinates'], true, 512, JSON_THROW_ON_ERROR);
+            $scanData = new ScanRequestResource(['coordinates' => $coordinates, 'settings' => $settings]);
 
             $response = $this->slideScannerService->scanFullSlide($scanData->resolve());
 
             if (isset($response['success']) && $response['success']) {
+                $scan->update([
+                    'status' => 'scanning'
+                ]);
                 return response()->json(['success' => 'Scanning started']);
             }
             return response()->json(['errors' => 'Scanning failed to start.']);

@@ -79,12 +79,10 @@ class ScanRequestResource extends JsonResource
             }
         }
 
-        $coordinates = json_decode($this['scan']['slide_coordinates'], true, 512, JSON_THROW_ON_ERROR);
-
-        $minX = $coordinates ? $coordinates['sw']['x'] : null;
-        $minY = $coordinates ? $coordinates['sw']['y'] : null;
-        $maxX = $coordinates ? $coordinates['ne']['x'] : null;
-        $maxY = $coordinates ? $coordinates['ne']['y'] : null;
+        $minX = $this['coordinates'] ? $this['coordinates']['sw']['x'] : null;
+        $minY = $this['coordinates'] ? $this['coordinates']['sw']['y'] : null;
+        $maxX = $this['coordinates'] ? $this['coordinates']['ne']['x'] : null;
+        $maxY = $this['coordinates'] ? $this['coordinates']['ne']['y'] : null;
         return [
             'id' => $this['scan']['id'],
             'minCondenser' => $minCondenser,
