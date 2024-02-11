@@ -179,7 +179,5 @@ class ScanController extends Controller
             Log::error('Failed to start scanning region: ' . $e->getMessage(), ['request' => $request->all()]);
             return response()->json(['message' => 'Creating regions failed. Try again later.'], 500);
         }
-
-
     }
 }
