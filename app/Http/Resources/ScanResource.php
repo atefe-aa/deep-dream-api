@@ -18,6 +18,7 @@ class ScanResource extends JsonResource
             'id' => $this->id,
             'nth' => $this->nth_slide,
             'slideImage' => $this->slide_image,
+            'slideNumber' => $this->slide_number,
             'image' => $this->image,
             'laboratory' => $this->test ? $this->test->laboratory->title : null,
             'testNumber' => $this->test ? $this->test->id : null,

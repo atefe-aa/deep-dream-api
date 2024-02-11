@@ -35,6 +35,24 @@ class ScanController extends Controller
         return new ScanResource($scan);
     }
 
+    public function addTestId(Request $request, $scanId)
+    {
+        $scan = Scan::findOrFail($scanId);
+        $testId = $request->get('testId');
+        $slideNumber = $request->get('slideNumber');
+        if ($testId && $slideNumber && $scan) {
+            if ($scan->test_id && $scan->slide_number) {
+                return response()->json(['message' => 'Scan already has a test id.']);
+            }
+            $scan->update([
+                'test_id' => $testId,
+                'slide_number' => $slideNumber,
+            ]);
+            return response()->json(['success' => 'scan updated successfully']);
+        }
+        return response()->json(['errors' => 'Bad request inputs'], 400);
+    }
+
     /**
      * @throws JsonException
      */
