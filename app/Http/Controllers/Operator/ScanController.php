@@ -32,7 +32,10 @@ class ScanController extends Controller
     public function nthSlideScan($nthSlide)
     {
         $scan = Scan::where([['nth_slide', $nthSlide], ['status', '!=', 'scanned']])->first();
-        return new ScanResource($scan);
+        if ($scan) {
+            return new ScanResource($scan);
+        }
+        return response()->json(['message' => 'Scan not found.']);
     }
 
     public function addTestId(Request $request, $scanId)
@@ -54,6 +57,9 @@ class ScanController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return JsonResponse
+     *
      * @throws JsonException
      */
     public function fullSlide(Request $request): JsonResponse
@@ -76,23 +82,36 @@ class ScanController extends Controller
 
             $scans = [];
             foreach ($slides as $slide) {
-                $scans[] = $slide->toScanArray();
+                // Check if there's an existing scan for the slide with 'ready' status
+                $existingScan = Scan::where([['nth_slide', $slide->nth], ['status', 'ready']])->first();
+
+                if ($existingScan) {
+                    // Update the existing scan if found
+                    $existingScan->update($slide->toScanArray($slide->nth));
+                } else {
+                    // If no existing scan, prepare a new scan array for insertion
+                    $scans[] = $slide->toScanArray($slide->nth);
+                }
             }
 
-            if (!$scans) {
-                DB::rollBack();
-                return response()->json(['message' => 'Failed to create scans.'], 500);
+            if (!empty($scans)) {
+                Scan::insert($scans);
             }
-
-            Scan::insert($scans);
 
             $settings = SettingsCategory::query()->withMagnificationAndCondenser(1)->get();
 
             DB::commit();
 
             $scan = Scan::getFirstStatus('ready');
+            if (!$scan) {
+                return response()->json(['message' => 'No ready scans found'], 404);
+            }
             $coordinates = json_decode($scan['slide_coordinates'], true, 512, JSON_THROW_ON_ERROR);
-            $scanData = new ScanRequestResource(['id' => $scan->id, 'coordinates' => $coordinates, 'settings' => $settings]);
+            $scanData = new ScanRequestResource([
+                'id' => $scan->id,
+                'coordinates' => $coordinates,
+                'settings' => $settings
+            ]);
 
             $response = $this->slideScannerService->scanFullSlide($scanData->resolve());
 
@@ -102,7 +121,7 @@ class ScanController extends Controller
                 ]);
                 return response()->json(['success' => 'Scanning started']);
             }
-            return response()->json(['errors' => 'Scanning failed to start.']);
+            return response()->json(['errors' => 'Scanning failed to start.'], 500);
 
         } catch (Throwable $e) {
             DB::rollBack();

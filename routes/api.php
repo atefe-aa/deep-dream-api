@@ -64,4 +64,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-Route::post('scan-status', [MachineController::class, 'scanStatus']);
+Route::post('full-slide-scan', [MachineController::class, 'fullSlideScan']);
+Route::post('region-scan', [MachineController::class, 'regionScan']);

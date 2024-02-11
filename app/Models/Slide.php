@@ -21,7 +21,7 @@ class Slide extends Model
     /**
      * @throws JsonException
      */
-    public function toScanArray(): array
+    public function toScanArray($nthSlide): array
     {
         $coordinates = [
             'sw' => ['x' => $this->sw_x, 'y' => $this->sw_y],
@@ -30,6 +30,7 @@ class Slide extends Model
 
         return [
             'slide_coordinates' => json_encode($coordinates, JSON_THROW_ON_ERROR),
+            'nth_slide' => $nthSlide
         ];
     }
 }

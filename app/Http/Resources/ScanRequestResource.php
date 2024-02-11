@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use JsonException;
 
 class ScanRequestResource extends JsonResource
 {
@@ -12,7 +11,6 @@ class ScanRequestResource extends JsonResource
      * Transform the resource into an array.
      *
      * @return array<string, mixed>
-     * @throws JsonException
      */
     public function toArray(Request $request): array
     {
