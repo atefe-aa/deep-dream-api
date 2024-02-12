@@ -25,7 +25,6 @@ class MachineRequest extends FormRequest
         return [
             'id' => 'required|integer',
             'status' => 'required|in:scanned,failed',
-            'imagePath' => 'nullable|string'
         ];
     }
 }

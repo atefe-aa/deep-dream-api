@@ -30,7 +30,8 @@ class Slide extends Model
 
         return [
             'slide_coordinates' => json_encode($coordinates, JSON_THROW_ON_ERROR),
-            'nth_slide' => $nthSlide
+            'nth_slide' => $nthSlide,
+            'created_at' => now(),
         ];
     }
 }

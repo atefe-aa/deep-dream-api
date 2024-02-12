@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('scan_id');
             $table->json('coordinates'); /* ['sw' => ['x'=>0,'y'=>0], 'ne' => ['x'=>25,'y'=>75]] */
             $table->text('image')->nullable();
+            $table->integer('duration')->nullable()->default(null);
             $table->enum('status', ['ready', 'failed', 'stopped', 'scanning', 'scanned'])->default('ready');
             $table->timestamps();
         });

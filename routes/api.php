@@ -66,3 +66,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('full-slide-scan', [MachineController::class, 'fullSlideScan']);
 Route::post('region-scan', [MachineController::class, 'regionScan']);
+Route::post('image', [MachineController::class, 'image']);

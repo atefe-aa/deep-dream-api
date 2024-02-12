@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Operator;
 
+use App\Helpers\JsonHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\scan\RegionScanRequest;
 use App\Http\Resources\ScanRequestResource;
@@ -28,7 +29,7 @@ class ScanController extends Controller
         $this->slideScannerService = App::make(SlideScannerService::class);
     }
 
-    public function nthSlideScan($nthSlide)
+    public function nthSlideScan($nthSlide): JsonResponse|ScanResource
     {
         $scan = Scan::where([['nth_slide', $nthSlide], ['status', '!=', 'scanned']])->first();
         if ($scan) {
@@ -37,7 +38,7 @@ class ScanController extends Controller
         return response()->json(['message' => 'Scan not found.']);
     }
 
-    public function addTestId(Request $request, $scanId)
+    public function addTestId(Request $request, $scanId): JsonResponse
     {
         $scan = Scan::findOrFail($scanId);
         $testId = $request->get('testId');
@@ -105,7 +106,8 @@ class ScanController extends Controller
             if (!$scan) {
                 return response()->json(['message' => 'No ready scans found'], 404);
             }
-            $coordinates = json_decode($scan['slide_coordinates'], true, 512, JSON_THROW_ON_ERROR);
+
+            $coordinates = JsonHelper::decodeJson($scan['slide_coordinates']);
             $scanData = new ScanRequestResource([
                 'id' => $scan->id,
                 'coordinates' => $coordinates,
@@ -115,6 +117,7 @@ class ScanController extends Controller
             $response = $this->slideScannerService->scanFullSlide($scanData->resolve());
 
             if (isset($response['success']) && $response['success']) {
+                //                TODO: schedule a time to check for the response
                 $scan->update([
                     'status' => 'scanning'
                 ]);
@@ -132,7 +135,7 @@ class ScanController extends Controller
     /**
      * @throws JsonException
      */
-    public function region(RegionScanRequest $request)
+    public function region(RegionScanRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -145,7 +148,7 @@ class ScanController extends Controller
                     'status' => 'ready'
                 ];
                 foreach ($scan['regions'] as $region) {
-                    $regionData['coordinates'] = json_encode($region, JSON_THROW_ON_ERROR);
+                    $regionData['coordinates'] = JsonHelper::encodeJson($region);
                     $regionsArray[] = $regionData;
                 }
             }
@@ -156,7 +159,7 @@ class ScanController extends Controller
             $regionToScan = Region::where('status', 'ready')->first();
             $settings = $regionToScan->scan->test->testType->settings;
 
-            $coordinates = json_decode($regionToScan['coordinates'], true, 512, JSON_THROW_ON_ERROR);
+            $coordinates = JsonHelper::decodeJson($regionToScan['coordinates']);
             $scanData = new ScanRequestResource([
                 'id' => $regionToScan->id,
                 'coordinates' => $coordinates,
@@ -167,6 +170,7 @@ class ScanController extends Controller
             $response = $this->slideScannerService->scanFullSlide($scanData->resolve());
 
             if (isset($response['success']) && $response['success']) {
+                //                TODO: schedule a time to check for the response
                 $regionToScan->update([
                     'status' => 'scanning'
                 ]);
