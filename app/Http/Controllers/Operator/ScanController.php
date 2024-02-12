@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\scan\RegionScanRequest;
 use App\Http\Resources\ScanRequestResource;
 use App\Http\Resources\ScanResource;
+use App\Jobs\CheckProcessStatusJob;
 use App\Models\Region;
 use App\Models\Scan;
 use App\Models\SettingsCategory;
@@ -114,13 +115,19 @@ class ScanController extends Controller
                 'settings' => $settings
             ]);
 
-            $response = $this->slideScannerService->scanFullSlide($scanData->resolve());
+            $response = $this->slideScannerService->startScan($scanData->resolve());
 
             if (isset($response['success']) && $response['success']) {
-                //                TODO: schedule a time to check for the response
+
+
                 $scan->update([
                     'status' => 'scanning'
                 ]);
+
+                //                TODO: schedule a time to check for the response
+                $approximateTime = 20;
+                dispatch(new CheckProcessStatusJob($scan))->delay(now()->addMinutes($approximateTime));
+
                 return response()->json(['success' => 'Scanning started']);
             }
             return response()->json(['errors' => 'Scanning failed to start.'], 500);
@@ -167,13 +174,17 @@ class ScanController extends Controller
                 'testType' => $regionToScan->scan->test->testType
             ]);
 
-            $response = $this->slideScannerService->scanFullSlide($scanData->resolve());
+            $response = $this->slideScannerService->startScan($scanData->resolve());
 
             if (isset($response['success']) && $response['success']) {
-                //                TODO: schedule a time to check for the response
+
                 $regionToScan->update([
                     'status' => 'scanning'
                 ]);
+
+                //                TODO: schedule a time to check for the response
+                $approximateTime = 20;
+                dispatch(new CheckProcessStatusJob($regionToScan))->delay(now()->addMinutes($approximateTime));
                 return response()->json(['success' => 'Scanning started']);
             }
             DB::commit();
