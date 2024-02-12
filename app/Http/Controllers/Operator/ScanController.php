@@ -97,7 +97,7 @@ class ScanController extends Controller
                 Scan::insert($scans);
             }
 
-            $settings = SettingsCategory::query()->withMagnificationAndCondenser(1)->get();
+            $settings = SettingsCategory::query()->MagnificationAndCondenser(1)->get();
 
             DB::commit();
 

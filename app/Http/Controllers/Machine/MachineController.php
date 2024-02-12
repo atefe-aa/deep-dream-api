@@ -52,7 +52,7 @@ class MachineController extends Controller
         //prepare next scan data
         $nextScan = Scan::getFirstStatus('ready');
         if ($nextScan) {
-            $settings = SettingsCategory::query()->withMagnificationAndCondenser(1)->get();
+            $settings = SettingsCategory::query()->MagnificationAndCondenser(1)->get();
             $nextScan->update(['status' => 'scanning']);
             $coordinates = json_decode($nextScan['slide_coordinates'], true, 512, JSON_THROW_ON_ERROR);
             return new ScanRequestResource(['id' => $nextScan->id, 'coordinates' => $coordinates, 'settings' => $settings]);

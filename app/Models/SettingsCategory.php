@@ -16,7 +16,7 @@ class SettingsCategory extends Model
         return $this->hasMany(Setting::class, 'category_id');
     }
 
-    public function scopeWithMagnificationAndCondenser(Builder $query, $magId): Builder
+    public function scopeMagnificationAndCondenser(Builder $query, int $magId): Builder
     {
         // Always include ID 5 for the condenser settings
         $ids = [$magId, 5];
