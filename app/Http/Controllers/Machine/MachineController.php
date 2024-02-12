@@ -6,6 +6,7 @@ use App\Helpers\JsonHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\machine\MachineRequest;
 use App\Http\Resources\ScanRequestResource;
+use App\Jobs\CheckProcessStatusJob;
 use App\Models\Region;
 use App\Models\Scan;
 use App\Models\SettingsCategory;
@@ -31,6 +32,9 @@ class MachineController extends Controller
             $nextScan = $this->prepareNextScan('ready');
             if ($nextScan) {
                 DB::commit();
+                //                TODO: schedule a time to check for the response
+                $approximateTime = 20;
+                dispatch(new CheckProcessStatusJob($scan))->delay(now()->addMinutes($approximateTime));
                 return new ScanRequestResource($this->formatScanResponse($nextScan));
             }
             DB::rollBack();
@@ -151,6 +155,9 @@ class MachineController extends Controller
             $nextScan = $this->prepareNextScan('2x-scanned');
             DB::commit();
             if ($nextScan) {
+                //                TODO: schedule a time to check for the response
+                $approximateTime = 20;
+                dispatch(new CheckProcessStatusJob($nextScan))->delay(now()->addMinutes($approximateTime));
                 return new ScanRequestResource($this->formatScanResponse($nextScan, true));
             }
 
