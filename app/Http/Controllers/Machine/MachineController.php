@@ -11,7 +11,10 @@ use App\Jobs\CheckProcessStatusJob;
 use App\Models\Region;
 use App\Models\Scan;
 use App\Models\SettingsCategory;
+use App\Services\CytomineProjectService;
 use Exception;
+use Illuminate\Config\Repository;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,21 +23,40 @@ use Illuminate\Support\Facades\Log;
 
 class MachineController extends Controller
 {
+
+    private mixed $cytomineProjectService;
+    /**
+     * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
+     */
+    /**
+     * @param CytomineProjectService $cytomineProjectService
+     */
+    public function __construct(CytomineProjectService $cytomineProjectService)
+    {
+        $this->cytomineProjectService = $cytomineProjectService;
+    }
+
     /**
      * @param MachineRequest $request
      * @return JsonResponse|ScanRequestResource
      */
-    public function fullSlideScan(MachineRequest $request): JsonResponse|ScanRequestResource
+    public function scan(MachineRequest $request): JsonResponse|ScanRequestResource
     {
         DB::beginTransaction();
         try {
             $scan = $this->updateScanFromRequest($request);
 
-            $nextScan = $this->prepareNextScan('ready');
+            if ($request->input('magnification') === 2) {
+                $nextScan = $this->prepareNextScan('ready');
+                $isRegion = false;
+            } else {
+                $nextScan = $this->prepareNextScan('2x-scanned');
+                $isRegion = true;
+            }
+
             if ($nextScan) {
-                $approximateTime = 20;
-                dispatch(new CheckProcessStatusJob($scan))->delay(now()->addMinutes($approximateTime));
-                return new ScanRequestResource($this->formatScanResponse($nextScan));
+
+                return new ScanRequestResource($this->formatScanResponse($nextScan, $isRegion));
             }
             DB::commit();
             return response()->json('', 404);
@@ -51,31 +73,53 @@ class MachineController extends Controller
      */
     private function updateScanFromRequest(MachineRequest $request): Scan
     {
-        $scanId = $request->input('id');
-        $scan = Scan::findOrFail($scanId);
-
+        $id = $request->input('id');
         $status = $request->input('status');
-//        from the qr code:
+        //        from the qr code:
         $testId = $request->input('testId');
         $slideNumber = $request->input('slideNumber');
+        $magnification = $request->input('$magnification');
 
-        $scanData['status'] = $status;
 
-        if ($status === 'scanned') {
-            $scanData['status'] = '2x-scanned';
-//            TODO : calculate scan duration based on $scan->updated_at and now $scanData['duration'] = $duration
+        if ($magnification === 2) {
+            $scan = Scan::findOrFail($id);
+            $scanData['status'] = $status;
+            if ($status === 'scanned') {
+                $scanData['status'] = '2x-scanned';
+                $scanData['duration'] = now()->diffInSeconds($scan->updated_at);
+            }
+
+            if ($testId) {
+                $scanData['test_id'] = $testId;
+            }
+            if ($slideNumber) {
+                $scanData['slide_number'] = $slideNumber;
+            }
+
+            $scan->update($scanData);
+        } else {
+            $region = Region::findOrFail($id);
+            $duration = now()->diffInSeconds($region->updated_at);
+            $region->update(['status' => $status, 'duration' => $duration]);
+            $scan = Scan::where('id', $region->scan_id)->first();
+            $this->checkAndFinalizeScan($scan);
         }
 
-        if ($testId) {
-            $scanData['test_id'] = $testId;
-        }
-        if ($slideNumber) {
-            $scanData['slide_number'] = $slideNumber;
-        }
-
-        $scan->update($scanData);
         event(new ScanUpdated($scan));
         return $scan;
+    }
+
+    /**
+     * @param Scan $scan
+     * @return void
+     */
+    private function checkAndFinalizeScan(Scan $scan): void
+    {
+        $remainingScanRegions = Region::where([['scan_id', $scan->id], ['status', '!=', 'scanned']])->get();
+
+        if ($remainingScanRegions->isEmpty()) {
+            $scan->update(['status' => 'scanned']);
+        }
     }
 
     /**
@@ -119,14 +163,18 @@ class MachineController extends Controller
                 $coordinates = JsonHelper::decodeJson($region['coordinates']);
                 $id = $region->id; // Update ID to region's ID if we're dealing with a region
                 $testType = $region->scan->test->testType;
+                $approximateScanTime = $region->approximate_scan_time;
+
+                dispatch(new CheckProcessStatusJob($region))->delay(now()->addSeconds($approximateScanTime));
             }
         } else {
             // For a full scan, fetch settings and decode coordinates directly from the scan
             $settings = SettingsCategory::query()->MagnificationAndCondenser(1)->get();
-            Log::info($settings);
             $coordinates = JsonHelper::decodeJson($scan['slide_coordinates']);
+            $approximateScanTime = $scan->approximate_scan_time;
+            dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateScanTime));
         }
-
+        
         // Return a structured response
         return [
             'id' => $id,
@@ -134,58 +182,6 @@ class MachineController extends Controller
             'settings' => $settings,
             'testType' => $testType
         ];
-    }
-
-    /**
-     * @param MachineRequest $request
-     * @return JsonResponse|ScanRequestResource
-     */
-    public function regionScan(MachineRequest $request): JsonResponse|ScanRequestResource
-    {
-        DB::beginTransaction();
-        try {
-            $region = Region::findOrFail($request->input('id'));
-            $status = $request->input('status');
-
-            $region->update(['status' => $status]);
-            $scan = Scan::where('id', $region->scan_id)->first();
-            event(new ScanUpdated($scan));
-
-            $this->checkAndFinalizeScan($region);
-
-            $nextScan = $this->prepareNextScan('2x-scanned');
-            DB::commit();
-            if ($nextScan) {
-                //                TODO: schedule a time to check for the response
-                $approximateTime = 20;
-                dispatch(new CheckProcessStatusJob($nextScan))->delay(now()->addMinutes($approximateTime));
-                return new ScanRequestResource($this->formatScanResponse($nextScan, true));
-            }
-
-            return response()->json('', 404);
-
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'An unexpected error occurred'], 500);
-        }
-    }
-
-    /**
-     * @param Region $region
-     * @return void
-     */
-    private function checkAndFinalizeScan(Region $region): void
-    {
-        // Check if all regions of the slide have been scanned
-        // Update scan status to 'scanned' if true
-        // Optionally, calculate duration and update it
-        $scan = Scan::where('id', $region->scan_id)->first();
-        $remainingScanRegions = Region::where([['scan_id', $scan->id], ['status', '!=', 'scanned']])->get();
-
-        if ($remainingScanRegions->isEmpty()) {
-            $scan->update(['status' => 'scanned']);
-            // TODO: Implement duration calculation and broadcasting
-        }
     }
 
     /**
@@ -197,21 +193,33 @@ class MachineController extends Controller
         $magnification = $request->get('magnification');
         $id = $request->get('id');
         $image = $request->get('image');
-        if ($magnification === '2x') {
+        if ($magnification === 2) {
             $scan = Scan::where('id', $id)->first();
             $scan->update([
-                'slide_image' => $image
+                'slide_image' => $image,
             ]);
-
         } else {
-            $region = Region::where('id', $id)->update([
-                'image' => $image
-            ]);
-            $scan = Scan::where('id', $region->scan_id)->first();
+            $region = Region::where('id', $id)->first();
+            if ($region) {
+                $region->update([
+                    'image' => $region,
+                ]);
+                $scan = Scan::where('id', $region->scan_id)->first();
+                if ($scan) {
+                    $response = $this->cytomineProjectService->uploadImage($scan->test->project_id, $image);
+                    if ($response) {
+                        $region->update([
+                            'cytomine_image_id' => $response['id'],
+                        ]);
+                    }
+                }
+
+            }
+
+
         }
         event(new ScanUpdated($scan));
-        //            TODO : broadcast the image or the exist of the image
-//        TODO: calculate the scan duration based on updated_at and now
+
     }
 
 }

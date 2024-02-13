@@ -41,6 +41,7 @@ return [
     ],
     'scanner' => [
         'api_url' => env('SCANNER_API_URL'),
+        'speed' => env('SCANNER_SPEED'),
     ]
 
 ];

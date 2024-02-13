@@ -110,7 +110,7 @@ class CytomineProjectService
         }
     }
 
-    public function uploadImage(int $projectId, string $imagePath, string $username): array
+    public function uploadImage(int $projectId, string $imagePath): array
     {
         $multipartData = [
             [
@@ -131,7 +131,7 @@ class CytomineProjectService
                 ]);
 
                 if ($response->successful()) {
-                    return ['data' => ['projectId' => $response['project']['id']]];
+                    return ['data' => ['id' => $response['image']['id']]];
                 }
 
                 return ['errors' => $response->json()];
@@ -140,7 +140,6 @@ class CytomineProjectService
 
         } catch (Exception $e) {
             Log::error("Uploading image failed: {$e->getMessage()}", [
-                'username' => $username,
                 'projectId' => $projectId,
                 'image' => $imagePath
             ]);

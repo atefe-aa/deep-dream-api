@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('counsellors', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cytomine_user_id');
+            $table->unsignedBigInteger('cytomine_user_id')->nullable();
             $table->unsignedBigInteger('lab_id');
             $table->string('name');
             $table->string('phone');
