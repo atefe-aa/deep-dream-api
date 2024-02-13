@@ -32,12 +32,11 @@ class MachineController extends Controller
 
             $nextScan = $this->prepareNextScan('ready');
             if ($nextScan) {
-                DB::commit();
                 $approximateTime = 20;
                 dispatch(new CheckProcessStatusJob($scan))->delay(now()->addMinutes($approximateTime));
                 return new ScanRequestResource($this->formatScanResponse($nextScan));
             }
-            DB::rollBack();
+            DB::commit();
             return response()->json('', 404);
         } catch (Exception $e) {
             DB::rollBack();
