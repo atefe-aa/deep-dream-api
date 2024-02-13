@@ -96,7 +96,7 @@ class ScanRequestResource extends JsonResource
             'defaultCondenser' => $defaultCondenser,
             'minFocus' => $minFocus,
             'maxFocus' => $maxFocus,
-            'magnification' => $this['testType']['magnification'] ?: 2,
+            'magnification' => $this['testType']['magnification'] ?? 2,
             'magnificationPosition' => $magnificationPosition,
             'numLayer' => $numLayer,
             'numMergeLayer' => $numMergeLayer,

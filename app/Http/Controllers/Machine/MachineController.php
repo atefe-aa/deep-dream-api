@@ -54,12 +54,13 @@ class MachineController extends Controller
                 $isRegion = true;
             }
 
-            if ($nextScan) {
-
-                return new ScanRequestResource($this->formatScanResponse($nextScan, $isRegion));
+            if (!$nextScan) {
+                return response()->json('', 404);
             }
+
             DB::commit();
-            return response()->json('', 404);
+            return new ScanRequestResource($this->formatScanResponse($nextScan, $isRegion));
+
         } catch (Exception $e) {
             DB::rollBack();
             Log::info($e);
@@ -78,7 +79,7 @@ class MachineController extends Controller
         //        from the qr code:
         $testId = $request->input('testId');
         $slideNumber = $request->input('slideNumber');
-        $magnification = $request->input('$magnification');
+        $magnification = $request->input('magnification');
 
 
         if ($magnification === 2) {
@@ -158,11 +159,13 @@ class MachineController extends Controller
                 ->first();
 
             if ($region) {
+                $region->update(['status' => 'scanning']);
                 // If a region is found, use its details for the response
                 $settings = $region->scan->test->testType->settings;
                 $coordinates = JsonHelper::decodeJson($region['coordinates']);
                 $id = $region->id; // Update ID to region's ID if we're dealing with a region
                 $testType = $region->scan->test->testType;
+                Log::info($testType);
                 $approximateScanTime = $region->approximate_scan_time;
 
                 dispatch(new CheckProcessStatusJob($region))->delay(now()->addSeconds($approximateScanTime));
@@ -174,7 +177,7 @@ class MachineController extends Controller
             $approximateScanTime = $scan->approximate_scan_time;
             dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateScanTime));
         }
-        
+
         // Return a structured response
         return [
             'id' => $id,
@@ -221,5 +224,6 @@ class MachineController extends Controller
         event(new ScanUpdated($scan));
 
     }
+
 
 }

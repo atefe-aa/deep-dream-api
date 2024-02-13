@@ -36,13 +36,16 @@ class CheckProcessStatusJob implements ShouldQueue
         $scan = Scan::where('id', $this->data->scanId)->first();
         $region = Region::where('id', $this->data->regionId)->first();
 //        if scan or region status is scanning then send the request to the service for the status
-        $response = $this->slideScannerService->checkStatus($this->data);
-        // $response = ['status','image']
-        if (!$response['errors']) {
+        if (($scan && $scan->status === 'scanning') || ($region && $region->status === 'scanning')) {
+            $response = $this->slideScannerService->checkStatus($this->data);
+            // $response = ['status','image']
+            if (!$response['errors']) {
+
+// TODO: broadcast something
+            }
 
 // TODO: broadcast something
         }
-
-// TODO: broadcast something
     }
+
 }

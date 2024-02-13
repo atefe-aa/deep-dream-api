@@ -6,7 +6,6 @@ use App\Helpers\JsonHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Log;
 use JsonException;
 
 class Region extends Model
@@ -68,9 +67,6 @@ class Region extends Model
         $scannerSpeed = $this->scannerSpeed ?: 1;
 
         $approximateTime = ($area / ($stepArea * $scannerSpeed)) * $numLayer;
-        Log::info('approximate time for region is : ' . $approximateTime);
-        Log::info('area region is : ' . $area);
-        Log::info('step area region is : ' . $stepArea);
 
         return $approximateTime;
     }

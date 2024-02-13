@@ -6,7 +6,6 @@ use App\Helpers\JsonHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Log;
 
 class Scan extends Model
 {
@@ -60,7 +59,7 @@ class Scan extends Model
         $scannerSpeed = $this->scannerSpeed ?: 1;
 
         $approximateTime = ($area / ($stepArea * $scannerSpeed)) * $numLayer;
-        Log::info('approximate time for 2x scan is : ' . $approximateTime);
+
         return $approximateTime;
     }
 

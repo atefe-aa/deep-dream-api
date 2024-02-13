@@ -125,8 +125,8 @@ class ScanController extends Controller
                 ]);
                 event(new ScanUpdated($scan));
 
-                $approximateTime = 20;
-                dispatch(new CheckProcessStatusJob($scan))->delay(now()->addMinutes($approximateTime));
+                $approximateTime = $scan->approximate_scan_time;
+                dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateTime));
 
                 return response()->json(['success' => 'Scanning started']);
             }
@@ -183,8 +183,8 @@ class ScanController extends Controller
                 ]);
                 $scan = Scan::where('id', $regionToScan->scan_id)->first();
                 event(new ScanUpdated($scan));
-                $approximateTime = 20;
-                dispatch(new CheckProcessStatusJob($regionToScan))->delay(now()->addMinutes($approximateTime));
+                $approximateTime = $regionToScan->approximate_scan_time;
+                dispatch(new CheckProcessStatusJob($regionToScan))->delay(now()->addSeconds($approximateTime));
                 return response()->json(['success' => 'Scanning started']);
             }
             DB::commit();
