@@ -12,6 +12,7 @@ class Counsellor extends Model
 
     protected $fillable = [
         'lab_id',
+        'cytomine_user_id',
         'name',
         'phone',
         'description'

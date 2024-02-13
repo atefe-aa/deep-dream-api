@@ -101,8 +101,7 @@ class CounsellorController extends Controller
             }
 
 
-            $baseUsername = preg_replace('/[^a-zA-Z0-9]/', '', $request->input('name'));
-            $username = $baseUsername . $counsellor->id;
+            $username = $request->input('phone') . $counsellor->id;
 
 
             $nameParts = explode(' ', $request->input('name'));
@@ -128,6 +127,7 @@ class CounsellorController extends Controller
             if (!$cytomineUser || !isset($cytomineUser['success'])) {
                 throw new RuntimeException('Cytomine user creation failed');
             }
+            $counsellor->update(['cytomine_user_id' => $cytomineUser['user']['id']]);
 
             DB::commit();
             return response()->json(['data' => 'Counsellor created successfully'], 201);
@@ -139,19 +139,18 @@ class CounsellorController extends Controller
         }
     }
 
-
     /**
-     * Display the specified resource.
+     * Update the specified resource in storage.
      */
-    public function show(string $id)
+    public function update(Request $request, string $id)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Display the specified resource.
      */
-    public function update(Request $request, string $id)
+    public function show(string $id)
     {
         //
     }

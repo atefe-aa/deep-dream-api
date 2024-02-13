@@ -14,6 +14,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 
 class RegistrationController extends Controller
@@ -147,7 +148,7 @@ class RegistrationController extends Controller
             $projectResponse = $this->cytomineProjectService->createProject($projectName, $username);
 
             if (isset($projectResponse['errors']) && !is_null($projectResponse['errors'])) {
-                throw new Exception($projectResponse['errors']);
+                throw new RuntimeException($projectResponse['errors']);
             }
 
             $test->update(['project_id' => $projectResponse['data']['projectId']]);

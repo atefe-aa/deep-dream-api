@@ -4,7 +4,8 @@ namespace App\Services;
 
 use Exception;
 use Illuminate\Support\Facades\Http;
-use Log;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Service class for handling authentication with the Cytomine API.
