@@ -38,7 +38,7 @@ class TestType extends Model
         $categoryId = $this->getCategoryIdByMagnification($this->magnification);
 
         if ($categoryId) {
-            return SettingsCategory::MagnificationAndCondenser($categoryId)->get();
+            return SettingsCategory::query()->MagnificationAndCondenser($categoryId)->get();
 
         }
         return null;

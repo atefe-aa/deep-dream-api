@@ -47,9 +47,7 @@ class ScanRequestResource extends JsonResource
                         }
                         break;
                     case 'condenser':
-                        $defaultCondenser = isset($this['testType']) && $this['testType']['condenser']
-                            ? $this['testType']['condenser']
-                            : $setting['value'];
+                        $defaultCondenser = $this['testType']['condenser'] ?? $setting['value'];
                         break;
                     case 'min-focus':
                         $minFocus = $setting['value'];
@@ -67,7 +65,7 @@ class ScanRequestResource extends JsonResource
                         $yStep = $setting['value'];
                         break;
                     case 'z':
-                        $zStep = isset($this['testType']) && $this['testType']['z_axis']
+                        $zStep = isset(['testType']['z_axis'])
                             ? $this['testType']['z_axis']
                             : $setting['value'];
                         break;

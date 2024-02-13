@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Operator;
 
+use App\Events\ScanUpdated;
 use App\Helpers\JsonHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\scan\RegionScanRequest;
@@ -119,12 +120,11 @@ class ScanController extends Controller
 
             if (isset($response['success']) && $response['success']) {
 
-
                 $scan->update([
                     'status' => 'scanning'
                 ]);
+                event(new ScanUpdated($scan));
 
-                //                TODO: schedule a time to check for the response
                 $approximateTime = 20;
                 dispatch(new CheckProcessStatusJob($scan))->delay(now()->addMinutes($approximateTime));
 
@@ -181,8 +181,8 @@ class ScanController extends Controller
                 $regionToScan->update([
                     'status' => 'scanning'
                 ]);
-
-                //                TODO: schedule a time to check for the response
+                $scan = Scan::where('id', $regionToScan->scan_id)->first();
+                event(new ScanUpdated($scan));
                 $approximateTime = 20;
                 dispatch(new CheckProcessStatusJob($regionToScan))->delay(now()->addMinutes($approximateTime));
                 return response()->json(['success' => 'Scanning started']);

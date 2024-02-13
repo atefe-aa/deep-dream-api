@@ -2,8 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Events\FullSlideScanned;
-use App\Events\RegionScanned;
 use App\Models\Scan;
 use App\Services\SlideScannerService;
 use Illuminate\Bus\Queueable;
@@ -41,9 +39,9 @@ class ScanRegion implements ShouldQueue
             $scan->update([
                 'image' => $response['image']
             ]);
-            broadcast(new RegionScanned(['data' => ['scan' => $scan]]));
+//            broadcast(new RegionScanned(['data' => ['scan' => $scan]]));
         }
 
-        broadcast(new FullSlideScanned(['error' => 'Scanning Failed ' . $this->data['scan']['id']]));
+//        broadcast(new FullSlideScanned(['error' => 'Scanning Failed ' . $this->data['scan']['id']]));
     }
 }

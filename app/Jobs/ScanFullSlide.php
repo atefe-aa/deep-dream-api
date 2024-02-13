@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Events\FullSlideScanned;
 use App\Models\Scan;
 use App\Models\Test;
 use App\Services\SlideScannerService;

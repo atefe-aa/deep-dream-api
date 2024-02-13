@@ -13,6 +13,6 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
-Broadcast::channel('slides.{nthSlide}', static function ($user) {
-    return $user->hasRole('superAdmin');
+Broadcast::channel('scans.{scanId}', static function ($user) {
+    return $user->hasRole(['superAdmin', 'operator']);
 });

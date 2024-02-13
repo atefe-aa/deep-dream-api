@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Events\FullSlideScanned;
+use App\Events\ScanUpdated;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SendSlideDataNotification implements ShouldQueue
@@ -18,7 +18,7 @@ class SendSlideDataNotification implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(FullSlideScanned $event): void
+    public function handle(ScanUpdated $event): void
     {
         //
     }

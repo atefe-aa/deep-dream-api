@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Machine;
 
+use App\Events\ScanUpdated;
 use App\Helpers\JsonHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\machine\MachineRequest;
@@ -32,7 +33,6 @@ class MachineController extends Controller
             $nextScan = $this->prepareNextScan('ready');
             if ($nextScan) {
                 DB::commit();
-                //                TODO: schedule a time to check for the response
                 $approximateTime = 20;
                 dispatch(new CheckProcessStatusJob($scan))->delay(now()->addMinutes($approximateTime));
                 return new ScanRequestResource($this->formatScanResponse($nextScan));
@@ -75,7 +75,7 @@ class MachineController extends Controller
         }
 
         $scan->update($scanData);
-//TODO: Broadcast the status update
+        event(new ScanUpdated($scan));
         return $scan;
     }
 
@@ -88,6 +88,7 @@ class MachineController extends Controller
         $nextScan = Scan::getFirstStatus($status);
         if ($nextScan) {
             $nextScan->update(['status' => 'scanning']);
+            event(new ScanUpdated($nextScan));
             return $nextScan;
         }
         return null;
@@ -122,7 +123,8 @@ class MachineController extends Controller
             }
         } else {
             // For a full scan, fetch settings and decode coordinates directly from the scan
-            $settings = SettingsCategory::query()->where('magnification_and_condenser', 1)->get();
+            $settings = SettingsCategory::query()->MagnificationAndCondenser(1)->get();
+            Log::info($settings);
             $coordinates = JsonHelper::decodeJson($scan['slide_coordinates']);
         }
 
@@ -134,7 +136,6 @@ class MachineController extends Controller
             'testType' => $testType
         ];
     }
-
 
     /**
      * @param MachineRequest $request
@@ -148,7 +149,8 @@ class MachineController extends Controller
             $status = $request->input('status');
 
             $region->update(['status' => $status]);
-            // TODO: Implement broadcasting of status update
+            $scan = Scan::where('id', $region->scan_id)->first();
+            event(new ScanUpdated($scan));
 
             $this->checkAndFinalizeScan($region);
 
@@ -197,15 +199,18 @@ class MachineController extends Controller
         $id = $request->get('id');
         $image = $request->get('image');
         if ($magnification === '2x') {
-            Scan::where('id', $id)->update([
+            $scan = Scan::where('id', $id)->first();
+            $scan->update([
                 'slide_image' => $image
             ]);
 
         } else {
-            Region::where('id', $id)->update([
+            $region = Region::where('id', $id)->update([
                 'image' => $image
             ]);
+            $scan = Scan::where('id', $region->scan_id)->first();
         }
+        event(new ScanUpdated($scan));
         //            TODO : broadcast the image or the exist of the image
 //        TODO: calculate the scan duration based on updated_at and now
     }
