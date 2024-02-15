@@ -33,7 +33,7 @@ class Region extends Model
     /**
      * @throws JsonException
      */
-    public function getEstimatedDurationAttribute(): float|int
+    public function estimatedDuration(): float|int
     {
         $coordinates = JsonHelper::decodeJson($this->coordinates);
         if (!$coordinates) {

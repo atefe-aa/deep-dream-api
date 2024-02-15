@@ -17,6 +17,7 @@ use App\Services\SlideScannerService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -30,6 +31,15 @@ class ScanController extends Controller
     public function __construct()
     {
         $this->slideScannerService = App::make(SlideScannerService::class);
+    }
+
+    public function processingScans(): JsonResponse|AnonymousResourceCollection
+    {
+        $scans = Scan::where('is_processing', 1)->get();
+        if ($scans) {
+            return ScanResource::collection($scans);
+        }
+        return response()->json(['message' => 'No scan found.']);
     }
 
     public function nthSlideScan($nthSlide): JsonResponse|ScanResource
@@ -67,6 +77,10 @@ class ScanController extends Controller
      */
     public function fullSlide(Request $request): JsonResponse
     {
+        $scanningInProcess = Scan::where([['status', 'scanning'], ['is_processing', 1]])->get();
+        if ($scanningInProcess->count() > 0) {
+            return response()->json(['message' => 'The machine is scanning. Please wait till the scanning is finished.'], 500);
+        }
         $validated = $request->validate([
             'slides' => 'required|array|min:1',
         ]);
@@ -86,13 +100,10 @@ class ScanController extends Controller
             $scans = [];
             foreach ($slides as $slide) {
                 // Check if there's an existing scan for the slide with 'ready' status
-                $existingScan = Scan::where([['nth_slide', $slide->nth], ['status', 'ready']])->first();
+                $existingScan = Scan::where([['nth_slide', $slide->nth], ['status', 'ready'], ['is_processing', 1]])->first();
 
-                if ($existingScan) {
-                    // Update the existing scan if found
-                    $existingScan->update($slide->toScanArray($slide->nth));
-                } else {
-                    // If no existing scan, prepare a new scan array for insertion
+                if (!$existingScan) {
+
                     $scans[] = $slide->toScanArray($slide->nth);
                 }
             }
@@ -124,7 +135,7 @@ class ScanController extends Controller
 
                 event(new ScanUpdated($scan));
 
-                $approximateTime = $scan->estimated_duration;
+                $approximateTime = $scan->estimatedDuration();
                 $scan->update([
                     'status' => 'scanning',
                     'estimated_duration' => $approximateTime
@@ -184,7 +195,7 @@ class ScanController extends Controller
                 $scan = Scan::where('id', $regionToScan->scan_id)->first();
                 event(new ScanUpdated($scan));
 
-                $approximateTime = $regionToScan->estimated_duration;
+                $approximateTime = $regionToScan->estimatedDuration();
                 $regionToScan->update([
                     'status' => 'scanning',
                     'estimated_duration' => $approximateTime
@@ -205,8 +216,7 @@ class ScanController extends Controller
     {
         try {
             $scans = Scan::where('is_processing', 1)->update(['is_processing' => 0]);
-            Log::info($scans);
-            return response()->json(['success' => 'Slots are cleared now.']);
+            return response()->json(['success' => 'Slots are cleared now.'], 200);
         } catch (Exception $e) {
             Log::info('Slots could not be cleared!' . $e->getMessage());
             return response()->json(['errors' => 'Something went wrong clearing slots.Please try again later.'], 500);

@@ -53,12 +53,11 @@ class MachineController extends Controller
                 $nextScan = $this->prepareNextScan('2x-scanned');
                 $isRegion = true;
             }
-
+            DB::commit();
             if (!$nextScan) {
                 return response()->json('', 404);
             }
 
-            DB::commit();
             return new ScanRequestResource($this->formatScanResponse($nextScan, $isRegion));
 
         } catch (Exception $e) {
@@ -84,7 +83,8 @@ class MachineController extends Controller
 
         if ($magnification === 2) {
             $scan = Scan::findOrFail($id);
-            $scanData['status'] = $status;
+
+            $scanData['status'] = '2x-failed';
             if ($status === 'scanned') {
                 $scanData['status'] = '2x-scanned';
                 $scanData['duration'] = now()->diffInSeconds($scan->updated_at);
@@ -97,7 +97,10 @@ class MachineController extends Controller
                 $scanData['slide_number'] = $slideNumber;
             }
 
-            $scan->update($scanData);
+            if ($scan->status === 'scanning') {
+                $scan->update($scanData);
+            }
+
         } else {
             $region = Region::findOrFail($id);
             $duration = now()->diffInSeconds($region->updated_at);
@@ -129,10 +132,18 @@ class MachineController extends Controller
      */
     private function prepareNextScan($status): ?Scan
     {
+        //prevent double scans
+        $scanningScan = Scan::where([['status', 'scanning'], ['is_processing', 1]])->get();
+        if ($scanningScan->count() > 0) {
+            return null;
+        }
+
         $nextScan = Scan::getFirstStatus($status);
         if ($nextScan) {
-            $nextScan->update(['status' => 'scanning']);
-            event(new ScanUpdated($nextScan));
+
+            if ($nextScan->update(['status' => 'scanning'])) {
+                event(new ScanUpdated($nextScan));
+            }
             return $nextScan;
         }
         return null;
@@ -164,7 +175,8 @@ class MachineController extends Controller
                 $coordinates = JsonHelper::decodeJson($region['coordinates']);
                 $id = $region->id; // Update ID to region's ID if we're dealing with a region
                 $testType = $region->scan->test->testType;
-                $approximateScanTime = $region->estimated_duration;
+                $approximateScanTime = $region->estimatedDuration();
+                Log::info('$approximateScanTime: ' . $approximateScanTime);
                 $region->update([
                     'status' => 'scanning',
                     'estimated_duration' => $approximateScanTime
@@ -175,7 +187,7 @@ class MachineController extends Controller
             // For a full scan, fetch settings and decode coordinates directly from the scan
             $settings = SettingsCategory::query()->MagnificationAndCondenser(1)->get();
             $coordinates = JsonHelper::decodeJson($scan['slide_coordinates']);
-            $approximateScanTime = $scan->estimated_duration;
+            $approximateScanTime = $scan->estimatedDuration();
             $scan->update(['estimated_duration' => $approximateScanTime]);
             dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateScanTime));
         }

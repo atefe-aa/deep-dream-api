@@ -8,6 +8,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ScanUpdated implements ShouldBroadcast
 {
@@ -44,10 +45,10 @@ class ScanUpdated implements ShouldBroadcast
     {
         // Calculate the expected completion time by adding the estimated duration to the updated_at timestamp
         $expectedCompletionTime = $this->scan->updated_at ? $this->scan->updated_at->addSeconds($this->scan->estimated_duration) : null;
-
+        Log::info('$this->scan->updated_at' . $this->scan->updated_at);
+        Log::info('$expectedCompletionTime' . $expectedCompletionTime);
         // Calculate seconds left by subtracting the current time from the expected completion time
         $secondsLeft = $this->scan->updated_at ? now()->diffInSeconds($expectedCompletionTime, false) : null; // Use 'false' to allow negative values
-
         return [
             'slideImage' => $this->scan->slide_image,
             'image' => $this->scan->image,

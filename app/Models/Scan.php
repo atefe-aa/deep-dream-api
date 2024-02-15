@@ -24,7 +24,7 @@ class Scan extends Model
 
     public static function getFirstStatus($status)
     {
-        return self::where('status', $status)->first();
+        return self::where([['status', $status], ['is_processing', 1]])->first();
     }
 
     public function test(): BelongsTo
@@ -32,8 +32,7 @@ class Scan extends Model
         return $this->belongsTo(Test::class);
     }
 
-//getEstimatedDurationAttribute
-    public function getEstimatedDurationAttribute(): float|int
+    public function estimatedDuration(): float|int
     {
         $coordinates = JsonHelper::decodeJson($this->slide_coordinates);
         if (!$coordinates) {
@@ -61,7 +60,6 @@ class Scan extends Model
         $scannerSpeed = $this->scannerSpeed ?: 1;
 
         $approximateTime = ($area / ($stepArea * $scannerSpeed)) * $numLayer;
-
         return $approximateTime;
     }
 
