@@ -155,26 +155,28 @@ class MachineController extends Controller
         if ($isRegion) {
             // Attempt to find the first unscanned region for the given scan
             $region = Region::where('scan_id', $scan->id)
-                ->where('status', '!=', 'scanned')
+                ->where([['status', '!=', 'scanned'], ['status', '!=', 'image-ready']])
                 ->first();
 
             if ($region) {
-                $region->update(['status' => 'scanning']);
                 // If a region is found, use its details for the response
                 $settings = $region->scan->test->testType->settings;
                 $coordinates = JsonHelper::decodeJson($region['coordinates']);
                 $id = $region->id; // Update ID to region's ID if we're dealing with a region
                 $testType = $region->scan->test->testType;
-                Log::info($testType);
-                $approximateScanTime = $region->approximate_scan_time;
-
+                $approximateScanTime = $region->estimated_duration;
+                $region->update([
+                    'status' => 'scanning',
+                    'estimated_duration' => $approximateScanTime
+                ]);
                 dispatch(new CheckProcessStatusJob($region))->delay(now()->addSeconds($approximateScanTime));
             }
         } else {
             // For a full scan, fetch settings and decode coordinates directly from the scan
             $settings = SettingsCategory::query()->MagnificationAndCondenser(1)->get();
             $coordinates = JsonHelper::decodeJson($scan['slide_coordinates']);
-            $approximateScanTime = $scan->approximate_scan_time;
+            $approximateScanTime = $scan->estimated_duration;
+            $scan->update(['estimated_duration' => $approximateScanTime]);
             dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateScanTime));
         }
 

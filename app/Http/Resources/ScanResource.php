@@ -14,6 +14,12 @@ class ScanResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // Calculate the expected completion time by adding the estimated duration to the updated_at timestamp
+        $expectedCompletionTime = $this->updated_at ? $this->updated_at->addSeconds($this->estimated_duration) : null;
+
+        // Calculate seconds left by subtracting the current time from the expected completion time
+        $secondsLeft = $this->updated_at ? now()->diffInSeconds($expectedCompletionTime, false) : null; // Use 'false' to allow negative values
+
         return [
             'id' => $this->id,
             'nth' => $this->nth_slide,
@@ -25,6 +31,7 @@ class ScanResource extends JsonResource
             'testType' => $this->test ? $this->test->testType->title : null,
             'duration' => $this->duration,
             'progress' => $this->status,
+            'secondsLeft' => $secondsLeft,
         ];
     }
 }

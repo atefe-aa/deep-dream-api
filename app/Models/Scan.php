@@ -19,6 +19,7 @@ class Scan extends Model
         'slide_image',
         'image',
         'duration',
+        'estimated_duration'
     ];
 
     public static function getFirstStatus($status)
@@ -31,7 +32,8 @@ class Scan extends Model
         return $this->belongsTo(Test::class);
     }
 
-    public function getApproximateScanTimeAttribute(): float|int
+//getEstimatedDurationAttribute
+    public function getEstimatedDurationAttribute(): float|int
     {
         $coordinates = JsonHelper::decodeJson($this->slide_coordinates);
         if (!$coordinates) {

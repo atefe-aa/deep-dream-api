@@ -121,12 +121,14 @@ class ScanController extends Controller
 
             if (isset($response['success']) && $response['success']) {
 
-                $scan->update([
-                    'status' => 'scanning'
-                ]);
+
                 event(new ScanUpdated($scan));
 
-                $approximateTime = $scan->approximate_scan_time;
+                $approximateTime = $scan->estimated_duration;
+                $scan->update([
+                    'status' => 'scanning',
+                    'estimated_duration' => $approximateTime
+                ]);
                 dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateTime));
 
                 return response()->json(['success' => 'Scanning started']);
@@ -178,13 +180,15 @@ class ScanController extends Controller
 
             if (isset($response['success']) && $response['success']) {
 
-                $regionToScan->update([
-                    'status' => 'scanning'
-                ]);
+
                 $scan = Scan::where('id', $regionToScan->scan_id)->first();
                 event(new ScanUpdated($scan));
 
-                $approximateTime = $regionToScan->approximate_scan_time;
+                $approximateTime = $regionToScan->estimated_duration;
+                $regionToScan->update([
+                    'status' => 'scanning',
+                    'estimated_duration' => $approximateTime
+                ]);
                 dispatch(new CheckProcessStatusJob($regionToScan))->delay(now()->addSeconds($approximateTime));
 
                 return response()->json(['success' => 'Scanning started']);
@@ -200,7 +204,8 @@ class ScanController extends Controller
     public function clearSlots(): JsonResponse
     {
         try {
-            Scan::where('is_processing', true)->update(['is_processing', false]);
+            $scans = Scan::where('is_processing', 1)->update(['is_processing' => 0]);
+            Log::info($scans);
             return response()->json(['success' => 'Slots are cleared now.']);
         } catch (Exception $e) {
             Log::info('Slots could not be cleared!' . $e->getMessage());

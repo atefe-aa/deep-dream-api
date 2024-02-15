@@ -42,15 +42,16 @@ class ScanUpdated implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
+        // Calculate the expected completion time by adding the estimated duration to the updated_at timestamp
+        $expectedCompletionTime = $this->scan->updated_at ? $this->scan->updated_at->addSeconds($this->scan->estimated_duration) : null;
+
+        // Calculate seconds left by subtracting the current time from the expected completion time
+        $secondsLeft = $this->scan->updated_at ? now()->diffInSeconds($expectedCompletionTime, false) : null; // Use 'false' to allow negative values
+
         return [
-            'id' => $this->scan->id,
-            'nth' => $this->scan->nth_slide,
             'slideImage' => $this->scan->slide_image,
-            'slideNumber' => $this->scan->slide_number,
             'image' => $this->scan->image,
-            'laboratory' => $this->scan->test ? $this->scan->test->laboratory->title : null,
-            'testNumber' => $this->scan->test ? $this->scan->test->id : null,
-            'testType' => $this->scan->test ? $this->scan->test->testType->title : null,
+            'secondsLeft' => $secondsLeft,
             'duration' => $this->scan->duration,
             'progress' => $this->scan->status,
         ];
