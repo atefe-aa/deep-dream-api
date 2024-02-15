@@ -205,6 +205,7 @@ class MachineController extends Controller
                     'slide_image' => $image,
                     'status' => '2x-image-ready'
                 ]);
+                event(new ScanUpdated($scan));
             } else {
                 $region = Region::where('id', $id)->first();
                 if ($region) {
@@ -224,12 +225,13 @@ class MachineController extends Controller
                                 'cytomine_image_id' => $response['id'],
                             ]);
                         }
+
+                        event(new ScanUpdated($scan));
                     }
                 }
             }
         }
 
-        event(new ScanUpdated($scan));
 
     }
 

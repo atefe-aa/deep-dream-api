@@ -54,6 +54,12 @@ class ScanUpdated implements ShouldBroadcast
             'secondsLeft' => $secondsLeft,
             'duration' => $this->scan->duration,
             'progress' => $this->scan->status,
+            'id' => $this->scan->id,
+            'nth' => $this->scan->nth_slide,
+            'slideNumber' => $this->scan->slide_number,
+            'laboratory' => $this->scan->test ? $this->scan->test->laboratory->title : null,
+            'testNumber' => $this->scan->test ? $this->scan->test->id : null,
+            'testType' => $this->scan->test ? $this->scan->test->testType->title : null,
         ];
     }
 }
