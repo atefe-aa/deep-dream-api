@@ -11,6 +11,7 @@ use App\Jobs\CheckProcessStatusJob;
 use App\Models\Region;
 use App\Models\Scan;
 use App\Models\SettingsCategory;
+use App\Models\Test;
 use App\Services\CytomineProjectService;
 use Exception;
 use Illuminate\Config\Repository;
@@ -236,6 +237,11 @@ class MachineController extends Controller
                             $region->update([
                                 'cytomine_image_id' => $response['id'],
                             ]);
+
+                            $test = Test::where('id', $scan->test->id)->first();
+                            if ($test) {
+                                $test->update(['status' => 'scanned']);
+                            }
                         }
 
                         event(new ScanUpdated($scan));
