@@ -14,6 +14,7 @@ use App\Models\Scan;
 use App\Models\SettingsCategory;
 use App\Models\Slide;
 use App\Services\SlideScannerService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -33,7 +34,7 @@ class ScanController extends Controller
 
     public function nthSlideScan($nthSlide): JsonResponse|ScanResource
     {
-        $scan = Scan::where([['nth_slide', $nthSlide], ['status', '!=', 'scanned']])->first();
+        $scan = Scan::where([['nth_slide', $nthSlide], ['is_processing', true]])->first();
         if ($scan) {
             return new ScanResource($scan);
         }
@@ -193,6 +194,18 @@ class ScanController extends Controller
 
             Log::error('Failed to start scanning region: ' . $e->getMessage(), ['request' => $request->all()]);
             return response()->json(['message' => 'Creating regions failed. Try again later.'], 500);
+        }
+    }
+
+    public function clearSlots(): JsonResponse
+    {
+        try {
+            Scan::where('is_processing', true)->update(['is_processing', false]);
+            return response()->json(['success' => 'Slots are cleared now.']);
+        } catch (Exception $e) {
+            Log::info('Slots could not be cleared!' . $e->getMessage());
+            return response()->json(['errors' => 'Something went wrong clearing slots.Please try again later.'], 500);
+
         }
     }
 }

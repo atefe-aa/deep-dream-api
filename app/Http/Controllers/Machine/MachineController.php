@@ -196,37 +196,37 @@ class MachineController extends Controller
         $magnification = $request->get('magnification');
         $id = $request->get('id');
         $image = $request->get('image');
-        if ($magnification === 2) {
-            $scan = Scan::where('id', $id)->first();
-            $scan->update([
-                'slide_image' => $image,
-                'status' => '2x-image-ready'
-            ]);
-        } else {
-            $region = Region::where('id', $id)->first();
-            if ($region) {
-                $region->update([
-                    'image' => $region,
-                    'status' => 'image-ready',
+        if ($image) {
+            if ($magnification === 2) {
+                $scan = Scan::where('id', $id)->first();
+                $scan->update([
+                    'slide_image' => $image,
+                    'status' => '2x-image-ready'
                 ]);
-                $scan = Scan::where('id', $region->scan_id)->first();
-
-                if ($scan) {
-                    $scan->update([
-                        'status' => 'image-ready'
+            } else {
+                $region = Region::where('id', $id)->first();
+                if ($region) {
+                    $region->update([
+                        'image' => $region,
+                        'status' => 'image-ready',
                     ]);
-                    $response = $this->cytomineProjectService->uploadImage($scan->test->project_id, $image);
-                    if ($response) {
-                        $region->update([
-                            'cytomine_image_id' => $response['id'],
+                    $scan = Scan::where('id', $region->scan_id)->first();
+
+                    if ($scan) {
+                        $scan->update([
+                            'status' => 'image-ready'
                         ]);
+                        $response = $this->cytomineProjectService->uploadImage($scan->test->project_id, $image);
+                        if ($response) {
+                            $region->update([
+                                'cytomine_image_id' => $response['id'],
+                            ]);
+                        }
                     }
                 }
-
             }
-
-
         }
+
         event(new ScanUpdated($scan));
 
     }

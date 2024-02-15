@@ -60,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('full-slide', [ScanController::class, 'fullSlide']);
         Route::post('region', [ScanController::class, 'region']);
         Route::post('areas', [ScanController::class, 'scanAreas']);
+        Route::get('clear-slots', [ScanController::class, 'clearSlots']);
     });
 
 });
