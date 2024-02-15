@@ -200,15 +200,21 @@ class MachineController extends Controller
             $scan = Scan::where('id', $id)->first();
             $scan->update([
                 'slide_image' => $image,
+                'status' => '2x-image-ready'
             ]);
         } else {
             $region = Region::where('id', $id)->first();
             if ($region) {
                 $region->update([
                     'image' => $region,
+                    'status' => 'image-ready',
                 ]);
                 $scan = Scan::where('id', $region->scan_id)->first();
+
                 if ($scan) {
+                    $scan->update([
+                        'status' => 'image-ready'
+                    ]);
                     $response = $this->cytomineProjectService->uploadImage($scan->test->project_id, $image);
                     if ($response) {
                         $region->update([
