@@ -6,6 +6,7 @@ use App\Helpers\JsonHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Scan extends Model
 {
@@ -30,6 +31,11 @@ class Scan extends Model
     public function test(): BelongsTo
     {
         return $this->belongsTo(Test::class);
+    }
+
+    public function regions(): HasMany
+    {
+        return $this->hasMany(Region::class);
     }
 
     public function estimatedDuration(): float|int
