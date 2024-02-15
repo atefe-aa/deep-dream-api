@@ -16,8 +16,9 @@ return new class extends Migration {
             $table->json('coordinates'); /* ['sw' => ['x'=>0,'y'=>0], 'ne' => ['x'=>25,'y'=>75]] */
             $table->text('image')->nullable();
             $table->unsignedBigInteger('cytomine_image_id')->nullable();
-            $table->integer('duration')->nullable()->default(null);
-            $table->enum('status', ['ready', 'failed', 'stopped', 'scanning', 'scanned'])->default('ready');
+            $table->bigInteger('estimated_duration')->nullable()->default(null);
+            $table->bigInteger('duration')->nullable()->default(null);
+            $table->enum('status', ['ready', 'failed', 'scanning', 'scanned', 'image-ready'])->default('ready');
             $table->timestamps();
         });
     }

@@ -15,10 +15,11 @@ return new class extends Migration {
             $table->integer('nth_slide');
             $table->unsignedBigInteger('test_id')->nullable()->default(0);
             $table->integer('slide_number')->nullable()->default(1);
-            $table->integer('duration')->nullable()->default(null);
+            $table->bigInteger('estimated_duration')->nullable()->default(null);
+            $table->bigInteger('duration')->nullable()->default(null);
             $table->json('slide_coordinates'); /* ['sw' => ['x'=>0,'y'=>0], 'ne' => ['x'=>25,'y'=>75]] */
-            $table->enum('status', ['ready', 'failed', 'stopped', 'scanning', 'scanned', '2x-scanned'])->default('ready');
-            $table->integer('slide_number')->nullable()->default(null);
+            $table->enum('status', ['ready', 'failed', 'scanning', 'scanned', '2x-scanned', '2x-failed', '2x-image-ready', 'image-ready'])->default('ready');
+            $table->boolean('is_processing')->default(true);
             $table->text('slide_image')->nullable();
             $table->text('image')->nullable();
             $table->timestamps();

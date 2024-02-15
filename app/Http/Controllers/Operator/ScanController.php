@@ -145,7 +145,6 @@ class ScanController extends Controller
     public function region(RegionScanRequest $request): JsonResponse
     {
         try {
-            DB::beginTransaction();
             $selectedRegions = $request->get('selectedRegions');
 
             $regionsArray = [];
@@ -183,14 +182,15 @@ class ScanController extends Controller
                 ]);
                 $scan = Scan::where('id', $regionToScan->scan_id)->first();
                 event(new ScanUpdated($scan));
+
                 $approximateTime = $regionToScan->approximate_scan_time;
                 dispatch(new CheckProcessStatusJob($regionToScan))->delay(now()->addSeconds($approximateTime));
+
                 return response()->json(['success' => 'Scanning started']);
             }
-            DB::commit();
             return response()->json(['errors' => 'Scanning failed to start.'], 500);
         } catch (Throwable $e) {
-            DB::rollBack();
+
             Log::error('Failed to start scanning region: ' . $e->getMessage(), ['request' => $request->all()]);
             return response()->json(['message' => 'Creating regions failed. Try again later.'], 500);
         }
