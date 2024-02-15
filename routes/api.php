@@ -11,6 +11,7 @@ use App\Http\Controllers\Operator\ScanController;
 use App\Http\Controllers\Operator\SettingsController;
 use App\Http\Controllers\Operator\SlideController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\ShareController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('registration', RegistrationController::class);
 
     Route::apiResource('counsellor', CounsellorController::class);
+
+    Route::post('share', [ShareController::class, 'share']);
 
     Route::group(['middleware' => ['role:superAdmin']], static function () {
         Route::apiResource('price', PriceController::class);

@@ -138,12 +138,13 @@ class CytomineAuthService
      */
     public function registerUser(array $data): ?array
     {
+
         try {
             $authToken = $this->login(env('CYTOMINE_ADMIN_USERNAME'), env('CYTOMINE_ADMIN_PASSWORD'));
             if (isset($authToken['data'])) {
                 $response = Http::withHeaders([
                     'Accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $authToken['data']['data']
+                    'Authorization' => 'Bearer ' . $authToken['data']['token']
                 ])->post($this->apiUrl . '/user.json', [
                     'firstname' => explode(" ", $data['name'])[0],
                     'lastname' => explode(" ", $data['name'])[1],
@@ -154,12 +155,14 @@ class CytomineAuthService
                 ]);
 
                 if ($response->successful()) {
+
+                    $responseData = $response->json();
                     $defineRoleResponse = Http::withHeaders([
                         'Accept' => 'application/json',
-                        'Authorization' => 'Bearer ' . $authToken
-                    ])->put(env('CYTOMINE_API_URL') . '/user/' . $response['user']['id'] . '/role/44/define.json');
+                        'Authorization' => 'Bearer ' . $authToken['data']['token']
+                    ])->put(env('CYTOMINE_API_URL') . '/user/' . $responseData['user']['id'] . '/role/44/define.json');
 
-                    return ['success' => $response->json()];
+                    return $responseData;
                 }
 
                 return ['error' => $response->status()];
@@ -167,7 +170,7 @@ class CytomineAuthService
             return ['error' => 'Something went wrong during authentication.'];
 
         } catch (Exception $e) {
-            Log::error("Cytomine Project Creation Failed: {$e->getMessage()}", [
+            Log::error("Cytomine User Creation Failed: {$e->getMessage()}", [
                 'name' => $data['name'],
             ]);
             return ['errors' => 'Failed to create user. Please try again later.'];

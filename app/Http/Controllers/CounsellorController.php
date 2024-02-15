@@ -102,21 +102,9 @@ class CounsellorController extends Controller
 
 
             $username = $request->input('phone') . $counsellor->id;
-
-
-            $nameParts = explode(' ', $request->input('name'));
-            $firstname = $nameParts[0];
-            $lastname = count($nameParts) > 1 ? end($nameParts) : "";
-
-            $email = $username . '@gmail.com';
-
             $password = $request->input('phone');
-
             $data = [
-                "firstname" => $firstname,
-                "lastname" => $lastname,
-                "email" => $email,
-                "language" => 'EN',
+                "name" => $request->input('name'),
                 'password' => $password,
                 'username' => $username
             ];
@@ -124,9 +112,11 @@ class CounsellorController extends Controller
             $cytomineUser = $this->cytomineAuthService->registerUser($data);
 
             // Check for successful external service registration
-            if (!$cytomineUser || !isset($cytomineUser['success'])) {
+            if (!$cytomineUser || !isset($cytomineUser['user'])) {
+
                 throw new RuntimeException('Cytomine user creation failed');
             }
+
             $counsellor->update(['cytomine_user_id' => $cytomineUser['user']['id']]);
 
             DB::commit();
