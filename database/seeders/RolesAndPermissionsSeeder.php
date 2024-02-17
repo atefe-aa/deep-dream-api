@@ -55,18 +55,5 @@ class RolesAndPermissionsSeeder extends Seeder
         if ($operatorUser)
             $operatorUser->assignRole($operatorRole);
 
-        //LABORATORY
-        $laboratoryUser = User::firstOrCreate(
-            ['username' => env('LABORATORY_USERNAME')],
-            [
-                'name' => env('LABORATORY_NAME'),
-                'phone' => env('LABORATORY_PHONE'),
-                'email' => env('LABORATORY_EMAIL'),
-                'password' => env("LABORATORY_PASSWORD")
-            ],
-        );
-        if ($laboratoryUser)
-            $laboratoryUser->assignRole($laboratoryRole);
-
     }
 }

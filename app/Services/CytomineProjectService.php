@@ -7,6 +7,7 @@ use Illuminate\Config\Repository;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 
 /**
@@ -65,7 +66,18 @@ class CytomineProjectService
                 ]);
 
                 if ($response->successful()) {
-                    return ['data' => ['projectId' => $response['project']['id']]];
+                    $projectId = $response['project']['id'];
+
+                    $setUiRes = $this->projectUiConfiguration($projectId, $authTokenResponse['token']);
+                    if (!$setUiRes['success']) {
+                        return ['errors' => $setUiRes['errors']];
+                    }
+
+                    $setImageFilters = $this->setProjectImageFilters($projectId, $authTokenResponse['token']);
+                    if (!$setImageFilters['success']) {
+                        return ['errors' => $setImageFilters['errors']];
+                    }
+                    return ['data' => ['projectId' => $projectId]];
                 }
 
                 return ['errors' => $response->json()];
@@ -78,6 +90,95 @@ class CytomineProjectService
                 'projectName' => $projectName
             ]);
             return ['errors' => 'Failed to create project. Please try again later.'];
+        }
+    }
+
+    public function projectUiConfiguration(int $projectId, string $token): array
+    {
+        try {
+            $pathToJsonFile = storage_path('app/public/projectConfiguration.json');
+            $jsonContent = file_get_contents($pathToJsonFile);
+
+            // Ensure the file was read successfully
+            if ($jsonContent === false) {
+                throw new RuntimeException("Failed to read the JSON file.");
+            }
+
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $token,
+            ])->withBody($jsonContent, 'application/json') // Send the raw JSON content
+            ->post($this->coreUrl . '/custom-ui/project/' . $projectId . '.json');
+
+            if ($response->successful()) {
+                return ['success' => true];
+            }
+
+            return ['success' => false, 'errors' => $response->json()];
+
+        } catch (Exception $e) {
+            Log::error("Cytomine Project configuration Failed: {$e->getMessage()}", [
+                'project Id' => $projectId,
+            ]);
+            return ['errors' => 'Failed to set project configuration. Please try again later.'];
+        }
+    }
+
+    public function setProjectImageFilters(int $projectId, string $token): array
+    {
+        try {
+            $filtersRes = $this->imageFilters($token);
+            if (!$filtersRes['success']) {
+                return ['success' => false, 'errors' => $filtersRes['errors']];
+            }
+            $filters = $filtersRes['data'];
+
+            $errors = [];
+            foreach ($filters as $filter) {
+                $response = Http::withHeaders([
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token
+                ])->post($this->apiUrl . '/imagefilterproject.json',
+                    [
+                        'imageFilter' => $filter['id'],
+                        'project' => $projectId
+                    ]);
+                if (!$response->successful()) {
+                    $errors[$filter['id']] = $response->body();
+                }
+            }
+            if (!empty($errors)) {
+                return ['success' => false, 'errors' => $errors];
+            }
+
+            return ['success' => true];
+
+        } catch (Exception $e) {
+            Log::error("Cytomine Project configuration Failed: {$e->getMessage()}", [
+                'project Id' => $projectId,
+            ]);
+            return ['errors' => 'Failed to set project configuration. Please try again later.'];
+        }
+    }
+
+    public function imageFilters(string $token): array
+    {
+        try {
+
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ])->get($this->apiUrl . '/imagefilter.json');
+
+            if ($response->successful()) {
+                return ['success' => true, 'data' => $response->json('collection')];
+            }
+
+            return ['success' => false, 'errors' => $response->json()];
+
+        } catch (Exception $e) {
+            Log::error("Retrieving image filters failed: {$e->getMessage()}");
+            return ['errors' => 'Failed to retrieve image filters. Please try again later.'];
         }
     }
 
@@ -146,6 +247,4 @@ class CytomineProjectService
             return ['errors' => 'Failed to upload the image. Please try again later.'];
         }
     }
-
-
 }
