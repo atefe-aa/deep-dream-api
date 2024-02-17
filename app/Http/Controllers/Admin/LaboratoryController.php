@@ -171,8 +171,8 @@ class LaboratoryController extends Controller
                 $data['password'] = $request->input('password');
                 $cytomineUser = $this->cytomineAuthService->registerUser($data);
 
-                if (!$cytomineUser || !isset($cytomineUser['success'])) {
-                    throw new Exception('Cytomine user creation failed');
+                if (isset($cytomineUser['errors'])) {
+                    throw new Exception('Cytomine user creation failed' . $cytomineUser['errors']);
                 }
             }
 

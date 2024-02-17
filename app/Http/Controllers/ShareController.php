@@ -142,7 +142,7 @@ class ShareController extends Controller
             $shortenLink = $shortenLinkRes['data'] ? $shortenLinkRes['data']['doc']['url'] : null;
 
             $message = $senderName
-                . " " . "has asked you to collaborate on a test.View the image via this link: \n"
+                . " " . "has requested you to collaborate on this slide image via this link: \n"
                 . $shortenLink;
 
             $requestBody = [

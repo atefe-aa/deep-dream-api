@@ -147,7 +147,7 @@ class CytomineAuthService
                     'Authorization' => 'Bearer ' . $authToken['data']['token']
                 ])->post($this->apiUrl . '/user.json', [
                     'firstname' => explode(" ", $data['name'])[0],
-                    'lastname' => explode(" ", $data['name'])[1],
+                    'lastname' => explode(" ", $data['name'])[1] ?? "-",
                     'language' => 'EN',
                     'email' => $data['username'] . '@gmail.com',
                     'username' => $data['username'],
@@ -165,9 +165,9 @@ class CytomineAuthService
                     return $responseData;
                 }
 
-                return ['error' => $response->status()];
+                return ['errors' => $response->body()];
             }
-            return ['error' => 'Something went wrong during authentication.'];
+            return ['errors' => 'Something went wrong during authentication.'];
 
         } catch (Exception $e) {
             Log::error("Cytomine User Creation Failed: {$e->getMessage()}", [
