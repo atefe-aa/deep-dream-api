@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Log;
 
 class Test extends Model
 {
@@ -30,7 +29,6 @@ class Test extends Model
         $priceModel = Price::where('lab_id', $this->lab_id)
             ->where('test_type_id', $this->test_type_id)
             ->first();
-        Log::info("ll");
         if ($priceModel) {
             $this->attributes['price'] = $priceModel->price + (($this->num_slide - 1) * $priceModel->price_per_slide);
         }

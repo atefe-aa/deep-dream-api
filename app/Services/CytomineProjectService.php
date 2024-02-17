@@ -96,7 +96,7 @@ class CytomineProjectService
     public function projectUiConfiguration(int $projectId, string $token): array
     {
         try {
-            $pathToJsonFile = storage_path('app/public/projectConfiguration.json');
+            $pathToJsonFile = resource_path('json/projectConfiguration.json');
             $jsonContent = file_get_contents($pathToJsonFile);
 
             // Ensure the file was read successfully
