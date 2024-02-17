@@ -46,6 +46,11 @@ return [
     'yun' => [
         'api_key' => env('YUN_API_KEY'),
         'api_url' => env('YUN_API_URL'),
+    ],
+    'sms' => [
+        'api_key' => env('SMS_PANEL_API_KEY'),
+        'api_url' => env('SMS_PANEL_API_URL'),
+        'normal_uri' => env('SMS_PANEL_NORMAL_URI'),
     ]
 
 ];

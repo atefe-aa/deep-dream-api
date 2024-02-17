@@ -2,14 +2,11 @@
 
 namespace App\Services;
 
-use App\Helpers\JsonHelper;
 use Illuminate\Config\Repository;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use JsonException;
 
-class YunService
+class SmsService
 {
     /**
      * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
@@ -19,30 +16,25 @@ class YunService
      * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
      */
     private mixed $apiUrl;
+    /**
+     * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
+     */
+    private mixed $normalUri;
 
     public function __construct()
     {
-        $this->apiKey = config('services.yun.api_key');
-        $this->apiUrl = config('services.yun.api_url');
+        $this->apiKey = config('services.sms.api_key');
+        $this->apiUrl = config('services.sms.api_url');
+        $this->normalUri = config('services.sms.normal_uri');
     }
 
-    /**
-     * @throws JsonException
-     */
-    public function shortUrl($title, $url): array
+    public function sendNormal($bodyData): array
     {
-        Log::info($url);
-        $data = JsonHelper::encodeJson([
-            "title" => $title,
-            "url" => $url,
-        ]);
-
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-            'X-API-Key' => $this->apiKey,
-            'Content-Length' => strlen($data)
-        ])->post($this->apiUrl, $data);
+            'apikey' => $this->apiKey,
+        ])->post($this->apiUrl . $this->normalUri, $bodyData);
 
         if ($response->successful()) {
             return ['data' => $response->json()];

@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionsSeeder extends Seeder
@@ -33,37 +31,38 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Retrieve User by username, or create it with the username and password attributes ...
         $superAdminUser = User::firstOrCreate(
-            ['username' => "superadmin"],
+            ['username' => env('SUPER_ADMIN_USERNAME')],
             [
-                'name' => "super admin",
-                'phone' => "09100520741",
-                'email' => "superadmin@voi.com",
-                'password' => bcrypt("1-7EAYk6oc(v7P")
-                ]
+                'name' => env('SUPER_ADMIN_NAME'),
+                'phone' => env('SUPER_ADMIN_PHONE'),
+                'email' => env('SUPER_ADMIN_EMAIL'),
+                'password' => env("SUPER_ADMIN_PASSWORD")
+            ]
         );
         if ($superAdminUser)
             $superAdminUser->assignRole($superAdminRole);
 
-        // Admin
+        // OPERATOR
         $operatorUser = User::firstOrCreate(
-            ['username'=>"operator"],
+            ['username' => env('OPERATOR_USERNAME')],
             [
-                'name'=>"operator",
-                'phone'=>"09100520742",
-                'email' => 'oprator@voi.com',
-                'password' => bcrypt('password')
+                'name' => env('OPERATOR_NAME'),
+                'phone' => env('OPERATOR_PHONE'),
+                'email' => env('OPERATOR_EMAIL'),
+                'password' => env("OPERATOR_PASSWORD")
             ],
         );
         if ($operatorUser)
             $operatorUser->assignRole($operatorRole);
 
-        //TourProvider
+        //LABORATORY
         $laboratoryUser = User::firstOrCreate(
-            ['username'=>"milad"],
+            ['username' => env('LABORATORY_USERNAME')],
             [
-                'name'=>"Milad",'phone'=>"09100520743",
-                'email' => 'milad@voi.com',
-                'password' => bcrypt('password')
+                'name' => env('LABORATORY_NAME'),
+                'phone' => env('LABORATORY_PHONE'),
+                'email' => env('LABORATORY_EMAIL'),
+                'password' => env("LABORATORY_PASSWORD")
             ],
         );
         if ($laboratoryUser)
