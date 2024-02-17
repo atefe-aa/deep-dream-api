@@ -85,16 +85,16 @@ class CytomineAuthService
                 $responseData = $response->json();
 
                 if (isset($responseData['success']) && $responseData['success']) {
-                    return ['token' => $responseData['token']];
+                    return ['success' => true, 'token' => $responseData['token']];
                 }
-                return ['error' => $responseData['error'] ?? 'Unknown error'];
+                return ['success' => false, 'error' => $responseData['error'] ?? 'Unknown error'];
             }
-            return ['error' => 'Authentication failed.'];
+            return ['success' => false, 'error' => 'Authentication failed.'];
         } catch (Exception $e) {
             Log::error("Getting user token Failed: {$e->getMessage()}", [
                 'username' => $username,
             ]);
-            return ['errors' => 'Failed to get the user token. Please try again later.'];
+            return ['success' => false, 'error' => 'Failed to get the user token. Please try again later.'];
         }
     }
 

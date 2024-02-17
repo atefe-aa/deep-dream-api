@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
+use App\Services\CytomineAuthService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,6 +11,13 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    private CytomineAuthService $cytomineAuthService;
+
+    public function __construct(CytomineAuthService $cytomineAuthService)
+    {
+        $this->cytomineAuthService = $cytomineAuthService;
+    }
+
     /**
      * @throws BindingResolutionException
      */
@@ -32,6 +40,15 @@ class AuthController extends Controller
     public function verifyToken(Request $request): UserResource
     {
         return new UserResource($request->user());
+    }
+
+    public function getCytomineToken(string $username): JsonResponse
+    {
+        $tokenRes = $this->cytomineAuthService->getUserToken($username);
+        if (!$tokenRes['success']) {
+            return response()->json(['errors' => $tokenRes['error']], 500);
+        }
+        return response()->json(['data' => ['token' => $tokenRes['token']]], 200);
     }
 
 }

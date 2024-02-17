@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('verify_token', [AuthController::class, 'verifyToken']);
 
+    Route::get('cytomine-token/{username}', [AuthController::class, 'getCytomineToken']);
 
     Route::apiResource('registration', RegistrationController::class);
 
