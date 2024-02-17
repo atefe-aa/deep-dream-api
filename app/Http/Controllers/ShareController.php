@@ -60,16 +60,27 @@ class ShareController extends Controller
         }
 
         $counsellors = Counsellor::whereIn('id', $request->get('counsellors'))->get();
+        $authorizedCounsellors = $user->hasRole(["superAdmin", 'operator']) ? $counsellors :
+            $counsellors->filter(function ($counsellor) use ($user) {
+                return $counsellor->lab_id === $user->laboratory->id;
+            });
 
-        $cytomineUsers = $counsellors->pluck('cytomine_user_id')->toArray();
+        if ($authorizedCounsellors->isEmpty()) {
+            return response()->json(['message' => 'You are not authorized to send SMS to the selected counsellors.'], 403);
+        }
+        $cytomineUsers = $authorizedCounsellors->pluck('cytomine_user_id')->toArray();
+
+        if (!$test->project_id) {
+            return response()->json(['message' => 'No Project has been set for this test.'], 404);
+        }
 
         $result = $this->cytomineProjectService
             ->addMemberToProject($cytomineUsers, $test->project_id, $username);
 
         if (isset($result['errors'])) {
+            Log::info('Cytomine add member failed: ', $result['errors']);
             return response()->json([
                 'message' => 'Failed to add members to the project.',
-                'errors' => $result['errors']
             ], 500);
         }
 
@@ -78,7 +89,7 @@ class ShareController extends Controller
         })->all();
 
         $failedCounsellors = [];
-        foreach ($counsellors as $counsellor) {
+        foreach ($authorizedCounsellors as $counsellor) {
             $username = $counsellor->phone . $counsellor->id;
             $userTokenResponse = $this->cytomineAuthService->getUserToken($username);
             $tokenKey = $userTokenResponse['token'] ?? null;
@@ -93,7 +104,6 @@ class ShareController extends Controller
                     $failedCounsellors[] = [
                         'counsellorId' => $counsellor->id,
                         'counsellorName' => $counsellor->name,
-                        'error' => $sendSmsResult['error']
                     ];
                 }
             }
@@ -149,7 +159,7 @@ class ShareController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to send SMS to ' . $recipient . ': ' . $e->getMessage());
             // Return a failure status and the recipient identifier
-            return ['success' => false, 'recipient' => $recipient, 'error' => $e->getMessage()];
+            return ['success' => false, 'recipient' => $recipient,];
         }
 
     }

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Illuminate\Config\Repository;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Http;
 
 class SmsService
 {
@@ -30,16 +29,16 @@ class SmsService
 
     public function sendNormal($bodyData): array
     {
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'apikey' => $this->apiKey,
-        ])->post($this->apiUrl . $this->normalUri, $bodyData);
+//        $response = Http::withHeaders([
+//            'Accept' => 'application/json',
+//            'Content-Type' => 'application/json',
+//            'apikey' => $this->apiKey,
+//        ])->post($this->apiUrl . $this->normalUri, $bodyData);
 
-        if ($response->successful()) {
-            return ['data' => $response->json()];
-        }
-
-        return ['errors' => $response->body()];
+//        if ($response->successful()) {
+//            return ['data' => $response->json()];
+//        }
+        return ['data' => "hoooray"];
+//        return ['errors' => $response->body()];
     }
 }

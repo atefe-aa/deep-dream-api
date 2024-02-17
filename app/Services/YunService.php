@@ -6,7 +6,6 @@ use App\Helpers\JsonHelper;
 use Illuminate\Config\Repository;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use JsonException;
 
 class YunService
@@ -31,7 +30,6 @@ class YunService
      */
     public function shortUrl($title, $url): array
     {
-        Log::info($url);
         $data = JsonHelper::encodeJson([
             "title" => $title,
             "url" => $url,
