@@ -148,8 +148,15 @@ class CounsellorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
-        //
+        $counsellor = Counsellor::findOrFail($id);
+        try {
+            $counsellor->delete();
+            return response()->json(['data' => 'success']);
+        } catch (Exception $e) {
+            Log::info('Failed to delete counsellor : ' . $e->getMessage(), ['counsellor id' => $id]);
+            return response()->json(['errors' => 'Deleting counsellor failed. Please try again later.'], 500);
+        }
     }
 }
