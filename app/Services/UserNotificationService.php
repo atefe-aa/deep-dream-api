@@ -27,7 +27,7 @@ class UserNotificationService
     protected function usersToNotify(Scan $scan): iterable
     {
         // Initialize a collection with the primary user's ID to ensure uniqueness from the start.
-        $userIds = collect([$scan->test->laboratory->user_id]);
+        $userIds = collect([$scan->test?->laboratory?->user_id]);
 
         // Get IDs of superAdmins and operators.
         $superAdminIds = User::role('superAdmin')->pluck('id');
