@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\TestTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounsellorController;
 use App\Http\Controllers\Machine\MachineController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Operator\ScanController;
 use App\Http\Controllers\Operator\SettingsController;
 use App\Http\Controllers\Operator\SlideController;
@@ -29,6 +30,15 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::group([
+        'prefix' => 'notification'
+    ], static function () {
+        Route::get('recent/{type}', [NotificationController::class, 'index']);
+        Route::get('is-new', [NotificationController::class, 'isNew']);
+        Route::post('read', [NotificationController::class, 'markAsRead']);
+        Route::get('send', [NotificationController::class, 'sendTestNotification']);
+    });
+
 
     Route::get('verify_token', [AuthController::class, 'verifyToken']);
 

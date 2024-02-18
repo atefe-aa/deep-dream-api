@@ -8,7 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Http;
 use JsonException;
 
-class YunService
+class ShortenLinkService
 {
     /**
      * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed

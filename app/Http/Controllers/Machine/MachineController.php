@@ -13,9 +13,8 @@ use App\Models\Scan;
 use App\Models\SettingsCategory;
 use App\Models\Test;
 use App\Services\CytomineProjectService;
+use App\Services\UserNotificationService;
 use Exception;
-use Illuminate\Config\Repository;
-use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,14 +25,14 @@ class MachineController extends Controller
 {
 
     private mixed $cytomineProjectService;
-    /**
-     * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
-     */
+    private UserNotificationService $notificationService;
+
     /**
      * @param CytomineProjectService $cytomineProjectService
      */
     public function __construct(CytomineProjectService $cytomineProjectService)
     {
+        $this->notificationService = new UserNotificationService();
         $this->cytomineProjectService = $cytomineProjectService;
     }
 
@@ -110,7 +109,11 @@ class MachineController extends Controller
             $this->checkAndFinalizeScan($scan);
         }
 
+        $this->notificationService->notifyStatusChange($scan);
+
         event(new ScanUpdated($scan));
+
+
         return $scan;
     }
 
@@ -143,6 +146,7 @@ class MachineController extends Controller
         if ($nextScan) {
 
             if ($nextScan->update(['status' => 'scanning'])) {
+                $this->notificationService->notifyStatusChange($nextScan);
                 event(new ScanUpdated($nextScan));
             }
             return $nextScan;
@@ -177,7 +181,7 @@ class MachineController extends Controller
                 $id = $region->id; // Update ID to region's ID if we're dealing with a region
                 $testType = $region->scan->test->testType;
                 $approximateScanTime = $region->estimatedDuration();
-                Log::info('$approximateScanTime: ' . $approximateScanTime);
+
                 $region->update([
                     'status' => 'scanning',
                     'estimated_duration' => $approximateScanTime
@@ -218,6 +222,7 @@ class MachineController extends Controller
                     'slide_image' => $image,
                     'status' => '2x-image-ready'
                 ]);
+                $this->notificationService->notifyStatusChange($scan);
                 event(new ScanUpdated($scan));
             } else {
                 $region = Region::where('id', $id)->first();
@@ -243,7 +248,7 @@ class MachineController extends Controller
                                 $test->update(['status' => 'scanned']);
                             }
                         }
-
+                        $this->notificationService->notifyStatusChange($scan);
                         event(new ScanUpdated($scan));
                     }
                 }

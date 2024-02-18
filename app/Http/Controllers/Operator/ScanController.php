@@ -14,6 +14,7 @@ use App\Models\Scan;
 use App\Models\SettingsCategory;
 use App\Models\Slide;
 use App\Services\SlideScannerService;
+use App\Services\UserNotificationService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,9 +28,11 @@ use Throwable;
 class ScanController extends Controller
 {
     private mixed $slideScannerService;
+    private UserNotificationService $notificationService;
 
     public function __construct()
     {
+        $this->notificationService = new UserNotificationService();
         $this->slideScannerService = App::make(SlideScannerService::class);
     }
 
@@ -132,7 +135,7 @@ class ScanController extends Controller
 
             if (isset($response['success']) && $response['success']) {
 
-
+                $this->notificationService->notifyStatusChange($scan);
                 event(new ScanUpdated($scan));
 
                 $approximateTime = $scan->estimatedDuration();
@@ -190,9 +193,8 @@ class ScanController extends Controller
             $response = $this->slideScannerService->startScan($scanData->resolve());
 
             if (isset($response['success']) && $response['success']) {
-
-
                 $scan = Scan::where('id', $regionToScan->scan_id)->first();
+                $this->notificationService->notifyStatusChange($scan);
                 event(new ScanUpdated($scan));
 
                 $approximateTime = $regionToScan->estimatedDuration();
