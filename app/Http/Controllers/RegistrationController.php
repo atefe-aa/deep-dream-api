@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\Test;
 use App\Services\CytomineProjectService;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -186,9 +187,18 @@ class RegistrationController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @throws AuthorizationException
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
-        //
+        $test = Test::findOrFail($id);
+        $this->authorize('delete', $test);
+        try {
+            $test->delete();
+            return response()->json(['data' => 'success']);
+        } catch (Exception $e) {
+            Log::info('Failed to delete test : ' . $e->getMessage(), ['test id' => $id]);
+            return response()->json(['errors' => 'Deleting test failed. Please try again later.'], 500);
+        }
     }
 }

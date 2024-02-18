@@ -151,6 +151,7 @@ class CounsellorController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $counsellor = Counsellor::findOrFail($id);
+        $this->authorize('delete', $counsellor);
         try {
             $counsellor->delete();
             return response()->json(['data' => 'success']);

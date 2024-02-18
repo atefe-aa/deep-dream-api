@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Models\Counsellor;
+use App\Models\Test;
+use App\Policies\CounsellorPolicy;
+use App\Policies\TestPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -13,7 +17,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        Test::class => TestPolicy::class,
+        Counsellor::class => CounsellorPolicy::class,
     ];
 
     /**
