@@ -115,7 +115,7 @@ class TestTypeController extends Controller
         $this->authorize('delete', $testType);
         try {
             $testsWithTestType = Test::where('test_type_id', $testType->id)->get();
-            Log::info($testsWithTestType);
+
             if ($testsWithTestType->count() > 0) {
                 return response()
                     ->json([
@@ -125,8 +125,8 @@ class TestTypeController extends Controller
             $testType->delete();
             return response()->json(['data' => 'success']);
         } catch (Exception $e) {
-            Log::info('Failed to delete counsellor : ' . $e->getMessage(), ['counsellor id' => $id]);
-            return response()->json(['errors' => 'Deleting counsellor failed. Please try again later.'], 500);
+            Log::info('Failed to delete test type : ' . $e->getMessage(), ['test type id' => $id]);
+            return response()->json(['errors' => 'Deleting test type failed. Please try again later.'], 500);
         }
     }
 }

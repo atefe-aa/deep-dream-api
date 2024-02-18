@@ -65,6 +65,14 @@ class PriceController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $price = Price::findOrFail($id);
+        $this->authorize('delete', $price);
+        try {
+            $price->delete();
+            return response()->json(['data' => 'success']);
+        } catch (Exception $e) {
+            \Illuminate\Support\Facades\Log::info('Failed to delete price : ' . $e->getMessage(), ['price id' => $id]);
+            return response()->json(['errors' => 'Deleting price failed. Please try again later.'], 500);
+        }
     }
 }
