@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources;
 
+use App\Helpers\JsonHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use JsonException;
 
 class ScanResource extends JsonResource
 {
@@ -11,6 +13,7 @@ class ScanResource extends JsonResource
      * Transform the resource into an array.
      *
      * @return array<string, mixed>
+     * @throws JsonException
      */
     public function toArray(Request $request): array
     {
@@ -32,6 +35,7 @@ class ScanResource extends JsonResource
             'duration' => $this->duration,
             'progress' => $this->status,
             'secondsLeft' => $secondsLeft,
+            'coordinates' => JsonHelper::decodeJson($this->slide_coordinates)
         ];
     }
 }
