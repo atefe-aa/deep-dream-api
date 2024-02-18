@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\testType\StoreTestTypeRequest;
 use App\Http\Resources\TestTypeResource;
+use App\Models\Test;
 use App\Models\TestType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -110,6 +111,22 @@ class TestTypeController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $testType = TestType::findOrFail($id);
+        $this->authorize('delete', $testType);
+        try {
+            $testsWithTestType = Test::where('test_type_id', $testType->id)->get();
+            Log::info($testsWithTestType);
+            if ($testsWithTestType->count() > 0) {
+                return response()
+                    ->json([
+                        'message' => 'Test type can not be deleted, because it has been used in some tests.'
+                    ], 409);
+            }
+            $testType->delete();
+            return response()->json(['data' => 'success']);
+        } catch (Exception $e) {
+            Log::info('Failed to delete counsellor : ' . $e->getMessage(), ['counsellor id' => $id]);
+            return response()->json(['errors' => 'Deleting counsellor failed. Please try again later.'], 500);
+        }
     }
 }
