@@ -32,10 +32,10 @@ class StoreCounsellorRequest extends FormRequest
         // Check if the user is a super admin or operator
         if (auth()->user()->hasRole(['superAdmin'])) {
             // If they are, require 'labId'
-            $rules['labId'] = ['required', 'exists:laboratories,id'];
+            $rules['laboratoryId'] = ['required', 'exists:laboratories,id'];
         } else {
-            // If not, 'labId' can be nullable
-            $rules['labId'] = ['nullable', 'exists:laboratories,id'];
+            // If not, 'laboratoryId' can be nullable
+            $rules['laboratoryId'] = ['nullable', 'exists:laboratories,id'];
         }
 
         return $rules;

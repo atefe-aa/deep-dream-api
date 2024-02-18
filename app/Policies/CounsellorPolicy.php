@@ -36,7 +36,13 @@ class CounsellorPolicy
      */
     public function update(User $user, Counsellor $counsellor): bool
     {
-        //
+        // Check if the user is a super admin or an operator
+        if ($user->hasRole(['superAdmin'])) {
+            return true;
+        }
+
+        // Check if the user is the creator of the test
+        return $user->id === $counsellor->laboratory->user_id;
     }
 
     /**
@@ -45,7 +51,7 @@ class CounsellorPolicy
     public function delete(User $user, Counsellor $counsellor): bool
     {
         // Check if the user is a super admin or an operator
-        if ($user->hasRole(['superAdmin', 'operator'])) {
+        if ($user->hasRole(['superAdmin'])) {
             return true;
         }
 

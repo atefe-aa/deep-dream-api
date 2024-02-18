@@ -73,8 +73,11 @@ class LaboratoryController extends Controller
             $query->orderBy('title', $sortOrder);
         }
         $query->orderBy('created_at', 'desc');
-
-        $laboratories = $query->paginate(10);
+        if ($request->has('noPaginate') && $request->get('noPaginate')) {
+            $laboratories = $query->get();
+        } else {
+            $laboratories = $query->paginate(10);
+        }
 
         return LaboratoryResource::collection($laboratories);
     }
@@ -257,6 +260,7 @@ class LaboratoryController extends Controller
                     ? $request->input('description')
                     : $laboratory->description,
             ]);
+//            TODO: update user on cytomine too
 
             DB::commit();
 

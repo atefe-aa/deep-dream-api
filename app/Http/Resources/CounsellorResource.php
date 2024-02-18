@@ -17,6 +17,7 @@ class CounsellorResource extends JsonResource
         return [
             'id' => $this->id,
             'labName' => $this->laboratory->title,
+            'labId' => $this->lab_id,
             'name' => $this->name,
             'phone' => $this->phone,
             'description' => $this->description

@@ -83,7 +83,7 @@ class CounsellorController extends Controller
             return response()->json(['errors' => 'Unauthorized'], 401);
         }
 
-        $labId = $user->hasRole("superAdmin") ? $request->input('labId') : $user->laboratory->id;
+        $labId = $user->hasRole("superAdmin") ? $request->input('laboratoryId') : $user->laboratory->id;
 
         try {
             DB::beginTransaction();
@@ -133,8 +133,36 @@ class CounsellorController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
+
     {
-        //
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['errors' => 'Unauthorized'], 401);
+        }
+        $counsellor = Counsellor::findOrFail($id);
+        $this->authorize('update', $counsellor);
+
+
+        try {
+            DB::beginTransaction();
+
+            $counsellor->update([
+                'lab_id' => $request->input('laboratoryId', $counsellor->lab_id),
+                'name' => $request->input('name', $counsellor->name),
+                'phone' => $request->input('phone', $counsellor->phone),
+                'description' => $request->input('description'),
+            ]);
+//TODO: update user on cytomine too
+
+            DB::commit();
+            return response()->json(['data' => 'Counsellor updated successfully'], 201);
+
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error('Failed to update counsellor: ' . $e->getMessage(), ['request' => $request->all()]);
+            return response()->json(['errors' => 'Updating counsellor failed. Try again later.'], 500);
+        }
     }
 
     /**
