@@ -42,8 +42,16 @@ class AuthController extends Controller
         return new UserResource($request->user());
     }
 
-    public function getCytomineToken(string $username): JsonResponse
+    public function getCytomineToken(): JsonResponse
     {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Not Authenticated'], 403);
+        }
+        $username = $user->hasRole(['superAdmin', 'operator'])
+            ? env('CYTOMINE_ADMIN_USERNAME')
+            : $user->username;
+
         $tokenRes = $this->cytomineAuthService->getUserToken($username);
         if (!$tokenRes['success']) {
             return response()->json(['errors' => $tokenRes['error']], 500);

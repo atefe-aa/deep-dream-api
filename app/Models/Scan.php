@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use JsonException;
 
 class Scan extends Model
 {
@@ -38,11 +39,14 @@ class Scan extends Model
         return $this->hasMany(Region::class);
     }
 
+    /**
+     * @throws JsonException
+     */
     public function estimatedDuration(): float|int
     {
         $coordinates = JsonHelper::decodeJson($this->slide_coordinates);
         if (!$coordinates) {
-            return 0; // Or handle the error as appropriate
+            return 0;
         }
 
         $settings = Setting::where('category_id', 1)->get(); // settings for 2x magnification

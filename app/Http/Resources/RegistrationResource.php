@@ -15,6 +15,9 @@ class RegistrationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $scannedScan = $this->scans ? $this->scans->filter(function ($scan) {
+            return $scan->status === 'scanned';
+        })->first() : null;
 
         return [
             "id" => $this->id,
@@ -25,11 +28,12 @@ class RegistrationResource extends JsonResource
             "gender" => $this->patient->gender,
             "date" => Jalalian::fromDateTime($this->created_at)->format('Y/m/d H:i'),
             "registrationCode" => $this->id,
-            "img" => null,
+            "project" => $this->project_id,
+            "img" => $scannedScan ? $scannedScan->regions->first()?->cytomine_image_id : null,
             "senderRegistrationCode" => $this->sender_register_code,
             "testType" => $this->testType->title,
             "description" => $this->description,
-            "laboratory" =>$this->laboratory->title,
+            "laboratory" => $this->laboratory->title,
             "progress" => $this->status,
             "price" => $this->price,
             "numberOfSlides" => $this->num_slide,
