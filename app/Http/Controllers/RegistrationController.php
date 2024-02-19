@@ -50,6 +50,7 @@ class RegistrationController extends Controller
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('sender_register_code', 'like', '%' . $searchTerm . '%')
                     ->orWhere('doctor_name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('id', 'like', '%' . $searchTerm . '%')
                     ->orWhere('status', 'like', '%' . $searchTerm . '%');
             })
                 ->orWhereHas('testType', function ($query) use ($searchTerm) {
@@ -78,7 +79,7 @@ class RegistrationController extends Controller
                     ->orderBy('laboratories.title', $sortOrder)
                     ->select('tests.*');
                 break;
-            case 'registration':
+            case 'admit-number':
                 $query->orderBy('id', $sortOrder);
                 break;
             case 'date':

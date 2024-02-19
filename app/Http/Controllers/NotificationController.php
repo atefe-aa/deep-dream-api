@@ -51,7 +51,7 @@ class NotificationController extends Controller
 
     public function sendTestNotification(): array
     {
-        $scan = Scan::findOrFail(8);
+        $scan = Scan::findOrFail(2);
         $this->notificationService->notifyStatusChange($scan);
         return ['success'];
     }
