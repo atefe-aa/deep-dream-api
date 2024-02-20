@@ -36,7 +36,13 @@ class TestPolicy
      */
     public function update(User $user, Test $test): bool
     {
-        //
+        // Check if the user is a super admin or an operator
+        if ($user->hasRole(['superAdmin', 'operator'])) {
+            return true;
+        }
+
+        // Check if the user is the creator of the test
+        return $user->id === $test->laboratory->user_id;
     }
 
     /**

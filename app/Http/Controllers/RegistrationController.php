@@ -137,9 +137,6 @@ class RegistrationController extends Controller
                 'description' => $request->input('description'),
             ]);
 
-
-            $test->setPriceAttribute();
-
             $test->save();
 
             $projectName = $request->input('name') . "-" . $test->id;
@@ -171,9 +168,43 @@ class RegistrationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
-        //
+        $user = Auth::user();
+        $test = Test::findOrFail($id);
+        $this->authorize('update', $test);
+
+        try {
+            DB::beginTransaction();
+            $test->patient->update([
+                'name' => $request->input('name'),
+                'national_id' => $request->input('nationalId'),
+                'age' => $request->input('age'),
+                'ageUnit' => $request->input('ageUnit'),
+                'gender' => $request->input('gender'),
+            ]);
+            $test->update([
+                'lab_id' => $user && $user->laboratory
+                    ? $user->laboratory->id
+                    : $request->input('laboratoryId'),
+                'sender_register_code' => $request->input('senderRegisterCode'),
+                'test_type_id' => $request->input('testType'),
+                'doctor_name' => $request->input('doctorName'),
+                'num_slide' => $request->input('numberOfSlides'),
+                'description' => $request->input('description'),
+            ]);
+//TODO: update project on cytomine
+            DB::commit();
+
+            return response()->json(['data' => 'success']);
+
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::info($e);
+            return response()->json(['errors' => 'Error updating registration.'], 500);
+
+        }
     }
 
     /**

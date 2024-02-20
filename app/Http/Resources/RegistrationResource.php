@@ -29,6 +29,7 @@ class RegistrationResource extends JsonResource
             "date" => Jalalian::fromDateTime($this->created_at)->format('Y/m/d H:i'),
             "registrationCode" => $this->id,
             "project" => $this->project_id,
+            "doctorName" => $this->doctor_name,
             "img" => $scannedScan ? $scannedScan->regions->first()?->cytomine_image_id : null,
             "senderRegistrationCode" => $this->sender_register_code,
             "testType" => $this->testType->title,
@@ -38,6 +39,8 @@ class RegistrationResource extends JsonResource
             "price" => $this->price,
             "numberOfSlides" => $this->num_slide,
             "durations" => $this->duration,
+            "laboratoryId" => $this->laboratory?->id,
+            "testTypeId" => $this->testType?->id,
         ];
     }
 }

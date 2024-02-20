@@ -27,6 +27,7 @@ class TestTypeController extends Controller
 
             $labId = $request->input('laboratory');
             $noPrice = $request->has('noPrice');
+
             if ($noPrice) {
                 //for create new test type price form to prevent duplicate pair of lab_id - test_typ_id
                 //return only test types with no price record for the lab

@@ -24,15 +24,35 @@ class Test extends Model
         'description'
     ];
 
-    public function setPriceAttribute(): void
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($test) {
+            $test->calculatePrice();
+        });
+    }
+
+    public function calculatePrice()
     {
         $priceModel = Price::where('lab_id', $this->lab_id)
             ->where('test_type_id', $this->test_type_id)
             ->first();
+
         if ($priceModel) {
-            $this->attributes['price'] = $priceModel->price + (($this->num_slide - 1) * $priceModel->price_per_slide);
+            $this->price = $priceModel->price + (($this->num_slide - 1) * $priceModel->price_per_slide);
         }
     }
+
+//    public function setPriceAttribute(): void
+//    {
+//        $priceModel = Price::where('lab_id', $this->lab_id)
+//            ->where('test_type_id', $this->test_type_id)
+//            ->first();
+//        if ($priceModel) {
+//            $this->attributes['price'] = $priceModel->price + (($this->num_slide - 1) * $priceModel->price_per_slide);
+//        }
+//    }
 
     public function patient(): BelongsTo
     {
@@ -53,4 +73,5 @@ class Test extends Model
     {
         return $this->hasMany(Scan::class);
     }
+
 }
