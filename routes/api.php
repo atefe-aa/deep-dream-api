@@ -55,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('laboratory', LaboratoryController::class);
         Route::post('laboratory/{laboratory}', [LaboratoryController::class, 'updateMedia']);
 
-        Route::get('statistics', [StatisticsController::class, 'prices']);
+        Route::get('statistics/chart', [StatisticsController::class, 'chart']);
     });
 
     Route::group([
