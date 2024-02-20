@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\price\StorePriceRequest;
+use App\Http\Requests\price\UpdatePriceRequest;
 use App\Http\Resources\PriceResource;
 use App\Models\Price;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Log;
 
 class PriceController extends Controller
@@ -48,16 +48,30 @@ class PriceController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
+
     {
-        //
+        $price = Price::findOrFail($id);
+        $this->authorize('view', $price);
+        return new PriceResource($price);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdatePriceRequest $request, string $id): JsonResponse
     {
-        //
+        try {
+            $price = Price::findOrFail($id);
+            $price->update([
+                'price' => $request->input('price', $price->price),
+                'price_per_slide' => $request->input('extraPrice', $price->price_per_slide),
+                'description' => $request->input('description'),
+            ]);
+            return response()->json(['data' => 'success']);
+        } catch (Exception $e) {
+            Log::info('Failed to update test type price: ' . $e->getMessage(), ['request' => $request->all()]);
+            return response()->json(['error' => 'Updating test type price failed. Try again later.']);
+        }
     }
 
     /**

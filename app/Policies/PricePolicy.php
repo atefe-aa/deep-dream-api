@@ -20,7 +20,7 @@ class PricePolicy
      */
     public function view(User $user, Price $price): bool
     {
-        //
+        return $user->hasRole(['superAdmin']);
     }
 
     /**

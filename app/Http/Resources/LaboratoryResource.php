@@ -26,7 +26,7 @@ class LaboratoryResource extends JsonResource
             "header" => $this->media->header ? $this->prepareUrl($this->media->header) : null,
             "footer" => $this->media->footer ? $this->prepareUrl($this->media->footer) : null,
             "signature" => $this->media->signature ? $this->prepareUrl($this->media->signature) : null,
-            "prices" => PriceResource::collection($this->prices)
+            "prices" => $this->prices->pluck('id'),
         ];
     }
 
