@@ -12,7 +12,7 @@ class TestTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return $user->hasRole(['superAdmin', 'operator']);
     }
 
     /**
@@ -20,7 +20,7 @@ class TestTypePolicy
      */
     public function view(User $user, TestType $testType): bool
     {
-        //
+        return $user->hasRole(['superAdmin', 'operator']);
     }
 
     /**
@@ -28,7 +28,7 @@ class TestTypePolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user->hasRole(['superAdmin', 'operator']);
     }
 
     /**
@@ -36,7 +36,7 @@ class TestTypePolicy
      */
     public function update(User $user, TestType $testType): bool
     {
-        //
+        return $user->hasRole(['superAdmin', 'operator']);
     }
 
     /**

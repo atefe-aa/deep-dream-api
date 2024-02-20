@@ -95,7 +95,9 @@ class TestTypeController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $testType = TestType::findOrFail($id);
+        $this->authorize('view', $testType);
+        return new TestTypeResource($testType);
     }
 
     /**
@@ -103,7 +105,28 @@ class TestTypeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $testType = TestType::findOrFail($id);
+        try {
+            $testType->update([
+                'title' => $request->input('title') ?? $testType->title,
+                'code' => $request->input('code'),
+                'gender' => $request->input('gender') ?? $testType->gender,
+                'type' => $request->input('type') ?? $testType->type,
+                'num_layer' => $request->input('numberOfLayers') ?? $testType->num_layer,
+                'micro_step' => $request->input('microStep'),
+                'step' => $request->input('step'),
+                'z_axis' => $request->input('z'),
+                'condenser' => $request->input('condenser'),
+                'brightness' => $request->input('brightness'),
+                'magnification' => $request->input('magnification') ?? $testType->magnification,
+                'description' => $request->input('description'),
+            ]);
+
+            return response()->json(['data' => 'success']);
+        } catch (Exception $e) {
+            Log::info('Failed to update test type: ' . $e->getMessage(), ['request' => $request->all()]);
+            return response()->json(['errors' => 'Updating test type failed. Try again later.']);
+        }
     }
 
     /**
