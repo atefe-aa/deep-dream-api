@@ -30,6 +30,9 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('statistics/chart', [StatisticsController::class, 'chart']);
+    Route::get('statistics/radarChart', [StatisticsController::class, 'radarChart']);
     Route::group([
         'prefix' => 'notification'
     ], static function () {
@@ -55,7 +58,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('laboratory', LaboratoryController::class);
         Route::post('laboratory/{laboratory}', [LaboratoryController::class, 'updateMedia']);
 
-        Route::get('statistics/chart', [StatisticsController::class, 'chart']);
+
+        Route::get('statistics/barchart', [StatisticsController::class, 'barChart']);
     });
 
     Route::group([
@@ -86,3 +90,7 @@ Route::post('scan', [MachineController::class, 'scan']);
 Route::post('image', [MachineController::class, 'image']);
 
 Route::post('shortenTest', [ShareController::class, 'testShortenLink']);
+
+
+
+

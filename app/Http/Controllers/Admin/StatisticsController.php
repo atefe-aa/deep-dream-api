@@ -4,102 +4,54 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helpers\DateHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Laboratory;
 use App\Models\Test;
+use App\Models\TestType;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Morilog\Jalali\Jalalian;
 
 class StatisticsController extends Controller
 {
-//    public function chart(Request $request): array
-//    {
-//        $fromDate = $request->get('fromDate');
-//        $toDate = $request->get('toDate');
-//        $laboratories = $request->get('laboratories');
-//        $testTypes = $request->get('testTypes');
-//        $x = $request->get('x');
-//        $y = $request->get('y');
-//
-//        $testsQuery = Test::query();
-//
-//        if ($fromDate && $toDate) {
-//            $testsQuery->whereBetween('created_at', [
-//                DateHelper::toGregorian($fromDate),
-//                DateHelper::toGregorian($toDate)
-//            ]);
-//        }
-//
-//        if (!empty($laboratories)) {
-//            $testsQuery->whereIn('lab_id', $laboratories);
-//        }
-//
-//        if (!empty($testTypes)) {
-//            $testsQuery->whereIn('test_type_id', $testTypes);
-//        }
-//
-//        $tests = $testsQuery->get();
-//
-//        $groupedData = [];
-//        if ($x === 'laboratories') {
-//            $groupedData = $tests->groupBy('lab_id');
-//        } elseif ($x === 'testTypes') {
-//            $groupedData = $tests->groupBy('test_type_id');
-//        }
-//
-//        $totals = [];
-//        $groupedResults = [];
-//
-//        foreach ($groupedData as $key => $group) {
-//            $dataValue = $y === 'price' ? $group->sum('price') : $group->count();
-//            $title = $x === 'laboratories' ? $group->first()->laboratory->title : $group->first()->testType->title;
-//            $groupedResults[] = ['title' => $title, 'value' => $dataValue];
-//        }
-//
-//        // Sort the grouped results from highest to lowest
-//        usort($groupedResults, static function ($a, $b) {
-//            return $b['value'] - $a['value'];
-//        });
-//
-//        $seriesData = [];
-//        $categories = [];
-//        foreach ($groupedResults as $result) {
-//            $seriesData[] = $result['value'];
-//            $categories[] = $result['title'];
-//        }
-//
-//        $series [] = [
-//            "name" => $y === 'price' ? "Total Price" : "Total Tests",
-//            'data' => $seriesData
-//        ];
-//
-//        if ($y === 'price') {
-//            $totals[] = ["title" => "Total Price", "unit" => "(R)", "value" => $tests->sum('price')];
-//        } else {
-//            $totals[] = ["title" => "Total Tests", "unit" => "", "value" => $tests->count()];
-//        }
-//
-//        $dateRange = Jalalian::fromDateTime($tests->min('created_at'))->format('Y/m/d') . ' - ' . Jalalian::fromDateTime($tests->max('created_at'))->format('Y/m/d');
-//        $totals[] = ["title" => "Date Range", "unit" => "", "value" => $dateRange];
-//
-//        return [
-//            'data' => [
-//                "totals" => $totals,
-//                "series" => $series,
-//                "xAxisCategories" => $categories,
-//            ]
-//        ];
-//    }
 
-
-    public function chart(Request $request): array
+    public function chart(Request $request): JsonResponse
     {
+        $user = Auth::user();
+
         $fromDate = $request->get('fromDate');
         $toDate = $request->get('toDate');
-        $laboratories = $request->get('laboratories');
-        $testTypes = $request->get('testTypes');
-        $x = $request->get('x');
-        $y = $request->get('y');
 
-        $testsQuery = Test::with(['laboratory', 'testType']);
+        $laboratories = $request->get('laboratories');
+
+        $y = $request->get('y');
+        $x = $request->get('x');
+
+        if ($user && !$user->hasRole(['superAdmin', 'laboratory'])) {
+            return response()->json(['errors' => 'Not Authenticated'], 403);
+        }
+
+        $labId = $user && $user->hasRole(['laboratory']) ? $user->laboratory->id : null;
+
+        if ($x === 'laboratories' && $labId) {
+            return response()->json(['errors' => 'Not Authenticated'], 403);
+        }
+
+        if ($x === 'laboratories') {
+            $allData = Laboratory::all()->keyBy('id');
+            $testsQuery = Test::with(['laboratory']);
+            $groupBy = 'lab_id';
+        } else {
+            $allData = $labId
+                ? TestType::whereHas('prices', static function ($query) use ($labId) {
+                    $query->where('lab_id', $labId);
+                })->get()
+                : TestType::all()->keyBy('id');
+            $testsQuery = $labId
+                ? Test::where('lab_id', $labId)->with(['testType'])
+                : Test::with(['testType']);
+            $groupBy = 'test_type_id';
+        }
 
         if ($fromDate && $toDate) {
             $testsQuery->whereBetween('created_at', [
@@ -107,72 +59,41 @@ class StatisticsController extends Controller
                 DateHelper::toGregorian($toDate)
             ]);
         }
-
         if (!empty($laboratories)) {
             $testsQuery->whereIn('lab_id', $laboratories);
         }
 
-        if (!empty($testTypes)) {
-            $testsQuery->whereIn('test_type_id', $testTypes);
-        }
-
         $tests = $testsQuery->get();
 
-        $series = [];
-        $categories = [];
-        $totals = [];
-
-        // Check if both filters are applied
-        if (!empty($laboratories) && !empty($testTypes) && $x === 'testTypes') {
-            $labGrouped = $tests->groupBy('lab_id');
-            foreach ($labGrouped as $labId => $labTests) {
-                $labSeriesData = [];
-                $testTypeGrouped = $labTests->groupBy('test_type_id');
-                foreach ($testTypeGrouped as $testTypeId => $testsGroup) {
-                    $value = $y === 'price' ? $testsGroup->sum('price') : $testsGroup->count();
-                    $labSeriesData[] = $value;
+        $groupedData = $tests->groupBy($groupBy);
+        $groupedResults = [];
+        foreach ($allData as $data) {
+            $dataValue = 0;
+            $title = $data->title;
+            foreach ($groupedData as $group) {
+                $groupDataId = $x === 'laboratories' ? $group->first()->lab_id : $group->first()->test_type_id;
+                if ($groupDataId === $data->id) {
+                    $dataValue = $y === 'price' ? $group->sum('price') : $group->count();
                 }
-                $series[] = [
-                    'name' => $labTests->first()->laboratory->title,
-                    'data' => $labSeriesData
-                ];
-                $categories = $testTypeGrouped->map(function ($item, $key) {
-                    return $item->first()->testType->title;
-                })->values()->all();
             }
-        } else {
-
-            $groupedData = [];
-            if ($x === 'laboratories') {
-                $groupedData = $tests->groupBy('lab_id');
-            } elseif ($x === 'testTypes') {
-                $groupedData = $tests->groupBy('test_type_id');
-            }
-
-            $groupedResults = [];
-
-            foreach ($groupedData as $key => $group) {
-                $dataValue = $y === 'price' ? $group->sum('price') : $group->count();
-                $title = $x === 'laboratories' ? $group->first()->laboratory->title : $group->first()->testType->title;
-                $groupedResults[] = ['title' => $title, 'value' => $dataValue];
-            }
-
-            // Sort the grouped results from highest to lowest
-            usort($groupedResults, static function ($a, $b) {
-                return $b['value'] - $a['value'];
-            });
-
-            $seriesData = [];
-            foreach ($groupedResults as $result) {
-                $seriesData[] = $result['value'];
-                $categories[] = $result['title'];
-            }
-
-            $series [] = [
-                "name" => $y === 'price' ? "Total Price" : "Total Tests",
-                'data' => $seriesData
-            ];
+            $groupedResults[] = ['title' => $title, 'value' => $dataValue];
         }
+
+        // Sort the grouped results from highest to lowest
+        usort($groupedResults, static function ($a, $b) {
+            return $b['value'] - $a['value'];
+        });
+
+        $seriesData = [];
+        $categories = [];
+        foreach ($groupedResults as $result) {
+            $seriesData[] = $result['value'];
+            $categories[] = $result['title'];
+        }
+        $series [] = [
+            "name" => $y === 'price' ? "Total Price" : "Total Tests",
+            'data' => $seriesData
+        ];
 
         if ($y === 'price') {
             $totals[] = ["title" => "Total Price", "unit" => "(R)", "value" => $tests->sum('price')];
@@ -183,14 +104,93 @@ class StatisticsController extends Controller
         $dateRange = Jalalian::fromDateTime($tests->min('created_at'))->format('Y/m/d') . ' - ' . Jalalian::fromDateTime($tests->max('created_at'))->format('Y/m/d');
         $totals[] = ["title" => "Date Range", "unit" => "", "value" => $dateRange];
 
-        return [
+        return response()->json([
             'data' => [
                 "totals" => $totals,
                 "series" => $series,
                 "xAxisCategories" => $categories,
             ]
-        ];
+        ]);
     }
 
+    public function radarChart(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        if ($user && !$user->hasRole(['superAdmin'])) {
+            return response()->json(['errors' => 'Not Authenticated'], 403);
+        }
+
+        $fromDate = $request->get('fromDate');
+        $toDate = $request->get('toDate');
+
+        $laboratories = $request->get('laboratories');
+        $testTypes = $request->get('testTypes');
+
+        $y = $request->get('y');
+
+        $allTestTypes = TestType::whereIn('id', $testTypes)->get();
+        $allLabs = Laboratory::whereIn('id', $laboratories)->get();
+
+
+        $testsQuery = Test::with(['testType', 'laboratory']);
+
+        if ($fromDate && $toDate) {
+            $testsQuery->whereBetween('created_at', [
+                DateHelper::toGregorian($fromDate),
+                DateHelper::toGregorian($toDate)
+            ]);
+        }
+
+        $tests = $testsQuery->get();
+        $totalValues = 0;
+        $series = [];
+        $categories = [];
+
+        foreach ($allLabs as $lab) {
+            $name = $lab->title;
+            $labSeriesData = [];
+            foreach ($allTestTypes as $testType) {
+                $categories[$testType->id] = $testType->title;
+                $value = 0;
+                $labGrouped = $tests->groupBy('lab_id');
+                foreach ($labGrouped as $labId => $labTests) {
+
+                    if ($labId === $lab->id) {
+                        $testTypeGrouped = $labTests->groupBy('test_type_id');
+                        foreach ($testTypeGrouped as $testTypeId => $testsGroup) {
+                            if ($testTypeId === $testType->id) {
+                                $value = $y === 'price' ? $testsGroup->sum('price') : $testsGroup->count();
+                            }
+
+                        }
+                    }
+                }
+                $labSeriesData[] = $value;
+                $totalValues += $value;
+            }
+            $series[] = [
+                'name' => $name,
+                'data' => $labSeriesData
+            ];
+        }
+
+
+        if ($y === 'price') {
+            $totals[] = ["title" => "Total Price", "unit" => "(R)", "value" => $totalValues];
+        } else {
+            $totals[] = ["title" => "Total Tests", "unit" => "", "value" => $totalValues];
+        }
+
+        $dateRange = Jalalian::fromDateTime($tests->min('created_at'))->format('Y/m/d') . ' - ' . Jalalian::fromDateTime($tests->max('created_at'))->format('Y/m/d');
+        $totals[] = ["title" => "Date Range", "unit" => "", "value" => $dateRange];
+
+        return response()->json([
+            'data' => [
+                "totals" => $totals,
+                "series" => $series,
+                "xAxisCategories" => $categories,
+            ]
+        ]);
+    }
 
 }
