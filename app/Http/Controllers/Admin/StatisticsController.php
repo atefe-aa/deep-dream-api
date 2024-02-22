@@ -23,30 +23,31 @@ class StatisticsController extends Controller
         $toDate = $request->get('toDate');
 
         $laboratories = $request->get('laboratories');
+        $testTypes = $request->get('testTypes');
 
         $y = $request->get('y');
         $x = $request->get('x');
 
-        if ($user && !$user->hasRole(['superAdmin', 'laboratory'])) {
+        if ($user && $user->hasRole(['operator'])) {
             return response()->json(['errors' => 'Not Authenticated'], 403);
         }
 
-        $labId = $user && $user->hasRole(['laboratory']) ? $user->laboratory->id : null;
+        $labId = $user && !$user->hasRole(['superAdmin']) ? $user->laboratory->id : null;
 
         if ($x === 'laboratories' && $labId) {
             return response()->json(['errors' => 'Not Authenticated'], 403);
         }
-
+        $testTypeQuery = !empty($testTypes) ? TestType::whereIn('id', $testTypes) : TestType::query();
         if ($x === 'laboratories') {
-            $allData = Laboratory::all()->keyBy('id');
+            $allData = !empty($laboratories) ? Laboratory::whereIn('id', $laboratories)->get() : Laboratory::all()->keyBy('id');
             $testsQuery = Test::with(['laboratory']);
             $groupBy = 'lab_id';
         } else {
             $allData = $labId
-                ? TestType::whereHas('prices', static function ($query) use ($labId) {
+                ? $testTypeQuery->whereHas('prices', static function ($query) use ($labId) {
                     $query->where('lab_id', $labId);
                 })->get()
-                : TestType::all()->keyBy('id');
+                : $testTypeQuery->get();
             $testsQuery = $labId
                 ? Test::where('lab_id', $labId)->with(['testType'])
                 : Test::with(['testType']);
@@ -108,7 +109,7 @@ class StatisticsController extends Controller
             'data' => [
                 "totals" => $totals,
                 "series" => $series,
-                "xAxisCategories" => $categories,
+                "xAxisCategories" => array_values($categories),
             ]
         ]);
     }
@@ -128,8 +129,12 @@ class StatisticsController extends Controller
 
         $y = $request->get('y');
 
-        $allTestTypes = TestType::whereIn('id', $testTypes)->get();
-        $allLabs = Laboratory::whereIn('id', $laboratories)->get();
+        $allTestTypes = $testTypes && !empty($testTypes)
+            ? TestType::whereIn('id', $testTypes)->get()
+            : TestType::take(5)->get();
+        $allLabs = $laboratories && !empty($laboratories)
+            ? Laboratory::whereIn('id', $laboratories)->get()
+            : Laboratory::take(5)->get();
 
 
         $testsQuery = Test::with(['testType', 'laboratory']);
@@ -188,7 +193,7 @@ class StatisticsController extends Controller
             'data' => [
                 "totals" => $totals,
                 "series" => $series,
-                "xAxisCategories" => $categories,
+                "xAxisCategories" => array_values($categories),
             ]
         ]);
     }

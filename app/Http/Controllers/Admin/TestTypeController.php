@@ -11,22 +11,31 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class TestTypeController extends Controller
 {
     /**
      * @param Request $request
-     * @return AnonymousResourceCollection
+     * @return  AnonymousResourceCollection|JsonResponse
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
+        $user = Auth::user();
         $query = TestType::query();
+        
+        $labId = $user && $user->hasRole(['superAdmin', 'operator'])
+            ? $request->input('laboratory')
+            : $user->laboratory->id;
 
-        if ($request->has('laboratory')) {
+        $noPrice = $request->has('noPrice');
 
-            $labId = $request->input('laboratory');
-            $noPrice = $request->has('noPrice');
+        if ($noPrice && $user && !$user->hasRole(['superAdmin', 'operator'])) {
+            return response()->json(['errors' => 'Not Authenticated'], 403);
+        }
+        if ($labId) {
+
 
             if ($noPrice) {
                 //for create new test type price form to prevent duplicate pair of lab_id - test_typ_id

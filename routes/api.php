@@ -30,7 +30,8 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->group(function () {
-
+    Route::apiResource('test-type', TestTypeController::class);
+    
     Route::get('statistics/chart', [StatisticsController::class, 'chart']);
     Route::get('statistics/radarChart', [StatisticsController::class, 'radarChart']);
     Route::group([
@@ -65,7 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group([
         'middleware' => ['role:superAdmin|operator']
     ], static function () {
-        Route::apiResource('test-type', TestTypeController::class);
+
         Route::apiResource('settings', SettingsController::class);
     });
     Route::group([
