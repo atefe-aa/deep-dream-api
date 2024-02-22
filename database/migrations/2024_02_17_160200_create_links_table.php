@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('links', function (Blueprint $table) {
             $table->id();
-            $table->longText('url');
-            $table->longText('code');
+            $table->longText('uri');
+            $table->longText('code')->unique();
             $table->timestamps();
         });
     }

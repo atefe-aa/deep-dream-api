@@ -87,7 +87,7 @@ class CytomineAuthService
                 if (isset($responseData['success']) && $responseData['success']) {
                     return ['success' => true, 'token' => $responseData['token']];
                 }
-                return ['success' => false, 'error' => $responseData['error'] ?? 'Unknown error'];
+                return ['success' => false, 'error' => $responseData['errorValues'] ?? 'Unknown error'];
             }
             return ['success' => false, 'error' => 'Authentication failed.'];
         } catch (Exception $e) {

@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\share\ShareRequest;
 use App\Models\Counsellor;
+use App\Models\Link;
 use App\Models\Test;
 use App\Services\CytomineAuthService;
 use App\Services\CytomineProjectService;
 use App\Services\SmsService;
-use App\Services\YunService;
+use Exception;
 use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,7 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use JsonException;
-use PHPUnit\Framework\Exception;
+use RuntimeException;
 
 class ShareController extends Controller
 {
@@ -31,17 +32,23 @@ class ShareController extends Controller
     /**
      * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
      */
-    private mixed $coreUrl;
-    private YunService $yunService;
     private SmsService $smsService;
+    /**
+     * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
+     */
+    private mixed $frontUrl;
+    /**
+     * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
+     */
+    private mixed $frontUri;
 
-    public function __construct(SmsService $smsService, YunService $yunService, CytomineProjectService $cytomineProjectService, CytomineAuthService $cytomineAuthService)
+    public function __construct(SmsService $smsService, CytomineProjectService $cytomineProjectService, CytomineAuthService $cytomineAuthService)
     {
-        $this->yunService = $yunService;
         $this->smsService = $smsService;
         $this->cytomineProjectService = $cytomineProjectService;
         $this->cytomineAuthService = $cytomineAuthService;
-        $this->coreUrl = config('services.cytomine.core_url');
+        $this->frontUrl = config('services.front.url');
+        $this->frontUri = config('services.front.uri');
     }
 
     /**
@@ -53,6 +60,7 @@ class ShareController extends Controller
         if (!$user) {
             return response()->json(['message' => 'Not Authorized'], 403);
         }
+
         $username = $this->determineUsername($user);
         $test = $this->validateTest($request->get('testId'));
         if (!$test) {
@@ -93,12 +101,9 @@ class ShareController extends Controller
             $username = $counsellor->phone . $counsellor->id;
             $userTokenResponse = $this->cytomineAuthService->getUserToken($username);
             $tokenKey = $userTokenResponse['token'] ?? null;
+            Log::info($userTokenResponse);
             if ($tokenKey) {
-                $link = $this->coreUrl
-                    . '/#/project/' . $test->project_id
-                    . '/image/' . $images[0]
-                    . '?username=' . $username
-                    . '&token=' . $tokenKey;
+                $link = "/image?username=$username&project=$test->project_id&image=$images[0]&token=$tokenKey";
                 $sendSmsResult = $this->sendSMS($counsellor->phone, $user->name, $link);
                 if (!$sendSmsResult['success']) {
                     $failedCounsellors[] = [
@@ -108,15 +113,12 @@ class ShareController extends Controller
                 }
             }
         }
-
-
         if (count($failedCounsellors) > 0) {
             return response()->json([
                 'message' => 'Some counsellors did not receive the SMS',
                 'errors' => $failedCounsellors
             ], 500);
         }
-
         // Respond with success if all SMSs were sent successfully
         return response()->json(['message' => 'SMS sent to all counsellors successfully']);
 
@@ -138,8 +140,8 @@ class ShareController extends Controller
     public function sendSMS(string $recipient, string $senderName, string $link): array
     {
         try {
-            $shortenLinkRes = $this->yunService->shortUrl('image-view', $link);
-            $shortenLink = $shortenLinkRes['data'] ? $shortenLinkRes['data']['doc']['url'] : null;
+            $shortenLinkRes = $this->shortenLink($link);
+            $shortenLink = $shortenLinkRes ?: null;
 
             $message = $senderName
                 . " " . "has requested you to collaborate on this slide image via this link: \n"
@@ -151,12 +153,13 @@ class ShareController extends Controller
                 "time" => now('UTC')->addSeconds(30),
                 "message" => $message
             ];
+
             $smsRes = $this->smsService->sendNormal($requestBody);
             if (isset($smsRes['errors'])) {
-                throw new Exception($smsRes['errors']);
+                throw new RuntimeException($smsRes['errors']);
             }
             return ['success' => true];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to send SMS to ' . $recipient . ': ' . $e->getMessage());
             // Return a failure status and the recipient identifier
             return ['success' => false, 'recipient' => $recipient,];
@@ -164,8 +167,32 @@ class ShareController extends Controller
 
     }
 
-    public function testShortenLink()
+    public function shortenLink(string $link): ?string
     {
-        return now('UTC');
+        $code = $this->generateUniqueCode();
+        $link = Link::create([
+            'uri' => $link,
+            'code' => $code,
+        ]);
+        if (!$link) {
+            return null;
+        }
+        return $this->frontUrl . $this->frontUri . '/' . $link->code;
+    }
+
+    public function generateUniqueCode($length = 6): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $uniqueCode = '';
+        for ($i = 0; $i < $length; $i++) {
+            $uniqueCode .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        $linkWithTheSameCode = Link::where('code', $uniqueCode)->first();
+
+        while ($linkWithTheSameCode) {
+            $uniqueCode = $this->generateUniqueCode($length);
+        }
+        return $uniqueCode;
     }
 }

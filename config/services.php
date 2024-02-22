@@ -43,9 +43,9 @@ return [
         'api_url' => env('SCANNER_API_URL'),
         'speed' => env('SCANNER_SPEED'),
     ],
-    'yun' => [
-        'api_key' => env('YUN_API_KEY'),
-        'api_url' => env('YUN_API_URL'),
+    'front' => [
+        'url' => env('FRONT_END_APP_URL'),
+        'uri' => env('FRONT_END_REDIRECT_URI'),
     ],
     'sms' => [
         'api_key' => env('SMS_PANEL_API_KEY'),

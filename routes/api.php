@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\StatisticsController;
 use App\Http\Controllers\Admin\TestTypeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounsellorController;
+use App\Http\Controllers\LinkController;
 use App\Http\Controllers\Machine\MachineController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Operator\ScanController;
@@ -31,7 +32,7 @@ Route::post('logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('test-type', TestTypeController::class);
-    
+
     Route::get('statistics/chart', [StatisticsController::class, 'chart']);
     Route::get('statistics/radarChart', [StatisticsController::class, 'radarChart']);
     Route::group([
@@ -92,6 +93,6 @@ Route::post('image', [MachineController::class, 'image']);
 
 Route::post('shortenTest', [ShareController::class, 'testShortenLink']);
 
-
+Route::get('link/{code}', [LinkController::class, 'link']);
 
 
