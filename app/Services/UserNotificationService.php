@@ -49,7 +49,7 @@ class UserNotificationService
             'scanned' => 'primary',
             'image-ready' => 'success',
             '2x-failed', 'failed' => 'danger',
-            default => 'secondary',
+            default => '',
         };
     }
 }

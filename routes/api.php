@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 
+Route::get('link/{code}', [LinkController::class, 'link']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('test-type', TestTypeController::class);
 
@@ -91,8 +93,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('scan', [MachineController::class, 'scan']);
 Route::post('image', [MachineController::class, 'image']);
 
-Route::post('shortenTest', [ShareController::class, 'testShortenLink']);
-
-Route::get('link/{code}', [LinkController::class, 'link']);
 
 

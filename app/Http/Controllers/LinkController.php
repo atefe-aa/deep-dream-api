@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Link;
+use Illuminate\Http\JsonResponse;
 
 class LinkController extends Controller
 {
-    public function link(string $code)
+    public function link(string $code): JsonResponse
     {
         $linkUri = Link::where('code', $code)->first();
         if (!$linkUri) {
