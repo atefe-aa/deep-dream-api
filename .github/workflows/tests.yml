@@ -1,39 +1,39 @@
-#name: Tests
-#
-#on:
-#  push:
-#    branches:
-#      - master
-#      - '*.x'
-#  pull_request:
-#  schedule:
-#    - cron: '0 0 * * *'
-#
-#permissions:
-#  contents: read
-#
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Setup PHP, with version specified
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: '8.3' # specify your PHP version here
-#
-#      - name: Install Composer dependencies
-#        run: composer install --prefer-dist --no-interaction --no-progress
-#
-#      - name: Copy environment file
-#        run: cp .env.example .env
-#
-#      - name: Generate app key
-#        run: php artisan key:generate
-#
-#
-#      - name: Execute tests
-#        run: vendor/bin/phpunit
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+      - '*.x'
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP, with version specified
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3' # specify your PHP version here
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate app key
+        run: php artisan key:generate
+
+
+      - name: Execute tests
+        run: vendor/bin/phpunit
