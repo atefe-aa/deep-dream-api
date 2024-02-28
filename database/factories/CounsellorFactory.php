@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ * @extends Factory<Model>
  */
 class CounsellorFactory extends Factory
 {
@@ -19,7 +18,7 @@ class CounsellorFactory extends Factory
     public function definition(): array
     {
         return [
-            'lab_id' => fake()->numberBetween(1,100),
+            'lab_id' => fake()->numberBetween(1, 10),
             'name' => fake()->name(),
             'description' => fake()->sentence(15),
             'phone' => fake()->unique()->phoneNumber(),

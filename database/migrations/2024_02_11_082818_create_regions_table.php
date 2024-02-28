@@ -20,6 +20,9 @@ return new class extends Migration {
             $table->bigInteger('duration')->nullable()->default(null);
             $table->enum('status', ['ready', 'failed', 'scanning', 'scanned', 'image-ready'])->default('ready');
             $table->timestamps();
+
+            $table->foreign('scan_id')->on('scans')->onDelete('cascade')->references('id');
+
         });
     }
 

@@ -22,10 +22,10 @@ class LaboratoryResource extends JsonResource
             "address" => $this->address,
             "description" => $this->description,
             "username" => $this->user->username,
-            "avatar" => $this->media->avatar ? $this->prepareUrl($this->media->avatar) : null,
-            "header" => $this->media->header ? $this->prepareUrl($this->media->header) : null,
-            "footer" => $this->media->footer ? $this->prepareUrl($this->media->footer) : null,
-            "signature" => $this->media->signature ? $this->prepareUrl($this->media->signature) : null,
+            "avatar" => $this->media?->avatar ? $this->prepareUrl($this->media->avatar) : null,
+            "header" => $this->media?->header ? $this->prepareUrl($this->media->header) : null,
+            "footer" => $this->media?->footer ? $this->prepareUrl($this->media->footer) : null,
+            "signature" => $this->media?->signature ? $this->prepareUrl($this->media->signature) : null,
             "prices" => $this->prices->pluck('id'),
         ];
     }

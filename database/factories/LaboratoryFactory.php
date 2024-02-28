@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Laboratory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Laboratory>
+ * @extends Factory<Laboratory>
  */
 class LaboratoryFactory extends Factory
 {
@@ -17,8 +18,8 @@ class LaboratoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => fake()->unique()->numberBetween(1,100),
-            'title' => fake()->company(),
+            'user_id' => fake()->numberBetween(1, 10),
+            'title' => fake()->word() . " " . fake()->word(),
             'address' => fake()->address(),
             'description' => fake()->sentence(15),
         ];

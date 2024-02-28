@@ -12,23 +12,23 @@ class SettingSeeder extends Seeder
      */
     public function run(): void
     {
-//        DB::table('settings_categories')->insert([
-//            [
-//                'title' => '2x',
-//            ],
-//            [
-//                'title' => '10x',
-//            ],
-//            [
-//                'title' => '40x',
-//            ],
-//            [
-//                'title' => '100x',
-//            ],
-//            [
-//                'title' => 'condenser',
-//            ],
-//        ]);
+        DB::table('settings_categories')->insert([
+            [
+                'title' => '2x',
+            ],
+            [
+                'title' => '10x',
+            ],
+            [
+                'title' => '40x',
+            ],
+            [
+                'title' => '100x',
+            ],
+            [
+                'title' => 'condenser',
+            ],
+        ]);
 
         $settings = [
             [

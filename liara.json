@@ -1,0 +1,7 @@
+{
+    "platform": "laravel",
+    "app": "deep-dream-api",
+    "laravel": {
+        "phpVersion": "8.2"
+    }
+}
