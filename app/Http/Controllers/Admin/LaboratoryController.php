@@ -188,16 +188,16 @@ class LaboratoryController extends Controller
 
             // Handle file uploads
             if ($request->hasFile('avatar')) {
-                $avatarPath = $request->file('avatar')->store('avatars', 'public');
+                $avatarPath = $request->file('avatar')?->store('avatars', 'public');
             }
             if ($request->hasFile('header')) {
-                $headerPath = $request->file('header')->store('headers', 'public');
+                $headerPath = $request->file('header')?->store('headers', 'public');
             }
             if ($request->hasFile('signature')) {
-                $signaturePath = $request->file('signature')->store('signatures', 'public');
+                $signaturePath = $request->file('signature')?->store('signatures', 'public');
             }
             if ($request->hasFile('footer')) {
-                $footerPath = $request->file('footer')->store('footers', 'public');
+                $footerPath = $request->file('footer')?->store('footers', 'public');
             }
 
             LaboratoryMedia::create([
@@ -215,7 +215,7 @@ class LaboratoryController extends Controller
             DB::rollBack();
 
             Log::info('Failed to create laboratory: ' . $e->getMessage(), ['request' => $request->all()]);
-            return response()->json(['errors' => 'Creating laboratory failed. Try again later.']);
+            return response()->json(['errors' => 'Creating laboratory failed. Try again later.', 'message' => 'Failed to create laboratory: ' . $e->getMessage()], 500);
         }
     }
 

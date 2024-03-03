@@ -23,7 +23,6 @@ return new class extends Migration {
             $table->text('slide_image')->nullable();
             $table->text('image')->nullable();
             $table->timestamps();
-            $table->foreign('test_id')->on('tests')->onDelete('cascade')->references('id');
         });
     }
 

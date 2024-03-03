@@ -165,7 +165,7 @@ class CytomineAuthService
                     return $responseData;
                 }
 
-                return ['errors' => $response->body()];
+                return ['errors' => $response->json('errors')];
             }
             return ['errors' => 'Something went wrong during authentication.'];
 
