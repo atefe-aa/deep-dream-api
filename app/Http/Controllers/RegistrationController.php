@@ -154,7 +154,7 @@ class RegistrationController extends Controller
 
             DB::commit();
 
-            return response()->json(['data' => 'success']);
+            return new RegistrationResource($test);
 
         } catch (Exception $e) {
             DB::rollBack();
