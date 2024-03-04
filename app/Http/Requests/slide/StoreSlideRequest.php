@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\slide;
 
+use App\Rules\UniqueCoordinates;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -18,16 +19,17 @@ class StoreSlideRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
             'nth' => ['required', 'integer', 'unique:slides,nth'],
-            'sw_x' => ['required', 'numeric', 'between:0,999.999'],
-            'sw_y' => ['required', 'numeric', 'between:0,999.999'],
-            'ne_x' => ['required', 'numeric', 'between:0,999.999'],
-            'ne_y' => ['required', 'numeric', 'between:0,999.999'],
+            'coordinates.sw_x' => ['numeric', 'between:0,999.999'],
+            'coordinates.sw_y' => ['numeric', 'between:0,999.999'],
+            'coordinates.ne_x' => ['numeric', 'between:0,999.999'],
+            'coordinates.ne_y' => ['numeric', 'between:0,999.999'],
+            'coordinates' => ['required', new UniqueCoordinates()],
         ];
     }
 }

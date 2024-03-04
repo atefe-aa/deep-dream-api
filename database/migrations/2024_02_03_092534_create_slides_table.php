@@ -18,6 +18,8 @@ return new class extends Migration {
             $table->float('ne_x');
             $table->float('ne_y');
             $table->timestamps();
+            
+            $table->unique(['sw_x', 'sw_y', 'ne_x', 'ne_y']);
         });
     }
 

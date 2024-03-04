@@ -20,7 +20,7 @@ class SlideController extends Controller
     public function index(): AnonymousResourceCollection|JsonResponse
     {
         try {
-            $slides = Slide::all();
+            $slides = Slide::orderBy('nth')->get();
             return SlideResource::collection($slides);
         } catch (Exception $e) {
             Log::info('Failed to retrieve slides: ' . $e->getMessage());
@@ -31,10 +31,18 @@ class SlideController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSlideRequest $request)
+    public function store(StoreSlideRequest $request): JsonResponse
     {
         try {
-            Slide::create($request->all());
+            Slide::create(
+                [
+                    "nth" => $request->get('nth'),
+                    "sw_y" => $request->get('coordinates')['sw_y'],
+                    "sw_x" => $request->get('coordinates')['sw_x'],
+                    "ne_x" => $request->get('coordinates')['ne_x'],
+                    "ne_y" => $request->get('coordinates')['ne_y'],
+                ]
+            );
             return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             Log::info('Failed to create slide : ' . $e->getMessage(), ['request' => $request->all()]);
