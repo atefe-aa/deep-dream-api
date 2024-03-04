@@ -61,6 +61,13 @@ class SettingSeeder extends Seeder
             ],
             [
                 'category_id' => 1,
+                'key' => 'step',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 1,
                 'key' => 'x',
                 'value' => 1,
                 'default' => 2,
@@ -142,6 +149,13 @@ class SettingSeeder extends Seeder
             [
                 'category_id' => 2,
                 'key' => 'micro-step',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 2,
+                'key' => 'step',
                 'value' => 1,
                 'default' => 2,
                 'unit' => 'mm'
@@ -235,6 +249,13 @@ class SettingSeeder extends Seeder
             ],
             [
                 'category_id' => 3,
+                'key' => 'step',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 3,
                 'key' => 'x',
                 'value' => 1,
                 'default' => 2,
@@ -316,6 +337,13 @@ class SettingSeeder extends Seeder
             [
                 'category_id' => 4,
                 'key' => 'micro-step',
+                'value' => 1,
+                'default' => 2,
+                'unit' => 'mm'
+            ],
+            [
+                'category_id' => 4,
+                'key' => 'step',
                 'value' => 1,
                 'default' => 2,
                 'unit' => 'mm'
