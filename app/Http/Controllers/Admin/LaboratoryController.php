@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 /**
  * Controller for managing laboratories.
@@ -175,7 +176,7 @@ class LaboratoryController extends Controller
                 $cytomineUser = $this->cytomineAuthService->registerUser($data);
 
                 if (isset($cytomineUser['errors'])) {
-                    throw new Exception('Cytomine user creation failed' . $cytomineUser['errors']);
+                    throw new RuntimeException('Cytomine user creation failed' . $cytomineUser['errors']);
                 }
             }
 
@@ -230,7 +231,7 @@ class LaboratoryController extends Controller
     {
         $laboratory = Laboratory::findOrFail($id);
         $user = User::findOrFail($laboratory->user->id);
-
+        Log::info($request->all());
         try {
             DB::beginTransaction();
 
@@ -238,9 +239,9 @@ class LaboratoryController extends Controller
                 'name' => !is_null($request->input('fullName')) && $request->input('fullName') !== ""
                     ? $request->input('fullName')
                     : $user->name,
-                'username' => !is_null($request->input('username')) && $request->input('username') !== ""
-                    ? $request->input('username')
-                    : $user->username,
+//                'username' => !is_null($request->input('username')) && $request->input('username') !== ""
+//                    ? $request->input('username')
+//                    : $user->username,
                 'phone' => !is_null($request->input('phone')) && $request->input('phone') !== ""
                     ? $request->input('phone')
                     : $user->phone,

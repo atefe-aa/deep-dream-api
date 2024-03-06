@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\laboratory;
 
+use App\Models\Laboratory;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLaboratoryRequest extends FormRequest
 {
@@ -17,22 +20,35 @@ class UpdateLaboratoryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
-        return [
-            "labName" => ['nullable','string'],
-            "fullName" => ['nullable','string'],
-            "phone" => ['nullable','string','unique:users'],
-            "address" => ['nullable','string'],
-            "description" => ['nullable','string'],
-            "username" => ['nullable','string','unique:users'],
-            "password" => ['nullable','string','confirmed'],
-            "avatar" => ['nullable','image'],
-            "signature" => ['nullable','image'],
-            "header" => ['nullable','image'],
-            "footer" => ['nullable','image'],
+        $labId = $this->route('laboratory');
+        $laboratory = Laboratory::findOrFail($labId);
+        $userId = $laboratory->user->id;
+
+        $rules = [
+            "labName" => ['nullable', 'string'],
+            "fullName" => ['nullable', 'string'],
+            "address" => ['nullable', 'string'],
+            "description" => ['nullable', 'string'],
+//            "username" => ['nullable', 'string', 'unique:users'], //username update is not available for now
+            "password" => ['nullable', 'string', 'confirmed'],
+            "avatar" => ['nullable', 'image'],
+            "signature" => ['nullable', 'image'],
+            "header" => ['nullable', 'image'],
+            "footer" => ['nullable', 'image'],
         ];
+
+        // Check if the user ID associated with the laboratory is valid
+        if ($userId) {
+            $rules['phone'] = ['nullable', 'string', Rule::unique('users', 'phone')->ignore($userId)];
+        } else {
+            // If for some reason the user ID is not available, perform a standard uniqueness check
+            $rules['phone'] = ['nullable', 'string', 'unique:users,phone'];
+        }
+
+        return $rules;
     }
 }

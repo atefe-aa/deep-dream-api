@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\laboratory;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLaboratoryRequest extends FormRequest
@@ -17,22 +18,22 @@ class StoreLaboratoryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-           "avatar" => ['nullable','image'],
-           "signature" => ['required','image'],
-           "header" => ['required','image'],
-           "footer" => ['nullable','image'],
-           "labName" => ['required','string'],
-           "fullName" => ['required','string'],
-           "phone" => ['required','string','unique:users'],
-           "address" => ['required','string'],
-           "description" => ['nullable','string'],
-           "username" => ['required','string','unique:users'],
-           "password" => ['required','string','confirmed'],
+            "avatar" => ['nullable', 'image'],
+            "signature" => ['required', 'image'],
+            "header" => ['required', 'image'],
+            "footer" => ['nullable', 'image'],
+            "labName" => ['required', 'string'],
+            "fullName" => ['required', 'string'],
+            "phone" => ['required', 'string', 'unique:users'],
+            "address" => ['required', 'string'],
+            "description" => ['nullable', 'string'],
+            "username" => ['required', 'string', 'unique:users'],
+            "password" => ['required', 'string', 'confirmed'],
         ];
     }
 }
