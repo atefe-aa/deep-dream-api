@@ -3,6 +3,7 @@
 namespace App\Http\Requests\laboratory;
 
 use App\Models\Laboratory;
+use App\Rules\IranPhoneNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -43,7 +44,7 @@ class UpdateLaboratoryRequest extends FormRequest
 
         // Check if the user ID associated with the laboratory is valid
         if ($userId) {
-            $rules['phone'] = ['nullable', 'string', Rule::unique('users', 'phone')->ignore($userId)];
+            $rules['phone'] = ['nullable', 'string', new IranPhoneNumber(), Rule::unique('users', 'phone')->ignore($userId)];
         } else {
             // If for some reason the user ID is not available, perform a standard uniqueness check
             $rules['phone'] = ['nullable', 'string', 'unique:users,phone'];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\laboratory;
 
+use App\Rules\IranPhoneNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -29,7 +30,7 @@ class StoreLaboratoryRequest extends FormRequest
             "footer" => ['nullable', 'image'],
             "labName" => ['required', 'string'],
             "fullName" => ['required', 'string'],
-            "phone" => ['required', 'string', 'unique:users'],
+            "phone" => ['required', 'string', 'unique:users', new IranPhoneNumber()],
             "address" => ['required', 'string'],
             "description" => ['nullable', 'string'],
             "username" => ['required', 'string', 'unique:users'],

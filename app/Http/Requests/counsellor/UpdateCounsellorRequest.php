@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\counsellor;
 
+use App\Rules\IranPhoneNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCounsellorRequest extends FormRequest
@@ -23,7 +24,7 @@ class UpdateCounsellorRequest extends FormRequest
 
         return [
             'name' => ['nullable', 'string'],
-            'phone' => ['nullable', 'string'],
+            'phone' => ['nullable', 'string', new IranPhoneNumber()],
             'description' => ['nullable', 'nullable', 'string'],
             'laboratoryId' => ['nullable', 'exists:laboratories,id']
         ];

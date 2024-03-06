@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\counsellor;
 
+use App\Rules\IranPhoneNumber;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,7 +26,7 @@ class StoreCounsellorRequest extends FormRequest
 //            if the creator is a super admin then it needs to pass along the lab id
         $rules = [
             'name' => ['required', 'string'],
-            'phone' => ['required', 'string'],
+            'phone' => ['required', 'string', new IranPhoneNumber()],
             'description' => ['nullable', 'string'],
         ];
 
