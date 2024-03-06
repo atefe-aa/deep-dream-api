@@ -24,7 +24,7 @@ class TestTypeController extends Controller
     {
         $user = Auth::user();
         $query = TestType::query();
-        
+
         $labId = $user && $user->hasRole(['superAdmin', 'operator'])
             ? $request->input('laboratory')
             : $user->laboratory->id;
@@ -50,6 +50,18 @@ class TestTypeController extends Controller
                 });
             }
 
+        }
+
+        if ($request->has('search')) {
+            $searchTerm = $request->get('search');
+
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('code', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('gender', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('type', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('magnification', 'like', '%' . $searchTerm . '%');
+            });
         }
 
         $sortBy = $request->get('sort', 'created_at');
