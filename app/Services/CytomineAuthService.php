@@ -140,7 +140,7 @@ class CytomineAuthService
     {
 
         try {
-            $authToken = $this->login(env('CYTOMINE_ADMIN_USERNAME'), env('CYTOMINE_ADMIN_PASSWORD'));
+            $authToken = $this->login($this->adminUsername, $this->adminPassword);
             if (isset($authToken['data'])) {
                 $response = Http::withHeaders([
                     'Accept' => 'application/json',
@@ -155,13 +155,13 @@ class CytomineAuthService
                 ]);
 
                 if ($response->successful()) {
-
+//
                     $responseData = $response->json();
-                    $defineRoleResponse = Http::withHeaders([
-                        'Accept' => 'application/json',
-                        'Authorization' => 'Bearer ' . $authToken['data']['token']
-                    ])->put(env('CYTOMINE_API_URL') . '/user/' . $responseData['user']['id'] . '/role/44/define.json');
-
+//                    $defineRoleResponse = Http::withHeaders([
+//                        'Accept' => 'application/json',
+//                        'Authorization' => 'Bearer ' . $authToken['data']['token']
+//                    ])->put(env('CYTOMINE_API_URL') . '/user/' . $responseData['user']['id'] . '/role/44/define.json');
+//
                     return $responseData;
                 }
 

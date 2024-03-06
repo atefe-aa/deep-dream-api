@@ -59,7 +59,7 @@ class CounsellorController extends Controller
 
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');
-        
+
         if ($sortBy === 'laboratory') {
             $query->join('laboratories', 'counsellors.lab_id', '=', 'laboratories.id')
                 ->orderBy('laboratories.title', $sortOrder)
@@ -118,10 +118,8 @@ class CounsellorController extends Controller
 
             $cytomineUser = $this->cytomineAuthService->registerUser($data);
 
-            // Check for successful external service registration
-            if (!$cytomineUser || !isset($cytomineUser['user'])) {
-
-                throw new RuntimeException('Cytomine user creation failed');
+            if (isset($cytomineUser['errors'])) {
+                throw new RuntimeException('Cytomine user creation failed' . $cytomineUser['errors']);
             }
 
             $counsellor->update(['cytomine_user_id' => $cytomineUser['user']['id']]);
