@@ -59,7 +59,14 @@ class CounsellorController extends Controller
 
         $sortBy = $request->get('sort', 'created_at');
         $sortOrder = $request->get('order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
+        
+        if ($sortBy === 'laboratory') {
+            $query->join('laboratories', 'counsellors.lab_id', '=', 'laboratories.id')
+                ->orderBy('laboratories.title', $sortOrder)
+                ->select('counsellors.*');
+        } else {
+            $query->orderBy($sortBy, $sortOrder);
+        }
 
 
         if ($request->get('noPaginate', false)) {
