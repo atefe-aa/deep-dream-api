@@ -9,6 +9,8 @@ use App\Models\Test;
 use App\Services\CytomineProjectService;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Config\Repository;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -21,10 +23,15 @@ use RuntimeException;
 class RegistrationController extends Controller
 {
     protected CytomineProjectService $cytomineProjectService;
+    /**
+     * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
+     */
+    private mixed $adminUsername;
 
     public function __construct(CytomineProjectService $cytomineProjectService)
     {
         $this->cytomineProjectService = $cytomineProjectService;
+        $this->adminUsername = config('services.cytomine.admin_username');
     }
 
     /**
@@ -141,7 +148,7 @@ class RegistrationController extends Controller
 
             $projectName = $request->input('name') . "-" . $test->id;
             $username = $user->hasRole(['superAdmin', 'operator'])
-                ? env('CYTOMINE_ADMIN_USERNAME')
+                ? $this->adminUsername
                 : $user->username;
 
             $projectResponse = $this->cytomineProjectService->createProject($projectName, $username);
