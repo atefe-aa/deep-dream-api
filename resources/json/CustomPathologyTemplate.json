@@ -1,0 +1,59 @@
+[
+    {
+        "id": 11,
+        "sectionTitle": "Macroscopic Description",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 63,
+                        "type": "textArea",
+                        "className": "",
+                        "label": "",
+                        "value": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "sectionTitle": "Microscopic Description",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 64,
+                        "type": "textArea",
+                        "className": "",
+                        "label": "",
+                        "value": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "sectionTitle": "Diagnosis",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 65,
+                        "type": "textArea",
+                        "className": "",
+                        "label": "",
+                        "value": ""
+                    }
+                ]
+            }
+        ]
+    }
+]

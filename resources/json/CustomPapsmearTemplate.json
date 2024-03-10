@@ -1,0 +1,650 @@
+[
+    {
+        "id": 2,
+        "sectionTitle": "CERVICOVAGINAL CYTOPATHOLOGY REPORT (PAP.SMEAR)",
+        "groups": [
+            {
+                "title": "SPECIMEN TYPE",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 1,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Conventional",
+                        "value": false
+                    },
+                    {
+                        "id": 2,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Liquid-Based",
+                        "value": false
+                    },
+                    {
+                        "id": 3,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Thin prep",
+                        "value": false
+                    },
+                    {
+                        "id": 4,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "E.Prep",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "sectionTitle": "SPECIMEN ADEQUACY: CERVICOVAGINAL CYTOPATHOLOGY REPORT (PAP.SMEAR)",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 5,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Satisfactory for evaluation",
+                        "value": false
+                    },
+                    {
+                        "id": 6,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Unsatisfactory for evaluation",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 7,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Endocervical/Transformation zone cells are present",
+                        "value": false
+                    },
+                    {
+                        "id": 8,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Scant cellularity",
+                        "value": false
+                    },
+                    {
+                        "id": 9,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Obscured by blood",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 10,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Absence of Endocervical/Metaplastic cells",
+                        "value": false
+                    },
+                    {
+                        "id": 11,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Poor preservation",
+                        "value": false
+                    },
+                    {
+                        "id": 12,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Obscured by inflammation",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "sectionTitle": "INTERPRETATION/RESULT",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 13,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Negative for intraepithelial lesion of malignancy",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "sectionTitle": "ORGANISM",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 14,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Trichomonas vaginalls",
+                        "value": false
+                    },
+                    {
+                        "id": 15,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Mixed bacteria",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 16,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Fungal organisms morphologically consistent with candida Spp",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 17,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Shift in flora suggestive of bacterial vaginosis",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 18,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Bacteria morphologically consistent with actinomyces Spp",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 19,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "chlamydia",
+                        "value": false
+                    },
+                    {
+                        "id": 20,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Cellular changes consistent with herpes simplex virus",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "sectionTitle": "Presence of inflammation",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 21,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Mild",
+                        "value": false
+                    },
+                    {
+                        "id": 22,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Moderate",
+                        "value": false
+                    },
+                    {
+                        "id": 23,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "severe",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "sectionTitle": "OTHER NON-NEOPLASTIC FINDINGS",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 24,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Reactive cellular changes associated with:",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 25,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Inflammation",
+                        "value": false
+                    },
+                    {
+                        "id": 26,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Inflammation (Includes typical Repair)",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 27,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Radiation",
+                        "value": false
+                    },
+                    {
+                        "id": 28,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Intrauterine Contraceptive Device (IUD)",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 29,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Glandular cells status post hysterectomy",
+                        "value": false
+                    },
+                    {
+                        "id": 30,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Atrophy",
+                        "value": false
+                    },
+                    {
+                        "id": 31,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Atrophic vaginitis",
+                        "value": false
+                    },
+                    {
+                        "id": 32,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Metaplasia",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 33,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Endometrial cells present in a woman 45 years old or more",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 34,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Squamous Metaplasia",
+                        "value": false
+                    },
+                    {
+                        "id": 35,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Keratotic",
+                        "value": false
+                    },
+                    {
+                        "id": 36,
+                        "type": "checkbox",
+                        "className": "",
+                        "label": "Pregnancy associated changes",
+                        "value": false
+                    },
+                    {
+                        "id": 37,
+                        "label": "Other",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "bordered fw-bold",
+                "options": [
+                    {
+                        "id": 38,
+                        "label": "Epithelial cell abnormalities",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "sectionTitle": "SQUAMOUS CELLS",
+        "groups": [
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 39,
+                        "label": "Atypical squamous cells",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 40,
+                        "label": "Of undetermined significance (ASC-US)",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 41,
+                        "label": "Can mot exclude HSIL (ASC-H)",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 42,
+                        "label": "Low-Grade squamous intraepithelial lesion (LSIL)",
+                        "value": false
+                    },
+                    {
+                        "id": 43,
+                        "label": "HPV",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 44,
+                        "label": "High-Grade squamous intraepithelial lesion (HSIL)",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 44,
+                        "label": "With features suspicious for invasion",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 45,
+                        "label": "Squamous cell carcinoma",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "sectionTitle": "GLANDULAR CELLS",
+        "groups": [
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 46,
+                        "label": "Atypical",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 47,
+                        "label": "Endocervical cells",
+                        "value": false
+                    },
+                    {
+                        "id": 48,
+                        "label": "Endometrial cells",
+                        "value": false
+                    },
+                    {
+                        "id": 49,
+                        "label": "Glandular cells, favor neoplasia",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 50,
+                        "label": "Glandular cells",
+                        "value": false
+                    },
+                    {
+                        "id": 51,
+                        "label": "Endocervical cells, favor neoplasia",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 52,
+                        "label": "Endocervical adenocarcinoma in situ",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 53,
+                        "label": "Adenocarcinoma",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 54,
+                        "label": "Endocervical",
+                        "value": false
+                    },
+                    {
+                        "id": 55,
+                        "label": "Extrauterine",
+                        "value": false
+                    },
+                    {
+                        "id": 56,
+                        "label": "Endometrial",
+                        "value": false
+                    },
+                    {
+                        "id": 57,
+                        "label": "Not Otherwise Specified (NOS)",
+                        "value": false
+                    }
+                ]
+            },
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 58,
+                        "label": "Other malignant neoplasms",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "sectionTitle": "Recommendation",
+        "groups": [
+            {
+                "title": "",
+                "type": "checkboxes",
+                "classNames": "",
+                "options": [
+                    {
+                        "id": 59,
+                        "label": "Repeat Smear",
+                        "value": false
+                    },
+                    {
+                        "id": 60,
+                        "label": "Immediately",
+                        "value": false
+                    },
+                    {
+                        "id": 61,
+                        "label": "after treatment",
+                        "value": false
+                    },
+                    {
+                        "id": 62,
+                        "label": "In ___ Month(s)",
+                        "value": false
+                    }
+                ]
+            }
+        ]
+    }
+]
