@@ -13,6 +13,7 @@ use App\Http\Controllers\Operator\ScanController;
 use App\Http\Controllers\Operator\SettingsController;
 use App\Http\Controllers\Operator\SlideController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShareController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,8 @@ Route::get('link/{code}', [LinkController::class, 'link']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('test-type', TestTypeController::class);
+
+    Route::apiResource('report', ReportController::class);
 
     Route::get('statistics/chart', [StatisticsController::class, 'chart']);
     Route::get('statistics/radarChart', [StatisticsController::class, 'radarChart']);

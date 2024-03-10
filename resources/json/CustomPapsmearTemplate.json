@@ -5,7 +5,7 @@
         "groups": [
             {
                 "title": "SPECIMEN TYPE",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 1,
@@ -45,7 +45,7 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 5,
@@ -65,7 +65,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 7,
@@ -92,7 +92,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 10,
@@ -125,7 +125,7 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "border pt-3",
                 "options": [
                     {
                         "id": 13,
@@ -144,7 +144,7 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 14,
@@ -164,7 +164,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 16,
@@ -177,7 +177,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 17,
@@ -190,7 +190,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 18,
@@ -203,7 +203,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 19,
@@ -229,7 +229,7 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 21,
@@ -262,7 +262,7 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 24,
@@ -275,7 +275,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 25,
@@ -295,7 +295,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 27,
@@ -315,7 +315,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 29,
@@ -349,7 +349,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 33,
@@ -362,7 +362,7 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 34,
@@ -387,6 +387,8 @@
                     },
                     {
                         "id": 37,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Other",
                         "value": false
                     }
@@ -394,10 +396,12 @@
             },
             {
                 "title": "",
-                "classNames": "bordered fw-bold",
+                "classNames": "border pt-3",
                 "options": [
                     {
                         "id": 38,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Epithelial cell abnormalities",
                         "value": false
                     }
@@ -411,10 +415,12 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 39,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Atypical squamous cells",
                         "value": false
                     }
@@ -422,10 +428,12 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 40,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Of undetermined significance (ASC-US)",
                         "value": false
                     }
@@ -433,10 +441,12 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 41,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Can mot exclude HSIL (ASC-H)",
                         "value": false
                     }
@@ -444,15 +454,19 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 42,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Low-Grade squamous intraepithelial lesion (LSIL)",
                         "value": false
                     },
                     {
                         "id": 43,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "HPV",
                         "value": false
                     }
@@ -460,10 +474,12 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 44,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "High-Grade squamous intraepithelial lesion (HSIL)",
                         "value": false
                     }
@@ -471,10 +487,12 @@
             },
             {
                 "title": "",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 44,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "With features suspicious for invasion",
                         "value": false
                     }
@@ -483,10 +501,12 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 45,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Squamous cell carcinoma",
                         "value": false
                     }
@@ -501,10 +521,12 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 46,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Atypical",
                         "value": false
                     }
@@ -513,20 +535,26 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 47,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Endocervical cells",
                         "value": false
                     },
                     {
                         "id": 48,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Endometrial cells",
                         "value": false
                     },
                     {
                         "id": 49,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Glandular cells, favor neoplasia",
                         "value": false
                     }
@@ -535,15 +563,19 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 50,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Glandular cells",
                         "value": false
                     },
                     {
                         "id": 51,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Endocervical cells, favor neoplasia",
                         "value": false
                     }
@@ -552,10 +584,12 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 52,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Endocervical adenocarcinoma in situ",
                         "value": false
                     }
@@ -564,10 +598,12 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 53,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Adenocarcinoma",
                         "value": false
                     }
@@ -576,25 +612,33 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 54,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Endocervical",
                         "value": false
                     },
                     {
                         "id": 55,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Extrauterine",
                         "value": false
                     },
                     {
                         "id": 56,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Endometrial",
                         "value": false
                     },
                     {
                         "id": 57,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Not Otherwise Specified (NOS)",
                         "value": false
                     }
@@ -603,10 +647,12 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 58,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Other malignant neoplasms",
                         "value": false
                     }
@@ -621,25 +667,33 @@
             {
                 "title": "",
                 "type": "checkboxes",
-                "classNames": "",
+                "classNames": "d-flex",
                 "options": [
                     {
                         "id": 59,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Repeat Smear",
                         "value": false
                     },
                     {
                         "id": 60,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "Immediately",
                         "value": false
                     },
                     {
                         "id": 61,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "after treatment",
                         "value": false
                     },
                     {
                         "id": 62,
+                        "type": "checkbox",
+                        "className": "",
                         "label": "In ___ Month(s)",
                         "value": false
                     }
