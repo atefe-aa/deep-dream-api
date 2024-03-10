@@ -22,11 +22,16 @@ class DatabaseSeeder extends Seeder
         RolesAndPermissionsSeeder::class,
         SettingSeeder::class,
         SlideSeeder::class,
+        ReportTemplateSeeder::class
     ];
 
     public function run(): void
     {
         $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(SettingSeeder::class);
+        $this->call(ReportTemplateSeeder::class);
+        $this->call(SlideSeeder::class);
+
         User::factory(10)->create();
         Laboratory::factory(10)->create();
         LaboratoryMedia::factory(10)->create();
@@ -35,8 +40,6 @@ class DatabaseSeeder extends Seeder
         Test::factory(100)->create();
         Counsellor::factory(40)->create();
 
-        $this->call(SettingSeeder::class);
         $this->call(PriceSeeder::class);
-        $this->call(SlideSeeder::class);
     }
 }
