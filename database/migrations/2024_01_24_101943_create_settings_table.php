@@ -19,7 +19,10 @@ return new class extends Migration {
             $table->float('default');
             $table->timestamps();
 
-            $table->foreign('category_id')->references('id')->on('settings_categories')->onDelete('cascade');
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('settings_categories')
+                ->onDelete('restrict');
         });
     }
 

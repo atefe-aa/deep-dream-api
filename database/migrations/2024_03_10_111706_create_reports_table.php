@@ -10,16 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('laboratories', static function (Blueprint $table) {
+        Schema::create('reports', static function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('test_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('title');
-            $table->text('address');
-            $table->text('description')->nullable();
-            $table->timestamp('deleted_at')->nullable();
+            $table->json('data');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('test_id')->on('tests')->references('id')->onDelete('restrict');
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('restrict');
         });
     }
 
@@ -28,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('laboratories');
+        Schema::dropIfExists('reports');
     }
 };

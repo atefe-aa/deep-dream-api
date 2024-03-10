@@ -27,9 +27,9 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->timestamps();
 
-            $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
-            $table->foreign('lab_id')->references('id')->on('laboratories')->onDelete('cascade');
-            $table->foreign('test_type_id')->references('id')->on('test_types')->onDelete('cascade');
+            $table->foreign('patient_id')->references('id')->on('patients')->onDelete('restrict');
+            $table->foreign('lab_id')->references('id')->on('laboratories')->onDelete('restrict');
+            $table->foreign('test_type_id')->references('id')->on('test_types')->onDelete('restrict');
 
         });
     }

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,8 +19,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
 
-            $table->foreign('lab_id')->references('id')->on('laboratories')->onDelete('cascade');
-            $table->foreign('test_type_id')->references('id')->on('test_types')->onDelete('cascade');
+            $table->foreign('lab_id')->references('id')->on('laboratories')->onDelete('restrict');
+            $table->foreign('test_type_id')->references('id')->on('test_types')->onDelete('restrict');
 
             $table->unique(['lab_id', 'test_type_id']);
         });

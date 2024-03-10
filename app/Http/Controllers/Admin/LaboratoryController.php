@@ -300,7 +300,7 @@ class LaboratoryController extends Controller
                 }
             }
 
-//by deleting the user related laboratory will be deleted because of cascade relationship
+//by deleting the user related laboratory will be deleted because of relationship
 // then the media row related to the laboratory will be deleted
             $laboratory->user->delete();
 
