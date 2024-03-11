@@ -37,14 +37,29 @@ class ReportController extends Controller
         $this->authorize('update', $test);
 
         try {
-            Report::create([
-                'test_id' => $testId,
-                'user_id' => $user->id,
-                'data' => JsonHelper::encodeJson($request->sections)
-            ]);
-            $test->update([
-                'status' => 'answered'
-            ]);
+            $existingReport = Report::where('test_id', $testId)->first();
+            if ($existingReport) {
+                if ($existingReport->delete()) {
+                    Report::create([
+                        'test_id' => $testId,
+                        'user_id' => $user->id,
+                        'template_id' => $request->id,
+                        'data' => JsonHelper::encodeJson($request->sections)
+                    ]);
+                }
+            } else {
+                Report::create([
+                    'test_id' => $testId,
+                    'user_id' => $user->id,
+                    'template_id' => $request->id,
+                    'data' => JsonHelper::encodeJson($request->sections)
+                ]);
+                $test->update([
+                    'status' => 'answered'
+                ]);
+            }
+
+
             return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             Log::info('Something went wrong creating a report: ' . $e->getMessage());
@@ -65,7 +80,14 @@ class ReportController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $report = Report::where('test_id', $id)->first();
+        if ($report) {
+            $test = Test::findOrFail($report->test_id);
+            $this->authorize('update', $test);
+
+            return new ReportTemplateResource($report);
+        }
+        return response()->json(['error' => 'failed'], 404);
     }
 
     /**

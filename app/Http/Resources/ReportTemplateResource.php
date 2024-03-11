@@ -17,10 +17,11 @@ class ReportTemplateResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $id = $this->template_id ?: $this->id;
         return [
-            "id" => $this->id,
-            "testTitle" => $this->test_title,
-            "note" => $this->note,
+            "id" => $id,
+            "testTitle" => $this->test_title ?: $this->template?->test_title,
+            "note" => $this->note ?: $this->template?->note,
             "sections" => JsonHelper::decodeJson($this->data),
         ];
     }

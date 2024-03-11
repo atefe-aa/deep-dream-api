@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Test extends Model
 {
@@ -44,16 +45,6 @@ class Test extends Model
         }
     }
 
-//    public function setPriceAttribute(): void
-//    {
-//        $priceModel = Price::where('lab_id', $this->lab_id)
-//            ->where('test_type_id', $this->test_type_id)
-//            ->first();
-//        if ($priceModel) {
-//            $this->attributes['price'] = $priceModel->price + (($this->num_slide - 1) * $priceModel->price_per_slide);
-//        }
-//    }
-
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);
@@ -72,6 +63,11 @@ class Test extends Model
     public function scans(): HasMany
     {
         return $this->hasMany(Scan::class);
+    }
+
+    public function report(): HasOne
+    {
+        return $this->hasOne(Report::class);
     }
 
 }

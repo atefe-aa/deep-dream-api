@@ -14,11 +14,13 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('test_id');
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('template_id');
             $table->json('data');
             $table->timestamps();
 
             $table->foreign('test_id')->on('tests')->references('id')->onDelete('restrict');
             $table->foreign('user_id')->on('users')->references('id')->onDelete('restrict');
+            $table->foreign('template_id')->on('report_templates')->references('id')->onDelete('restrict');
         });
     }
 

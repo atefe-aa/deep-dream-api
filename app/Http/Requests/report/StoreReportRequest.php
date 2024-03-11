@@ -23,7 +23,7 @@ class StoreReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer',
+            'id' => 'required|integer|exists:report_templates,id',
             'testId' => 'required|integer|exists:tests,id',
             'testTitle' => 'required|string',
             'sections' => 'required|array',

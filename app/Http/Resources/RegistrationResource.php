@@ -40,7 +40,9 @@ class RegistrationResource extends JsonResource
             "numberOfSlides" => $this->num_slide,
             "durations" => $this->duration,
             "laboratoryId" => $this->laboratory?->id,
+            "laboratoryId" => $this->laboratory?->id,
             "testTypeId" => $this->testType?->id,
+            "report" => $this->report ? new ReportTemplateResource($this->report) : null
         ];
     }
 }
