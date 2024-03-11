@@ -5,7 +5,7 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "className": "",
                 "options": [
                     {
                         "id": 63,
@@ -24,7 +24,7 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "className": "",
                 "options": [
                     {
                         "id": 64,
@@ -43,7 +43,7 @@
         "groups": [
             {
                 "title": "",
-                "classNames": "",
+                "className": "",
                 "options": [
                     {
                         "id": 65,
