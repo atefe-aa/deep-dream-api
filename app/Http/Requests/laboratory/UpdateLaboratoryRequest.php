@@ -36,10 +36,10 @@ class UpdateLaboratoryRequest extends FormRequest
             "description" => ['nullable', 'string'],
 //            "username" => ['nullable', 'string', 'unique:users'], //username update is not available for now
             "password" => ['nullable', 'string', 'confirmed'],
-            "avatar" => ['nullable', 'image'],
-            "signature" => ['nullable', 'image'],
-            "header" => ['nullable', 'image'],
-            "footer" => ['nullable', 'image'],
+            "avatar" => ['nullable'],
+            "signature" => ['nullable'],
+            "header" => ['nullable'],
+            "footer" => ['nullable'],
         ];
 
         // Check if the user ID associated with the laboratory is valid
