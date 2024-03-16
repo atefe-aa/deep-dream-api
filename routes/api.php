@@ -15,6 +15,7 @@ use App\Http\Controllers\Operator\SlideController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShareController;
+use App\Http\Middleware\CheckScannerToken;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -94,10 +95,13 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::group(['middleware' => 'CheckScannerToken'], function () {
+Route::group(['middleware' => CheckScannerToken::class], static function () {
     Route::post('scan', [MachineController::class, 'scan']);
     Route::post('image', [MachineController::class, 'image']);
 });
+
+//Route::post('scan', [MachineController::class, 'scan']);
+//Route::post('image', [MachineController::class, 'image']);
 
 
 
