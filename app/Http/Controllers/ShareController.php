@@ -41,12 +41,17 @@ class ShareController extends Controller
      * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
      */
     private mixed $frontUri;
+    /**
+     * @var Repository|\Illuminate\Contracts\Foundation\Application|Application|mixed
+     */
+    private mixed $cytomineAdminUsername;
 
     public function __construct(SmsService $smsService, CytomineProjectService $cytomineProjectService, CytomineAuthService $cytomineAuthService)
     {
         $this->smsService = $smsService;
         $this->cytomineProjectService = $cytomineProjectService;
         $this->cytomineAuthService = $cytomineAuthService;
+        $this->cytomineAdminUsername = config('cytomine.admin_username');
         $this->frontUrl = config('services.front.url');
         $this->frontUri = config('services.front.uri');
     }
@@ -127,7 +132,7 @@ class ShareController extends Controller
     private function determineUsername($user): string
     {
         return $user->hasRole(['superAdmin', 'operator'])
-            ? env('CYTOMINE_ADMIN_USERNAME')
+            ? $this->cytomineAdminUsername
             : $user->username;
     }
 

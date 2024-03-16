@@ -66,9 +66,7 @@ class Region extends Model
         // Ensure scanner speed is not zero to avoid division by zero error
         $scannerSpeed = $this->scannerSpeed ?: 1;
 
-        $approximateTime = ($area / ($stepArea * $scannerSpeed)) * $numLayer;
-
-        return $approximateTime;
+        return ($area / ($stepArea * $scannerSpeed)) * $numLayer;
     }
 
 
