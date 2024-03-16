@@ -94,11 +94,13 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::group(['middleware' => 'CheckScannerToken'], function () {
-    Route::post('scan', [MachineController::class, 'scan']);
-    Route::post('image', [MachineController::class, 'image']);
-});
+// Route::group(['middleware' => 'CheckScannerToken'], function () {
+//     Route::post('scan', [MachineController::class, 'scan']);
+//     Route::post('image', [MachineController::class, 'image']);
+// });
 
+Route::post('scan', [MachineController::class, 'scan']);
+Route::post('image', [MachineController::class, 'image']);
 
 
 
