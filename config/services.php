@@ -41,6 +41,7 @@ return [
     ],
     'scanner' => [
         'api_url' => env('SCANNER_API_URL'),
+        'api_token' => env('SCANNER_API_TOKEN'),
         'speed' => env('SCANNER_SPEED'),
     ],
     'front' => [
