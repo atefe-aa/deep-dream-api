@@ -11,7 +11,6 @@ use App\Jobs\CheckProcessStatusJob;
 use App\Models\Region;
 use App\Models\Scan;
 use App\Models\SettingsCategory;
-use App\Models\Test;
 use App\Services\CytomineProjectService;
 use App\Services\UserNotificationService;
 use Exception;
@@ -24,7 +23,7 @@ use Illuminate\Support\Facades\Log;
 class MachineController extends Controller
 {
 
-    private mixed $cytomineProjectService;
+//    private mixed $cytomineProjectService;
     private UserNotificationService $notificationService;
 
     /**
@@ -33,7 +32,7 @@ class MachineController extends Controller
     public function __construct(CytomineProjectService $cytomineProjectService)
     {
         $this->notificationService = new UserNotificationService();
-        $this->cytomineProjectService = $cytomineProjectService;
+//        $this->cytomineProjectService = $cytomineProjectService;
     }
 
     /**
@@ -59,7 +58,6 @@ class MachineController extends Controller
             }
 
             event(new ScanUpdated($nextScan));
-
             return new ScanRequestResource($this->formatScanResponse($nextScan, $isRegion));
 
         } catch (Exception $e) {
@@ -239,18 +237,18 @@ class MachineController extends Controller
                         $scan->update([
                             'status' => 'image-ready'
                         ]);
-                        $response = $this->cytomineProjectService->uploadImage($scan->test->project_id, $image);
-                        if ($response) {
-                            $region->update([
-                                'cytomine_image_id' => $response['id'],
-                            ]);
-
-                            $test = Test::where('id', $scan->test->id)->first();
-                            if ($test) {
-                                $test->update(['status' => 'scanned']);
-                            }
-                        }
-                        $this->notificationService->notifyStatusChange($scan);
+//                        $response = $this->cytomineProjectService->uploadImage($scan->test->project_id, $image);
+//                        if ($response) {
+//                            $region->update([
+//                                'cytomine_image_id' => $response['id'],
+//                            ]);
+//
+//                            $test = Test::where('id', $scan->test->id)->first();
+//                            if ($test) {
+//                                $test->update(['status' => 'scanned']);
+//                            }
+//                        }
+//                        $this->notificationService->notifyStatusChange($scan);
                         event(new ScanUpdated($scan));
                     }
                 }
