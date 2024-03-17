@@ -1,11 +1,11 @@
 [
     {
         "id": 11,
-        "sectionTitle": "Macroscopic Description",
+        "sectionTitle": "SPECIMEN",
         "groups": [
             {
-                "title": "",
-                "className": "",
+                "title": "Macroscopic",
+                "className": "text-start fw-bold fs-5 mt-2",
                 "options": [
                     {
                         "id": 63,
@@ -15,16 +15,10 @@
                         "value": ""
                     }
                 ]
-            }
-        ]
-    },
-    {
-        "id": 12,
-        "sectionTitle": "Microscopic Description",
-        "groups": [
+            },
             {
-                "title": "",
-                "className": "",
+                "title": "Microscopic",
+                "className": "text-start fw-bold fs-5 mt-2",
                 "options": [
                     {
                         "id": 64,
@@ -34,16 +28,10 @@
                         "value": ""
                     }
                 ]
-            }
-        ]
-    },
-    {
-        "id": 13,
-        "sectionTitle": "Diagnosis",
-        "groups": [
+            },
             {
-                "title": "",
-                "className": "",
+                "title": "Diagnosis",
+                "className": "text-start fw-bold fs-5 mt-2",
                 "options": [
                     {
                         "id": 65,

@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONT_END_APP_URL')],
+    'allowed_origins' => [env('FRONT_END_APP_URL'),env('FRONT_TLS_URL'),'http://192.168.1.68:580'],
 
     'allowed_origins_patterns' => [],
 

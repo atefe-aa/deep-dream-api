@@ -56,6 +56,7 @@ class MachineController extends Controller
             if (!$nextScan) {
                 return response()->json('', 404);
             }
+
             event(new ScanUpdated($nextScan));
             return new ScanRequestResource($this->formatScanResponse($nextScan, $isRegion));
 
