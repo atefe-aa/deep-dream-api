@@ -131,19 +131,20 @@ class ScanController extends Controller
                 'settings' => $settings
             ]);
 
-            $response = $this->slideScannerService->startScan($scanData->resolve());
+            $response = $this->slideScannerService->startScan(["data"=>$scanData->resolve()]);
 
-            if (isset($response['success']) && $response['success']) {
+            if (isset($response['data']) && $response['data']) {
 
-                $this->notificationService->notifyStatusChange($scan);
-                event(new ScanUpdated($scan));
+                // $this->notificationService->notifyStatusChange($scan);
+                // event(new ScanUpdated($scan));
 
                 $approximateTime = $scan->estimatedDuration();
+                Log::info($approximateTime);
                 $scan->update([
                     'status' => 'scanning',
                     'estimated_duration' => $approximateTime
                 ]);
-                dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateTime));
+                // dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateTime));
 
                 return response()->json(['success' => 'Scanning started']);
             }

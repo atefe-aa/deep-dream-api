@@ -28,12 +28,14 @@ class SlideScannerService
 
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
-            ])->post($this->apiUrl, $data);
+            ])->post($this->apiUrl.'/dynamic/scan', $data);
 
             if ($response->successful()) {
-                return ['data' => 'responseData'];
+                Log::info($response->json());
+                return ['data' => "success"];
             }
-            return ['errors' => 'scanner error'];
+
+            return ['errors' => $response->body()];
 
         } catch (Exception $e) {
             Log::error("Scanning full slide Failed: {$e->getMessage()}", [$data]);
@@ -47,7 +49,7 @@ class SlideScannerService
 
             $response = Http::withHeaders([
                 'Accept' => 'application/json',
-            ])->post($this->apiUrl, $data);
+            ])->post($this->apiUrl.'/', $data);
 
             if ($response->successful()) {
                 return ['data' => 'responseData'];
