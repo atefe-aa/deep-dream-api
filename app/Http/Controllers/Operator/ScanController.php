@@ -135,8 +135,8 @@ class ScanController extends Controller
 
             if (isset($response['data']) && $response['data']) {
 
-                // $this->notificationService->notifyStatusChange($scan);
-                // event(new ScanUpdated($scan));
+                $this->notificationService->notifyStatusChange($scan);
+                event(new ScanUpdated($scan));
 
                 $approximateTime = $scan->estimatedDuration();
                 Log::info($approximateTime);
@@ -144,7 +144,7 @@ class ScanController extends Controller
                     'status' => 'scanning',
                     'estimated_duration' => $approximateTime
                 ]);
-                // dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateTime));
+                dispatch(new CheckProcessStatusJob($scan))->delay(now()->addSeconds($approximateTime));
 
                 return response()->json(['success' => 'Scanning started']);
             }
