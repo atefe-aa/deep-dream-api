@@ -45,13 +45,24 @@ class UniqueCoordinates implements ValidationRule
             $fail('Please review the coordinates. SW : South-West, NE: North-East.');
             return;
         }
-        
-        $existingPoint = Slide::where([
-            ['sw_x', '>=', $sw_x - 0.0001],
-            ['sw_x', '<=', $sw_x + 0.0001],
-            ['sw_y', '>=', $sw_y - 0.0001],
-            ['sw_y', '<=', $sw_y + 0.0001],
-        ])
+
+        $slideId = request()?->route('slide');
+
+        if ($slideId !== null) {
+            $existingPointQuery = Slide::where('id', '!=', $slideId);
+            $existingPositionQuery = Slide::where('id', '!=', $slideId);
+        } else {
+            $existingPointQuery = Slide::query();
+            $existingPositionQuery = Slide::query();
+        }
+
+        $existingPoint = $existingPointQuery
+            ->where([
+                ['sw_x', '>=', $sw_x - 0.0001],
+                ['sw_x', '<=', $sw_x + 0.0001],
+                ['sw_y', '>=', $sw_y - 0.0001],
+                ['sw_y', '<=', $sw_y + 0.0001],
+            ])
             ->orWhere([
                 ['ne_x', '>=', $ne_x - 0.0001],
                 ['ne_x', '<=', $ne_x + 0.0001],
@@ -64,16 +75,17 @@ class UniqueCoordinates implements ValidationRule
             $fail('The slides cannot overlap.');
         }
 
-        $existingPosition = Slide::where([
-            ['sw_x', '>=', $sw_x - 0.0001],
-            ['sw_x', '<=', $sw_x + 0.0001],
-            ['sw_y', '>=', $sw_y - 0.0001],
-            ['sw_y', '<=', $sw_y + 0.0001],
-            ['ne_x', '>=', $ne_x - 0.0001],
-            ['ne_x', '<=', $ne_x + 0.0001],
-            ['ne_y', '>=', $ne_y - 0.0001],
-            ['ne_y', '<=', $ne_y + 0.0001],
-        ])->get();
+        $existingPosition = $existingPositionQuery
+            ->where([
+                ['sw_x', '>=', $sw_x - 0.0001],
+                ['sw_x', '<=', $sw_x + 0.0001],
+                ['sw_y', '>=', $sw_y - 0.0001],
+                ['sw_y', '<=', $sw_y + 0.0001],
+                ['ne_x', '>=', $ne_x - 0.0001],
+                ['ne_x', '<=', $ne_x + 0.0001],
+                ['ne_y', '>=', $ne_y - 0.0001],
+                ['ne_y', '<=', $ne_y + 0.0001],
+            ])->get();
 
         if ($existingPosition->count() > 0) {
             $fail('This position already exists.');

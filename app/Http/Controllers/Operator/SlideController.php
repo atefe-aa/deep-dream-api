@@ -66,7 +66,14 @@ class SlideController extends Controller
     {
         $slide = Slide::findOrFail($id);
         try {
-            $slide->update($request->all());
+            $slide->update([
+                "nth" => $request->get('nth') ?? $slide->nth,
+                "sw_y" => $request->get('coordinates')['sw_y'] ?? $slide->sw_y,
+                "sw_x" => $request->get('coordinates')['sw_x'] ?? $slide->sw_x,
+                "ne_x" => $request->get('coordinates')['ne_x'] ?? $slide->ne_x,
+                "ne_y" => $request->get('coordinates')['ne_y'] ?? $slide->ne_y,
+            ]);
+//            Log::info($request->all());
             return response()->json(['data' => 'success']);
         } catch (Exception $e) {
             Log::info('Failed to update slide : ' . $e->getMessage(), ['request' => $request->all()]);
