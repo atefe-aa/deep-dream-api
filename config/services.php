@@ -52,6 +52,10 @@ return [
         'api_key' => env('SMS_PANEL_API_KEY'),
         'api_url' => env('SMS_PANEL_API_URL'),
         'normal_uri' => env('SMS_PANEL_NORMAL_URI'),
+    ],
+    'milad' => [
+        'api_key' => env('MILAD_API_KEY'),
+        'api_url' => env('MILAD_API_URL'),
     ]
 
 ];
