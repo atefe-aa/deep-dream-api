@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounsellorController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\Machine\MachineController;
+use App\Http\Controllers\MiladAdmitController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Operator\ScanController;
 use App\Http\Controllers\Operator\SettingsController;
@@ -15,7 +16,6 @@ use App\Http\Controllers\Operator\SlideController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShareController;
-use App\Http\Middleware\CheckScannerToken;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,6 +35,9 @@ Route::post('logout', [AuthController::class, 'logout']);
 Route::get('link/{code}', [LinkController::class, 'link']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('admit-info/{admitNumber}', [MiladAdmitController::class, 'miladAdmit']);
+
     Route::apiResource('test-type', TestTypeController::class);
 
     Route::apiResource('report', ReportController::class);

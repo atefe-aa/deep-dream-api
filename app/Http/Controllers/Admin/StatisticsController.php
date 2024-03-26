@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helpers\DateHelper;
+use App\Helpers\AgeHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Laboratory;
 use App\Models\Test;
@@ -56,8 +56,8 @@ class StatisticsController extends Controller
 
         if ($fromDate && $toDate) {
             $testsQuery->whereBetween('created_at', [
-                DateHelper::toGregorian($fromDate),
-                DateHelper::toGregorian($toDate)
+                AgeHelper::toGregorian($fromDate),
+                AgeHelper::toGregorian($toDate)
             ]);
         }
         if (!empty($laboratories)) {
@@ -141,8 +141,8 @@ class StatisticsController extends Controller
 
         if ($fromDate && $toDate) {
             $testsQuery->whereBetween('created_at', [
-                DateHelper::toGregorian($fromDate),
-                DateHelper::toGregorian($toDate)
+                AgeHelper::toGregorian($fromDate),
+                AgeHelper::toGregorian($toDate)
             ]);
         }
 
