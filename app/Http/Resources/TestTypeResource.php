@@ -18,6 +18,7 @@ class TestTypeResource extends JsonResource
             "id" => $this->id,
             "title" => $this->title,
             "code" => $this->code,
+            "template" => $this->report_template_id,
             "gender" => $this->gender,
             "type" => $this->type,
             "numberOfLayers" => $this->num_layer,

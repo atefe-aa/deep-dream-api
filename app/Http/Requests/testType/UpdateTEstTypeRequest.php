@@ -23,6 +23,7 @@ class UpdateTEstTypeRequest extends FormRequest
     {
         return [
             'title' => ['nullable', 'string'],
+            'template' => ['nullable', 'exists:report_templates,id'],
             'code' => ['nullable', 'string'],
             'gender' => ['nullable', 'string', 'in:male,female,both'],
             'type' => ['nullable', 'string', 'in:invert,fluorescent,optical'],

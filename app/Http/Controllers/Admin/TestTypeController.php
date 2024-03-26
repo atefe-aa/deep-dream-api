@@ -89,6 +89,7 @@ class TestTypeController extends Controller
         try {
             $testType = new TestType([
                 'title' => $request->input('title'),
+                'report_template_id' => $request->input('template'),
                 'code' => $request->input('code'),
                 'gender' => $request->input('gender'),
                 'type' => $request->input('type'),
@@ -105,7 +106,7 @@ class TestTypeController extends Controller
 //            $testType->setDefaultValues($request->input('magnification'));
             $testType->save();
 
-            return response()->json(['data' => 'success']);
+            return response()->json(['data' => $testType]);
         } catch (Exception $e) {
             Log::info('Failed to create test type: ' . $e->getMessage(), ['request' => $request->all()]);
             return response()->json(['errors' => 'Creating new test type failed. Try again later.']);
@@ -125,12 +126,13 @@ class TestTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
         $testType = TestType::findOrFail($id);
         try {
             $testType->update([
                 'title' => $request->input('title') ?? $testType->title,
+                'report_template_id' => $request->input('template') ?? $testType->report_template_id,
                 'code' => $request->input('code'),
                 'gender' => $request->input('gender') ?? $testType->gender,
                 'type' => $request->input('type') ?? $testType->type,

@@ -12,6 +12,7 @@ class TestType extends Model
 
     protected $fillable = [
         'title',
+        'report_template_id',
         'code',
         'gender',
         'type',
