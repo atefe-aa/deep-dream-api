@@ -30,6 +30,7 @@ class MiladAdmitController extends Controller
 
         return response()->json([
             'data' => [
+                "admitNumber" => $admitNumber,
                 "name" => $admitInfo['firstName'] . " " . $admitInfo['lastName'],
                 "nationalId" => $admitInfo['nationalId'],
                 "age" => $age['age'],

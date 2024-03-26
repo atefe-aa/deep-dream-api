@@ -17,7 +17,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use RuntimeException;
 
 
 class RegistrationController extends Controller
@@ -146,18 +145,18 @@ class RegistrationController extends Controller
 
             $test->save();
 
-            $projectName = $request->input('name') . "-" . $test->id;
-            $username = $user->hasRole(['superAdmin', 'operator'])
-                ? $this->adminUsername
-                : $user->username;
-
-            $projectResponse = $this->cytomineProjectService->createProject($projectName, $username);
-
-            if (isset($projectResponse['errors']) && !is_null($projectResponse['errors'])) {
-                throw new RuntimeException($projectResponse['errors']);
-            }
-
-            $test->update(['project_id' => $projectResponse['data']['projectId']]);
+//            $projectName = $request->input('name') . "-" . $test->id;
+//            $username = $user->hasRole(['superAdmin', 'operator'])
+//                ? $this->adminUsername
+//                : $user->username;
+//
+//            $projectResponse = $this->cytomineProjectService->createProject($projectName, $username);
+//
+//            if (isset($projectResponse['errors']) && !is_null($projectResponse['errors'])) {
+//                throw new RuntimeException($projectResponse['errors']);
+//            }
+//
+//            $test->update(['project_id' => $projectResponse['data']['projectId']]);
 
             DB::commit();
 
