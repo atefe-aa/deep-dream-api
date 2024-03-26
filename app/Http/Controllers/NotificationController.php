@@ -8,7 +8,6 @@ use App\Services\UserNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
@@ -42,12 +41,9 @@ class NotificationController extends Controller
     {
         $user = $request->user();
 
-        $notificationIds = $request->input('ids', []); // 'ids' is an array of notification IDs
-        if ($user->notifications()
-            ->whereIn('id', $notificationIds)
-            ->update(['read_at' => now()])) {
-            Log::info($request->get('ids'));
-        }
+        $user->notifications()
+            ->where('read_at', null)
+            ->update(['read_at' => now()]);
 
         return response()->json(['data' => 'success']);
     }

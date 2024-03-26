@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use JsonException;
+use Morilog\Jalali\Jalalian;
 
 class NotificationResource extends JsonResource
 {
@@ -24,7 +25,7 @@ class NotificationResource extends JsonResource
         } else {
             // For periods longer than a week, display the full date and time.
             // Customize the format as needed.
-            $formattedTime = $createdAt->format('Y-m-d H:i:s');
+            $formattedTime = Jalalian::fromDateTime($this->created_at)->format('Y/m/d H:i');
         }
 
         return [

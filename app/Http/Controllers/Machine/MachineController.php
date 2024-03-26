@@ -109,7 +109,7 @@ class MachineController extends Controller
             $this->checkAndFinalizeScan($scan);
         }
 
-        $this->notificationService->notifyStatusChange($scan);
+//        $this->notificationService->notifyStatusChange($scan);
 
         event(new ScanUpdated($scan));
 
@@ -146,7 +146,7 @@ class MachineController extends Controller
         if ($nextScan) {
 
             if ($nextScan->update(['status' => 'scanning'])) {
-                $this->notificationService->notifyStatusChange($nextScan);
+//                $this->notificationService->notifyStatusChange($nextScan);
                 event(new ScanUpdated($nextScan));
             }
             return $nextScan;
@@ -222,7 +222,7 @@ class MachineController extends Controller
                     'slide_image' => $image,
                     'status' => '2x-image-ready'
                 ]);
-                $this->notificationService->notifyStatusChange($scan);
+//                $this->notificationService->notifyStatusChange($scan);
                 event(new ScanUpdated($scan));
             } else {
                 $region = Region::where('id', $id)->first();
@@ -248,7 +248,7 @@ class MachineController extends Controller
 //                                $test->update(['status' => 'scanned']);
 //                            }
 //                        }
-//                        $this->notificationService->notifyStatusChange($scan);
+                        $this->notificationService->notifyStatusChange($scan);
                         event(new ScanUpdated($scan));
                     }
                 }

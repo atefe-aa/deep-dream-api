@@ -48,44 +48,68 @@ class UniqueCoordinates implements ValidationRule
 
         $slideId = request()?->route('slide');
 
-        if ($slideId !== null) {
-            $existingPointQuery = Slide::where('id', '!=', $slideId);
-            $existingPositionQuery = Slide::where('id', '!=', $slideId);
-        } else {
-            $existingPointQuery = Slide::query();
-            $existingPositionQuery = Slide::query();
-        }
+//        $overlapArea = Slide::where([
+//            ['id', '!=', $slideId],
+//            // and $sw_x is not in the range between 'ne_x' and 'sw_x'
+//            // and $sw_y is not in the range between 'ne_y' and 'sw_y'
+//        ])
+//            ->get();
 
-        $existingPoint = $existingPointQuery
-            ->where([
-                ['sw_x', '>=', $sw_x - 0.0001],
-                ['sw_x', '<=', $sw_x + 0.0001],
-                ['sw_y', '>=', $sw_y - 0.0001],
-                ['sw_y', '<=', $sw_y + 0.0001],
-            ])
-            ->orWhere([
-                ['ne_x', '>=', $ne_x - 0.0001],
-                ['ne_x', '<=', $ne_x + 0.0001],
-                ['ne_y', '>=', $ne_y - 0.0001],
-                ['ne_y', '<=', $ne_y + 0.0001],
-            ])
+        $overlapArea = Slide::where('id', '!=', $slideId)
+            ->where(function ($query) use ($sw_x, $sw_y, $ne_x, $ne_y) {
+                // Ensure that the southwest corner of the current slide
+                // is not within the range of any existing slides
+                $query->where(function ($q) use ($sw_x, $sw_y, $ne_x, $ne_y) {
+                    $q->where([
+                        ['sw_x', '<', $sw_x],
+                        ['ne_x', '>', $sw_x],
+                        ['sw_y', '<', $sw_y],
+                        ['ne_y', '>', $sw_y]
+                    ]);
+                })
+                    ->orWhere(function ($q) use ($sw_x, $sw_y, $ne_x, $ne_y) {
+                        $q->where([
+                            ['sw_x', '<', $ne_x],
+                            ['ne_x', '>', $ne_x],
+                            ['sw_y', '<', $ne_y],
+                            ['ne_y', '>', $ne_y]
+                        ]);
+                    })
+                    ->orWhere(function ($q) use ($sw_x, $sw_y, $ne_x, $ne_y) {
+                        $q->where([
+                            ['sw_x', '>', $sw_x],
+                            ['sw_x', '<', $ne_x],
+                            ['sw_y', '>', $sw_y],
+                            ['sw_y', '<', $ne_y]
+                        ]);
+                    })
+                    ->orWhere(function ($q) use ($sw_x, $sw_y, $ne_x, $ne_y) {
+                        $q->where([
+                            ['ne_x', '>', $sw_x],
+                            ['ne_x', '<', $ne_x],
+                            ['ne_y', '>', $sw_y],
+                            ['ne_y', '<', $ne_y]
+                        ]);
+                    });
+            })
             ->get();
 
-        if ($existingPoint->count() > 0) {
+
+        if ($overlapArea->count() > 0) {
             $fail('The slides cannot overlap.');
         }
 
-        $existingPosition = $existingPositionQuery
-            ->where([
-                ['sw_x', '>=', $sw_x - 0.0001],
-                ['sw_x', '<=', $sw_x + 0.0001],
-                ['sw_y', '>=', $sw_y - 0.0001],
-                ['sw_y', '<=', $sw_y + 0.0001],
-                ['ne_x', '>=', $ne_x - 0.0001],
-                ['ne_x', '<=', $ne_x + 0.0001],
-                ['ne_y', '>=', $ne_y - 0.0001],
-                ['ne_y', '<=', $ne_y + 0.0001],
-            ])->get();
+        $existingPosition = Slide::where([
+            ['id', '!=', $slideId],
+            ['sw_x', '>=', $sw_x - 0.0001],
+            ['sw_x', '<=', $sw_x + 0.0001],
+            ['sw_y', '>=', $sw_y - 0.0001],
+            ['sw_y', '<=', $sw_y + 0.0001],
+            ['ne_x', '>=', $ne_x - 0.0001],
+            ['ne_x', '<=', $ne_x + 0.0001],
+            ['ne_y', '>=', $ne_y - 0.0001],
+            ['ne_y', '<=', $ne_y + 0.0001],
+        ])->get();
 
         if ($existingPosition->count() > 0) {
             $fail('This position already exists.');
