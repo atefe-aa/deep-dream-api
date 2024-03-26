@@ -41,6 +41,7 @@ class RegistrationResource extends JsonResource
             "durations" => $this->duration,
             "laboratoryId" => $this->laboratory?->id,
             "testTypeId" => $this->testType?->id,
+            "templateId" => $this->testType?->report_template_id,
             "report" => $this->report ? new ReportTemplateResource($this->report) : null
         ];
     }
