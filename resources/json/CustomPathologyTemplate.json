@@ -41,6 +41,19 @@
                         "value": ""
                     }
                 ]
+            },
+            {
+                "title": "Comments",
+                "className": "text-start fw-bold fs-5 mt-2",
+                "options": [
+                    {
+                        "id": 66,
+                        "type": "textArea",
+                        "className": "",
+                        "label": "",
+                        "value": ""
+                    }
+                ]
             }
         ]
     }

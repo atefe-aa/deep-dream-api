@@ -26,7 +26,8 @@ class ReportTemplateSeeder extends Seeder
         $rows = [
             [
                 'test_title' => 'PAP.SMEAR',
-                'note' => 'A single negative pap smear has a limited value in cervical cancer screening.',
+                'note' => '',
+//                'note' => 'A single negative pap smear has a limited value in cervical cancer screening.',
                 'data' => $PapJsonContent
             ],
             [

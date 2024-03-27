@@ -700,5 +700,24 @@
                 ]
             }
         ]
+    },
+    {
+        "id": 11,
+        "sectionTitle": "Comments",
+        "groups": [
+            {
+                "title": "",
+                "className": "text-start fw-bold fs-5 mt-2",
+                "options": [
+                    {
+                        "id": 67,
+                        "type": "textArea",
+                        "className": "",
+                        "label": "",
+                        "value": ""
+                    }
+                ]
+            }
+        ]
     }
 ]
