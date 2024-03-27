@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ * @extends Factory<Model>
  */
 class TestTypeFactory extends Factory
 {
@@ -16,19 +17,20 @@ class TestTypeFactory extends Factory
      */
     public function definition(): array
     {
-        $numLayer = fake()->numberBetween(1,3);
+        $numLayer = fake()->numberBetween(1, 3);
         return [
             'title' => fake()->word(),
-            'code' => fake()->numberBetween(100,900),
-            'gender' => fake()->randomElement(['male','female','both']),
-            'type' => fake()->randomElement(['optical','fluorescent','invert']),
+            'code' => fake()->numberBetween(100, 900),
+            'report_template_id' => fake()->numberBetween(1, 2),
+            'gender' => fake()->randomElement(['male', 'female', 'both']),
+            'type' => fake()->randomElement(['optical', 'fluorescent', 'invert']),
             'num_layer' => $numLayer,
-            'micro_step' => $numLayer > 1 ? fake()->numberBetween(1,100) : null,
-            'step' => $numLayer > 1 ? fake()->numberBetween(1,100) : null,
-            'z_axis' =>fake()->randomElement([fake()->numberBetween(1,100), null]),
-            'condenser' => fake()->randomElement([fake()->numberBetween(1,100), null]),
-            'brightness' => fake()->randomElement([fake()->numberBetween(1,100), null]),
-            'magnification' =>fake()->randomElement([2,10,40,100]),
+            'micro_step' => $numLayer > 1 ? fake()->numberBetween(1, 100) : null,
+            'step' => $numLayer > 1 ? fake()->numberBetween(1, 100) : null,
+            'z_axis' => fake()->randomElement([fake()->numberBetween(1, 100), null]),
+            'condenser' => fake()->randomElement([fake()->numberBetween(1, 100), null]),
+            'brightness' => fake()->randomElement([fake()->numberBetween(1, 100), null]),
+            'magnification' => fake()->randomElement([2, 10, 40, 100]),
             'description' => fake()->sentence(10),
         ];
     }

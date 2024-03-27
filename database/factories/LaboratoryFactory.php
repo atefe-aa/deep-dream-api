@@ -18,7 +18,7 @@ class LaboratoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => fake()->numberBetween(1, 10),
+            'user_id' => fake()->numberBetween(3, 10),
             'title' => fake()->word() . " " . fake()->word(),
             'address' => fake()->address(),
             'description' => fake()->sentence(15),

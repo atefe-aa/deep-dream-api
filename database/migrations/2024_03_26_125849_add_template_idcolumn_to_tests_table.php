@@ -29,7 +29,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('tests', function (Blueprint $table) {
+        Schema::table('test_types', function (Blueprint $table) {
+            $table->dropForeign(['report_template_id']);
             $table->dropColumn('report_template_id');
         });
     }
