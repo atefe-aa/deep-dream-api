@@ -35,7 +35,7 @@ class StoreReportRequest extends FormRequest
             'sections.*.groups.*.options' => 'required|array',
             'sections.*.groups.*.options.*.id' => 'required|integer',
             'sections.*.groups.*.options.*.type' => 'required|string',
-            'sections.*.groups.*.options.*.value' => 'required',
+            'sections.*.groups.*.options.*.value' => 'nullable',
             'sections.*.groups.*.options.*.label' => 'nullable|string',
             'sections.*.groups.*.options.*.className' => 'nullable|string',
         ];
